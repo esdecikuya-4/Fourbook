@@ -36,13 +36,138 @@ async function apiRequest(endpoint, options = {}) {
 
 async function loadCurrentUser() {
   const res = await apiRequest('auth.php?action=get_current');
-  if (res.status) {
+  if (res.status && res.data.user) {
     state.currentUser = res.data.user;
-    state.allUsers = res.data.all_users;
+    state.allUsers = res.data.all_users || [];
+    showAppScreen();
     updateUserUI();
     switchTab('beranda');
     fetchNotifications();
     fetchFriendships();
+  } else {
+    state.currentUser = null;
+    state.allUsers = res.data ? (res.data.all_users || []) : [];
+    showAuthScreen();
+  }
+}
+
+function showAuthScreen() {
+  const authScreen = document.getElementById('auth-view-screen');
+  const appScreen = document.getElementById('app-main-screen');
+  if (authScreen) authScreen.style.display = 'flex';
+  if (appScreen) appScreen.style.display = 'none';
+}
+
+function showAppScreen() {
+  const authScreen = document.getElementById('auth-view-screen');
+  const appScreen = document.getElementById('app-main-screen');
+  if (authScreen) authScreen.style.display = 'none';
+  if (appScreen) appScreen.style.display = 'block';
+}
+
+function toggleAuthTab(tab) {
+  const loginForm = document.getElementById('auth-form-login');
+  const regForm = document.getElementById('auth-form-register');
+  const loginBtn = document.getElementById('auth-tab-login-btn');
+  const regBtn = document.getElementById('auth-tab-register-btn');
+
+  if (tab === 'login') {
+    if (loginForm) loginForm.style.display = 'flex';
+    if (regForm) regForm.style.display = 'none';
+    if (loginBtn) loginBtn.classList.add('active');
+    if (regBtn) regBtn.classList.remove('active');
+  } else {
+    if (loginForm) loginForm.style.display = 'none';
+    if (regForm) regForm.style.display = 'flex';
+    if (loginBtn) loginBtn.classList.remove('active');
+    if (regBtn) regBtn.classList.add('active');
+  }
+}
+
+async function handleAuthLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+
+  if (!username || !password) {
+    alert('Silakan masukkan username dan kata sandi');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('username', username);
+  formData.append('password', password);
+
+  const res = await apiRequest('auth.php?action=login', { method: 'POST', body: formData });
+  if (res.status && res.data.user) {
+    state.currentUser = res.data.user;
+    showAppScreen();
+    updateUserUI();
+    switchTab('beranda');
+    fetchNotifications();
+    fetchFriendships();
+  } else {
+    alert(res.message || 'Username atau kata sandi tidak cocok');
+  }
+}
+
+async function quickLoginUser(userId) {
+  const formData = new FormData();
+  formData.append('userId', userId);
+  const res = await apiRequest('auth.php?action=switch_user', { method: 'POST', body: formData });
+  if (res.status && res.data.user) {
+    state.currentUser = res.data.user;
+    showAppScreen();
+    updateUserUI();
+    switchTab('beranda');
+    fetchNotifications();
+    fetchFriendships();
+  } else {
+    alert(res.message || 'Gagal masuk akun');
+  }
+}
+
+async function handleAuthRegister(e) {
+  e.preventDefault();
+  const fullName = document.getElementById('reg-fullname').value.trim();
+  const role = document.getElementById('reg-role').value;
+  const studentNumber = document.getElementById('reg-number').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value.trim();
+  const bio = document.getElementById('reg-bio').value.trim();
+
+  if (!fullName || !username || !password) {
+    alert('Nama lengkap, username, dan kata sandi wajib diisi');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('fullName', fullName);
+  formData.append('role', role);
+  formData.append('studentNumber', studentNumber);
+  formData.append('username', username);
+  formData.append('password', password);
+  formData.append('bio', bio);
+
+  const res = await apiRequest('auth.php?action=register', { method: 'POST', body: formData });
+  if (res.status && res.data.user) {
+    alert('Pendaftaran berhasil! Selamat datang di Fourbook.');
+    state.currentUser = res.data.user;
+    showAppScreen();
+    updateUserUI();
+    switchTab('beranda');
+    fetchNotifications();
+    fetchFriendships();
+  } else {
+    alert(res.message || 'Gagal mendaftar akun');
+  }
+}
+
+async function handleLogout() {
+  if (confirm('Apakah Anda yakin ingin keluar dari akun Fourbook?')) {
+    await apiRequest('auth.php?action=logout');
+    state.currentUser = null;
+    showAuthScreen();
   }
 }
 
@@ -842,9 +967,10 @@ function renderProfileView() {
         <div><b>${myFriends.length}</b> <span style="color: #65676B; font-size: 12px;">Teman</span></div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 16px;">
-        <button class="btn-fb-primary" style="flex: 1;" onclick="openModal('switchUserModal')"><i class="fa-solid fa-users-gear"></i> Ganti Akun Pengguna</button>
+      <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+        <button class="btn-fb-primary" style="flex: 1; min-width: 140px;" onclick="openModal('switchUserModal')"><i class="fa-solid fa-users-gear"></i> Ganti Akun</button>
         <button class="btn-fb-secondary" onclick="openModal('editProfileModal')"><i class="fa-solid fa-pen"></i> Edit Profil</button>
+        <button class="btn-fb-secondary" style="color: #FA3E3E; border-color: #FECACA; background: #FEF2F2;" onclick="handleLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
       </div>
     </div>
   `;

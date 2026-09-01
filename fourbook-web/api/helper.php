@@ -32,6 +32,5 @@ function get_current_user_session() {
     if (isset($_SESSION['user'])) {
         return $_SESSION['user'];
     }
-    $users = get_json_data('users.json');
-    return !empty($users) ? $users[0] : null;
+    return null;
 }

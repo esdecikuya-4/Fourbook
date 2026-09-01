@@ -32,6 +32,12 @@ if ($action === 'login') {
     json_response(false, [], 'Username atau kata sandi salah');
 }
 
+if ($action === 'logout') {
+    unset($_SESSION['user']);
+    session_destroy();
+    json_response(true, [], 'Berhasil keluar');
+}
+
 if ($action === 'register') {
     $fullName = trim($_POST['fullName'] ?? '');
     $username = trim($_POST['username'] ?? '');

@@ -16,61 +16,174 @@ session_start();
 </head>
 <body>
 
-  <!-- TOP HEADER -->
-  <header class="fb-header">
-    <div class="fb-brand" onclick="switchTab('beranda')">
-      <div class="fb-logo-circle">4</div>
-      <div class="fb-brand-title">
-        <span class="fb-brand-name">fourbook</span>
-        <span class="fb-school-tag">SDN 4 Putrajawa</span>
-      </div>
-    </div>
+  <!-- ================= AUTH SCREEN (LOGIN & REGISTER) ================= -->
+  <div id="auth-view-screen" class="fb-auth-overlay" style="display: none;">
+    <div class="fb-auth-card">
+      <div class="auth-header">
+        <div class="auth-logo-badge">4</div>
+        <h1 class="auth-title">fourbook</h1>
+        <div class="auth-school-subtitle">SDN 4 Putrajawa</div>
+        <p class="auth-tagline">Ruang Kolaborasi & Media Sosial Resmi Siswa dan Guru</p>
 
-    <div class="fb-header-actions">
-      <button class="fb-icon-btn" onclick="openModal('switchUserModal')" title="Ganti Akun">
-        <i class="fa-solid fa-users"></i>
-      </button>
-      <button class="fb-icon-btn" onclick="switchTab('pesan')" title="Pesan">
-        <i class="fa-brands fa-facebook-messenger"></i>
-      </button>
-      <div class="avatar-circle my-avatar" style="width: 36px; height: 36px; font-size: 14px; cursor: pointer;" onclick="switchTab('profil')">
-        <i class="fa-solid fa-user"></i>
-      </div>
-    </div>
-  </header>
-
-  <!-- NAVIGATION TABS -->
-  <nav class="fb-nav-bar">
-    <div class="fb-nav-container">
-      <div class="nav-tab-item active" data-tab="beranda">
-        <div class="nav-tab-icon"><i class="fa-solid fa-house"></i></div>
-        <span class="nav-tab-label">Beranda</span>
-      </div>
-      <div class="nav-tab-item" data-tab="teman">
-        <div class="nav-tab-icon"><i class="fa-solid fa-user-group"></i></div>
-        <span class="nav-tab-label">Teman</span>
-      </div>
-      <div class="nav-tab-item" data-tab="pesan">
-        <div class="nav-tab-icon"><i class="fa-solid fa-message"></i></div>
-        <span class="nav-tab-label">Pesan</span>
-      </div>
-      <div class="nav-tab-item" data-tab="notifikasi">
-        <div class="nav-tab-icon">
-          <i class="fa-solid fa-bell"></i>
-          <span class="badge-counter" id="nav-notif-badge" style="display: none;">0</span>
+        <div class="auth-tabs-toggle">
+          <button type="button" class="auth-tab-btn active" id="auth-tab-login-btn" onclick="toggleAuthTab('login')">
+            <i class="fa-solid fa-right-to-bracket"></i> Masuk
+          </button>
+          <button type="button" class="auth-tab-btn" id="auth-tab-register-btn" onclick="toggleAuthTab('register')">
+            <i class="fa-solid fa-user-plus"></i> Daftar Akun
+          </button>
         </div>
-        <span class="nav-tab-label">Notifikasi</span>
       </div>
-      <div class="nav-tab-item" data-tab="profil">
-        <div class="nav-tab-icon"><i class="fa-solid fa-user"></i></div>
-        <span class="nav-tab-label">Profil</span>
+
+      <!-- FORM MASUK (LOGIN) -->
+      <div id="auth-form-login" class="auth-form-body">
+        <form onsubmit="handleAuthLogin(event)" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label">Username / Nama Panggilan</label>
+            <input type="text" id="login-username" class="form-input" placeholder="Contoh: dimas / teten" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kata Sandi</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Masukkan kata sandi..." required>
+          </div>
+          <button type="submit" class="btn-fb-primary" style="height: 42px; width: 100%; margin-top: 4px; font-size: 14px;">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Fourbook
+          </button>
+        </form>
+
+        <!-- PILIH AKUN CEPAT / DEMO -->
+        <div class="auth-demo-accounts-box">
+          <div class="auth-demo-title">Atau Masuk Cepat (Akun Sekolah):</div>
+          <div class="demo-account-chip" onclick="quickLoginUser(1)">
+            <div class="demo-chip-avatar" style="background: #1877F2;"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="demo-chip-info">
+              <div class="demo-chip-name">Teten Kurniawan, S.Pd.</div>
+              <div class="demo-chip-role">Wali Kelas (Admin) &bull; NIP. 198507122010011015</div>
+            </div>
+          </div>
+          <div class="demo-account-chip" onclick="quickLoginUser(2)">
+            <div class="demo-chip-avatar" style="background: #D97706;"><i class="fa-solid fa-star"></i></div>
+            <div class="demo-chip-info">
+              <div class="demo-chip-name">Dimas Aditya Pratama</div>
+              <div class="demo-chip-role">Ketua Kelas &bull; No. Absen: 01</div>
+            </div>
+          </div>
+          <div class="demo-account-chip" onclick="quickLoginUser(3)">
+            <div class="demo-chip-avatar" style="background: #EC4899;"><i class="fa-solid fa-palette"></i></div>
+            <div class="demo-chip-info">
+              <div class="demo-chip-name">Siti Nurhaliza</div>
+              <div class="demo-chip-role">Murid &bull; No. Absen: 02</div>
+            </div>
+          </div>
+          <div class="demo-account-chip" onclick="quickLoginUser(4)">
+            <div class="demo-chip-avatar" style="background: #3B82F6;"><i class="fa-solid fa-futbol"></i></div>
+            <div class="demo-chip-info">
+              <div class="demo-chip-name">Rizky Alfaridzi</div>
+              <div class="demo-chip-role">Murid &bull; No. Absen: 03</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM DAFTAR (REGISTER) -->
+      <div id="auth-form-register" class="auth-form-body" style="display: none;">
+        <form onsubmit="handleAuthRegister(event)" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" id="reg-fullname" class="form-input" placeholder="Contoh: Ahmad Fauzi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status / Peran</label>
+            <select id="reg-role" class="form-select">
+              <option value="MURID">Siswa / Murid</option>
+              <option value="KETUA_KELAS">Ketua Kelas</option>
+              <option value="WALI_KELAS">Wali Kelas / Guru</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. Absen / NIP</label>
+            <input type="text" id="reg-number" class="form-input" placeholder="Contoh: No. Absen: 05" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="reg-username" class="form-input" placeholder="Contoh: ahmad" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kata Sandi</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="Buat kata sandi akun..." required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bio / Minat Singkat</label>
+            <input type="text" id="reg-bio" class="form-input" placeholder="Contoh: Suka menggambar & matematika">
+          </div>
+          <button type="submit" class="btn-fb-primary" style="height: 42px; width: 100%; margin-top: 4px; font-size: 14px;">
+            <i class="fa-solid fa-user-check"></i> Buat Akun Baru
+          </button>
+        </form>
       </div>
     </div>
-  </nav>
+  </div>
 
-  <!-- MAIN CONTAINER -->
-  <main class="fb-main-layout">
-    <div class="fb-content-wrapper">
+  <!-- ================= MAIN APPLICATION SCREEN ================= -->
+  <div id="app-main-screen" style="display: none;">
+    <!-- TOP HEADER -->
+    <header class="fb-header">
+      <div class="fb-brand" onclick="switchTab('beranda')">
+        <div class="fb-logo-circle">4</div>
+        <div class="fb-brand-title">
+          <span class="fb-brand-name">fourbook</span>
+          <span class="fb-school-tag">SDN 4 Putrajawa</span>
+        </div>
+      </div>
+
+      <div class="fb-header-actions">
+        <button class="fb-icon-btn" onclick="openModal('switchUserModal')" title="Ganti Akun">
+          <i class="fa-solid fa-users"></i>
+        </button>
+        <button class="fb-icon-btn" onclick="switchTab('pesan')" title="Pesan">
+          <i class="fa-brands fa-facebook-messenger"></i>
+        </button>
+        <button class="fb-icon-btn" onclick="handleLogout()" title="Keluar / Logout" style="color: #FA3E3E;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+        <div class="avatar-circle my-avatar" style="width: 36px; height: 36px; font-size: 14px; cursor: pointer;" onclick="switchTab('profil')">
+          <i class="fa-solid fa-user"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="fb-nav-bar">
+      <div class="fb-nav-container">
+        <div class="nav-tab-item active" data-tab="beranda">
+          <div class="nav-tab-icon"><i class="fa-solid fa-house"></i></div>
+          <span class="nav-tab-label">Beranda</span>
+        </div>
+        <div class="nav-tab-item" data-tab="teman">
+          <div class="nav-tab-icon"><i class="fa-solid fa-user-group"></i></div>
+          <span class="nav-tab-label">Teman</span>
+        </div>
+        <div class="nav-tab-item" data-tab="pesan">
+          <div class="nav-tab-icon"><i class="fa-solid fa-message"></i></div>
+          <span class="nav-tab-label">Pesan</span>
+        </div>
+        <div class="nav-tab-item" data-tab="notifikasi">
+          <div class="nav-tab-icon">
+            <i class="fa-solid fa-bell"></i>
+            <span class="badge-counter" id="nav-notif-badge" style="display: none;">0</span>
+          </div>
+          <span class="nav-tab-label">Notifikasi</span>
+        </div>
+        <div class="nav-tab-item" data-tab="profil">
+          <div class="nav-tab-icon"><i class="fa-solid fa-user"></i></div>
+          <span class="nav-tab-label">Profil</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="fb-main-layout">
+      <div class="fb-content-wrapper">
 
       <!-- TAB 1: BERANDA -->
       <div id="view-beranda" class="tab-view-container">
@@ -188,6 +301,7 @@ session_start();
 
     </div>
   </main>
+  </div>
 
   <!-- MODAL: CREATE POST -->
   <div id="createPostModal" class="fb-modal-overlay">
