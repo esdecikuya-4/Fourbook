@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "username": "teten",
+    "password": "123",
+    "fullName": "Teten Kurniawan, S.Pd.",
+    "role": "WALI_KELAS",
+    "studentNumber": "NIP. 198507122010011015",
+    "avatarColor": "0xFF1877F2",
+    "avatarIcon": "teacher",
+    "bio": "Wali Kelas & Guru Pembimbing SDN 4 Putrajawa. Mari wujudkan generasi cerdas, berkarakter, dan berprestasi!",
+    "customPhotoUri": ""
+  },
+  {
+    "id": 2,
+    "username": "dimas",
+    "password": "123",
+    "fullName": "Dimas Aditya Pratama",
+    "role": "KETUA_KELAS",
+    "studentNumber": "No. Absen: 01",
+    "avatarColor": "0xFFD97706",
+    "avatarIcon": "star",
+    "bio": "Ketua Kelas SDN 4 Putrajawa. Siap membantu teman-teman dan menjaga kekompakan kelas!",
+    "customPhotoUri": ""
+  },
+  {
+    "id": 3,
+    "username": "siti",
+    "password": "123",
+    "fullName": "Siti Nurhaliza",
+    "role": "MURID",
+    "studentNumber": "No. Absen: 02",
+    "avatarColor": "0xFFEC4899",
+    "avatarIcon": "palette",
+    "bio": "Suka melukis, seni tari, dan belajar sains bersama teman-teman di sekolah.",
+    "customPhotoUri": ""
+  },
+  {
+    "id": 4,
+    "username": "rizky",
+    "password": "123",
+    "fullName": "Rizky Alfaridzi",
+    "role": "MURID",
+    "studentNumber": "No. Absen: 03",
+    "avatarColor": "0xFF3B82F6",
+    "avatarIcon": "sports",
+    "bio": "Hobi sepak bola, atletik, dan kegiatan pramuka SDN 4 Putrajawa.",
+    "customPhotoUri": ""
+  },
+  {
+    "id": 5,
+    "username": "aurel",
+    "password": "123",
+    "fullName": "Aurelia Putri",
+    "role": "MURID",
+    "studentNumber": "No. Absen: 04",
+    "avatarColor": "0xFF10B981",
+    "avatarIcon": "music",
+    "bio": "Anggota paduan suara SDN 4 Putrajawa. Menyanyi dan membaca puisi.",
+    "customPhotoUri": ""
+  }
+]

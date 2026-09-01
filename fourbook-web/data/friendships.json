@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "senderId": 2,
+    "receiverId": 1,
+    "status": "ACCEPTED",
+    "createdAt": 1756600000000
+  },
+  {
+    "id": 2,
+    "senderId": 3,
+    "receiverId": 1,
+    "status": "ACCEPTED",
+    "createdAt": 1756610000000
+  },
+  {
+    "id": 3,
+    "senderId": 4,
+    "receiverId": 1,
+    "status": "PENDING",
+    "createdAt": 1756720000000
+  },
+  {
+    "id": 4,
+    "senderId": 2,
+    "receiverId": 3,
+    "status": "ACCEPTED",
+    "createdAt": 1756620000000
+  }
+]

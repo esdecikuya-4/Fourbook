@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "senderId": 2,
+    "senderName": "Dimas Aditya Pratama",
+    "senderRole": "KETUA_KELAS",
+    "senderAvatarColor": "0xFFD97706",
+    "senderAvatarIcon": "star",
+    "recipientId": 1,
+    "recipientName": "Teten Kurniawan, S.Pd.",
+    "messageText": "Assalamualaikum Pak Teten, semua teman-teman sudah mengumpulkan tugas kliping IPA di meja kelas.",
+    "timestamp": 1756703000000,
+    "isRead": true
+  },
+  {
+    "id": 2,
+    "senderId": 1,
+    "senderName": "Teten Kurniawan, S.Pd.",
+    "senderRole": "WALI_KELAS",
+    "senderAvatarColor": "0xFF1877F2",
+    "senderAvatarIcon": "teacher",
+    "recipientId": 2,
+    "recipientName": "Dimas Aditya Pratama",
+    "messageText": "Waalaikumsalam Dimas, terima kasih banyak sudah mengoordinir teman-teman kelas dengan baik!",
+    "timestamp": 1756703500000,
+    "isRead": true
+  }
+]

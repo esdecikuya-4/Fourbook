@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "quizId": 1,
+    "studentId": 2,
+    "studentName": "Dimas Aditya Pratama",
+    "studentNumber": "No. Absen: 01",
+    "score": 100,
+    "totalQuestions": 3,
+    "correctAnswers": 3,
+    "submittedAt": 1756705000000
+  },
+  {
+    "id": 2,
+    "quizId": 1,
+    "studentId": 3,
+    "studentName": "Siti Nurhaliza",
+    "studentNumber": "No. Absen: 02",
+    "score": 100,
+    "totalQuestions": 3,
+    "correctAnswers": 3,
+    "submittedAt": 1756706000000
+  }
+]

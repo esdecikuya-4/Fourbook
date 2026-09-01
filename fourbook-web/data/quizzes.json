@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "title": "Ulangan Harian IPAS: Ekosistem & Tumbuhan",
+    "subject": "IPAS",
+    "description": "Kuis pemahaman materi fotosintesis, rantai makanan, dan adaptasi makhluk hidup SDN 4 Putrajawa.",
+    "timeLimitMinutes": 15,
+    "createdByName": "Teten Kurniawan, S.Pd.",
+    "createdAt": 1756650000000,
+    "questions": [
+      {
+        "id": 1,
+        "questionText": "Zat hijau daun yang berperan penting dalam proses fotosintesis disebut...",
+        "options": ["Klorofil", "Stomata", "Floem", "Xilem"],
+        "correctIndex": 0
+      },
+      {
+        "id": 2,
+        "questionText": "Gas yang diserap oleh tumbuhan hijau saat melakukan fotosintesis di siang hari adalah...",
+        "options": ["Oksigen (O2)", "Karbon Dioksida (CO2)", "Nitrogen (N2)", "Helium (He)"],
+        "correctIndex": 1
+      },
+      {
+        "id": 3,
+        "questionText": "Dalam rantai makanan di sawah, padi berkedudukan sebagai...",
+        "options": ["Konsumen I", "Pengurai", "Produsen", "Konsumen Puncak"],
+        "correctIndex": 2
+      }
+    ]
+  }
+]

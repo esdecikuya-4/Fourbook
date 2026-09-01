@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "recipientUserId": 0,
+    "senderUserId": 1,
+    "senderName": "Teten Kurniawan, S.Pd.",
+    "senderRole": "WALI_KELAS",
+    "senderAvatarColor": "0xFF1877F2",
+    "senderAvatarIcon": "teacher",
+    "type": "NEW_POST",
+    "title": "Postingan Baru dari Wali Kelas",
+    "message": "Teten Kurniawan memposting: \"Pengumuman: Jadwal Ulangan Harian & Kegiatan Pramuka\"",
+    "targetId": 3,
+    "createdAt": 1756720000000,
+    "isRead": false
+  },
+  {
+    "id": 2,
+    "recipientUserId": 1,
+    "senderUserId": 3,
+    "senderName": "Siti Nurhaliza",
+    "senderRole": "MURID",
+    "senderAvatarColor": "0xFFEC4899",
+    "senderAvatarIcon": "palette",
+    "type": "COMMENT",
+    "title": "Komentar Baru",
+    "message": "Siti Nurhaliza mengomentari: \"Saya mencatat semua bagian stomata di buku...\"",
+    "targetId": 1,
+    "createdAt": 1756702000000,
+    "isRead": false
+  },
+  {
+    "id": 3,
+    "recipientUserId": 1,
+    "senderUserId": 4,
+    "senderName": "Rizky Alfaridzi",
+    "senderRole": "MURID",
+    "senderAvatarColor": "0xFF3B82F6",
+    "senderAvatarIcon": "sports",
+    "type": "FRIEND_REQUEST",
+    "title": "Permintaan Pertemanan",
+    "message": "Rizky Alfaridzi mengirimkan permintaan pertemanan kepada Anda.",
+    "targetId": 4,
+    "createdAt": 1756720000000,
+    "isRead": false
+  }
+]

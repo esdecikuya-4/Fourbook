@@ -1,0 +1,6 @@
+{
+  "name": "Fourbook",
+  "description": "Fourbook - SDN 4 PUTRAJAWA Online Community dengan posting status, foto, video, kuis ulangan harian, jurnal harian, absensi siswa, dan profil interaktif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

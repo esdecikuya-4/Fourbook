@@ -1,0 +1,88 @@
+[
+  {
+    "id": 1,
+    "uploaderId": 1,
+    "uploaderName": "Teten Kurniawan, S.Pd.",
+    "uploaderRole": "WALI_KELAS",
+    "uploaderAvatarColor": "0xFF1877F2",
+    "uploaderAvatarIcon": "teacher",
+    "title": "Praktikum IPA: Mengenal Fotosintesis dan Bagian Tumbuhan",
+    "description": "Dokumentasi kegiatan siswa-siswi kelas saat praktikum pengamatan daun di halaman sekolah SDN 4 Putrajawa. Semua siswa sangat antusias dan disiplin!",
+    "mediaUri": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80",
+    "mediaType": "PHOTO",
+    "postType": "PHOTO",
+    "category": "Akademik",
+    "likeCount": 18,
+    "timestamp": 1756700000000,
+    "reactions": { "LIKE": [2, 3, 4], "LOVE": [5], "AWESOME": [2] },
+    "comments": [
+      {
+        "id": 1,
+        "userId": 2,
+        "userName": "Dimas Aditya Pratama",
+        "userRole": "KETUA_KELAS",
+        "userAvatarColor": "0xFFD97706",
+        "userAvatarIcon": "star",
+        "commentText": "Terima kasih Pak Teten, praktikum tadi sangat seru dan mudah dipahami!",
+        "timestamp": 1756701000000
+      },
+      {
+        "id": 2,
+        "userId": 3,
+        "userName": "Siti Nurhaliza",
+        "userRole": "MURID",
+        "userAvatarColor": "0xFFEC4899",
+        "userAvatarIcon": "palette",
+        "commentText": "Saya mencatat semua bagian stomata di buku catatan pak guru 👍",
+        "timestamp": 1756702000000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "uploaderId": 3,
+    "uploaderName": "Siti Nurhaliza",
+    "uploaderRole": "MURID",
+    "uploaderAvatarColor": "0xFFEC4899",
+    "uploaderAvatarIcon": "palette",
+    "title": "Lukisan Pemandangan Gunung Papandayan",
+    "description": "Karya seni lukis cat air untuk persiapan lomba FLS2N tingkat kecamatan mewakili SDN 4 Putrajawa. Mohon doa dan masukannya teman-teman dan Pak Guru!",
+    "mediaUri": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&q=80",
+    "mediaType": "PHOTO",
+    "postType": "PHOTO",
+    "category": "Kesenian",
+    "likeCount": 24,
+    "timestamp": 1756710000000,
+    "reactions": { "LOVE": [1, 2, 4, 5], "AWESOME": [1, 4] },
+    "comments": [
+      {
+        "id": 3,
+        "userId": 1,
+        "userName": "Teten Kurniawan, S.Pd.",
+        "userRole": "WALI_KELAS",
+        "userAvatarColor": "0xFF1877F2",
+        "userAvatarIcon": "teacher",
+        "commentText": "Bagus sekali Siti! Komposisi warna dan gradasi langitnya sudah sangat matang. Terus berlatih ya!",
+        "timestamp": 1756711000000
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "uploaderId": 1,
+    "uploaderName": "Teten Kurniawan, S.Pd.",
+    "uploaderRole": "WALI_KELAS",
+    "uploaderAvatarColor": "0xFF1877F2",
+    "uploaderAvatarIcon": "teacher",
+    "title": "Pengumuman: Jadwal Ulangan Harian & Kegiatan Pramuka",
+    "description": "Diberitahukan kepada seluruh siswa SDN 4 Putrajawa, ulangan harian IPAS dan Matematika akan dilaksanakan hari Kamis. Hari Jumat sore dilanjutkan latihan rutin Pramuka Penggalang.",
+    "mediaUri": "",
+    "mediaType": "NONE",
+    "postType": "TEXT_STATUS",
+    "category": "Pengumuman",
+    "likeCount": 15,
+    "timestamp": 1756720000000,
+    "reactions": { "LIKE": [2, 3, 4, 5] },
+    "comments": []
+  }
+]
