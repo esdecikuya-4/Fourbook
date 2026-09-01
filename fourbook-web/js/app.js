@@ -111,22 +111,6 @@ async function handleAuthLogin(e) {
   }
 }
 
-async function quickLoginUser(userId) {
-  const formData = new FormData();
-  formData.append('userId', userId);
-  const res = await apiRequest('auth.php?action=switch_user', { method: 'POST', body: formData });
-  if (res.status && res.data.user) {
-    state.currentUser = res.data.user;
-    showAppScreen();
-    updateUserUI();
-    switchTab('beranda');
-    fetchNotifications();
-    fetchFriendships();
-  } else {
-    alert(res.message || 'Gagal masuk akun');
-  }
-}
-
 async function handleAuthRegister(e) {
   e.preventDefault();
   const fullName = document.getElementById('reg-fullname').value.trim();
@@ -967,23 +951,12 @@ function renderProfileView() {
         <div><b>${myFriends.length}</b> <span style="color: #65676B; font-size: 12px;">Teman</span></div>
       </div>
 
-      <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
-        <button class="btn-fb-primary" style="flex: 1; min-width: 140px;" onclick="openModal('switchUserModal')"><i class="fa-solid fa-users-gear"></i> Ganti Akun</button>
-        <button class="btn-fb-secondary" onclick="openModal('editProfileModal')"><i class="fa-solid fa-pen"></i> Edit Profil</button>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button class="btn-fb-primary" style="flex: 1;" onclick="openModal('editProfileModal')"><i class="fa-solid fa-pen"></i> Edit Profil</button>
         <button class="btn-fb-secondary" style="color: #FA3E3E; border-color: #FECACA; background: #FEF2F2;" onclick="handleLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
       </div>
     </div>
   `;
-}
-
-async function switchUserAccount(userId) {
-  const formData = new FormData();
-  formData.append('userId', userId);
-  const res = await apiRequest('auth.php?action=switch_user', { method: 'POST', body: formData });
-  if (res.status) {
-    closeModal('switchUserModal');
-    location.reload();
-  }
 }
 
 // ----------------------------------------------------

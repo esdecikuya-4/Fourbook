@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "username": "teten",
-    "password": "123",
+    "username": "admin",
+    "password": "qqq",
     "fullName": "Teten Kurniawan, S.Pd.",
     "role": "WALI_KELAS",
     "studentNumber": "NIP. 198507122010011015",

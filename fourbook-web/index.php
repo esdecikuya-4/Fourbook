@@ -23,7 +23,7 @@ session_start();
         <div class="auth-logo-badge">4</div>
         <h1 class="auth-title">fourbook</h1>
         <div class="auth-school-subtitle">SDN 4 Putrajawa</div>
-        <p class="auth-tagline">Ruang Kolaborasi & Media Sosial Resmi Siswa dan Guru</p>
+        <p class="auth-tagline">Sdn 4 Putrajawa Online Community</p>
 
         <div class="auth-tabs-toggle">
           <button type="button" class="auth-tab-btn active" id="auth-tab-login-btn" onclick="toggleAuthTab('login')">
@@ -39,8 +39,8 @@ session_start();
       <div id="auth-form-login" class="auth-form-body">
         <form onsubmit="handleAuthLogin(event)" style="display: flex; flex-direction: column; gap: 10px;">
           <div class="form-group">
-            <label class="form-label">Username / Nama Panggilan</label>
-            <input type="text" id="login-username" class="form-input" placeholder="Contoh: dimas / teten" required>
+            <label class="form-label">Username</label>
+            <input type="text" id="login-username" class="form-input" placeholder="Masukkan username (contoh: admin)" required>
           </div>
           <div class="form-group">
             <label class="form-label">Kata Sandi</label>
@@ -50,39 +50,6 @@ session_start();
             <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Fourbook
           </button>
         </form>
-
-        <!-- PILIH AKUN CEPAT / DEMO -->
-        <div class="auth-demo-accounts-box">
-          <div class="auth-demo-title">Atau Masuk Cepat (Akun Sekolah):</div>
-          <div class="demo-account-chip" onclick="quickLoginUser(1)">
-            <div class="demo-chip-avatar" style="background: #1877F2;"><i class="fa-solid fa-chalkboard-user"></i></div>
-            <div class="demo-chip-info">
-              <div class="demo-chip-name">Teten Kurniawan, S.Pd.</div>
-              <div class="demo-chip-role">Wali Kelas (Admin) &bull; NIP. 198507122010011015</div>
-            </div>
-          </div>
-          <div class="demo-account-chip" onclick="quickLoginUser(2)">
-            <div class="demo-chip-avatar" style="background: #D97706;"><i class="fa-solid fa-star"></i></div>
-            <div class="demo-chip-info">
-              <div class="demo-chip-name">Dimas Aditya Pratama</div>
-              <div class="demo-chip-role">Ketua Kelas &bull; No. Absen: 01</div>
-            </div>
-          </div>
-          <div class="demo-account-chip" onclick="quickLoginUser(3)">
-            <div class="demo-chip-avatar" style="background: #EC4899;"><i class="fa-solid fa-palette"></i></div>
-            <div class="demo-chip-info">
-              <div class="demo-chip-name">Siti Nurhaliza</div>
-              <div class="demo-chip-role">Murid &bull; No. Absen: 02</div>
-            </div>
-          </div>
-          <div class="demo-account-chip" onclick="quickLoginUser(4)">
-            <div class="demo-chip-avatar" style="background: #3B82F6;"><i class="fa-solid fa-futbol"></i></div>
-            <div class="demo-chip-info">
-              <div class="demo-chip-name">Rizky Alfaridzi</div>
-              <div class="demo-chip-role">Murid &bull; No. Absen: 03</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- FORM DAFTAR (REGISTER) -->
@@ -137,9 +104,6 @@ session_start();
       </div>
 
       <div class="fb-header-actions">
-        <button class="fb-icon-btn" onclick="openModal('switchUserModal')" title="Ganti Akun">
-          <i class="fa-solid fa-users"></i>
-        </button>
         <button class="fb-icon-btn" onclick="switchTab('pesan')" title="Pesan">
           <i class="fa-brands fa-facebook-messenger"></i>
         </button>
@@ -191,7 +155,7 @@ session_start();
         <div class="sdn-hero-card">
           <div class="hero-left">
             <h2>SDN 4 Putrajawa</h2>
-            <p>Ruang Kolaborasi & Media Sosial Resmi Siswa dan Guru</p>
+            <p>Sdn 4 Putrajawa Online Community</p>
           </div>
           <div class="hero-badge">T.A. 2026/2027</div>
         </div>
@@ -340,57 +304,6 @@ session_start();
           </button>
         </div>
       </form>
-    </div>
-  </div>
-
-  <!-- MODAL: SWITCH USER (Demo Accounts) -->
-  <div id="switchUserModal" class="fb-modal-overlay">
-    <div class="fb-modal-content">
-      <div class="modal-header">
-        <div class="modal-title">Ganti Akun Pengguna</div>
-        <button class="modal-close-btn" onclick="closeModal('switchUserModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body" id="switch-user-list">
-        <p style="font-size: 12px; color: #65676B;">Pilih profil untuk masuk sebagai Guru Wali Kelas, Ketua Kelas, atau Siswa:</p>
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
-          <div class="member-card" style="cursor: pointer; padding: 10px 14px;" onclick="switchUserAccount(1)">
-            <div class="member-card-top">
-              <div class="avatar-circle" style="background-color: #1877F2; width: 40px; height: 40px;"><i class="fa-solid fa-chalkboard-user"></i></div>
-              <div>
-                <div style="font-weight: bold; font-size: 13px;">Teten Kurniawan, S.Pd.</div>
-                <div style="font-size: 11px; color: #1877F2;">Wali Kelas (Admin) &bull; NIP. 198507122010011015</div>
-              </div>
-            </div>
-          </div>
-          <div class="member-card" style="cursor: pointer; padding: 10px 14px;" onclick="switchUserAccount(2)">
-            <div class="member-card-top">
-              <div class="avatar-circle" style="background-color: #D97706; width: 40px; height: 40px;"><i class="fa-solid fa-star"></i></div>
-              <div>
-                <div style="font-weight: bold; font-size: 13px;">Dimas Aditya Pratama</div>
-                <div style="font-size: 11px; color: #D97706;">Ketua Kelas &bull; No. Absen: 01</div>
-              </div>
-            </div>
-          </div>
-          <div class="member-card" style="cursor: pointer; padding: 10px 14px;" onclick="switchUserAccount(3)">
-            <div class="member-card-top">
-              <div class="avatar-circle" style="background-color: #EC4899; width: 40px; height: 40px;"><i class="fa-solid fa-palette"></i></div>
-              <div>
-                <div style="font-weight: bold; font-size: 13px;">Siti Nurhaliza</div>
-                <div style="font-size: 11px; color: #65676B;">Murid &bull; No. Absen: 02</div>
-              </div>
-            </div>
-          </div>
-          <div class="member-card" style="cursor: pointer; padding: 10px 14px;" onclick="switchUserAccount(4)">
-            <div class="member-card-top">
-              <div class="avatar-circle" style="background-color: #3B82F6; width: 40px; height: 40px;"><i class="fa-solid fa-futbol"></i></div>
-              <div>
-                <div style="font-weight: bold; font-size: 13px;">Rizky Alfaridzi</div>
-                <div style="font-size: 11px; color: #65676B;">Murid &bull; No. Absen: 03</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
