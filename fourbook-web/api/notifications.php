@@ -8,12 +8,25 @@ $currentUser = get_current_user_session();
 if ($action === 'get_notifications') {
     if (!$currentUser) json_response(true, ['notifications' => [], 'unread_count' => 0]);
     $myId = $currentUser['id'];
+    $users = get_json_data('users.json');
+    $userMap = [];
+    foreach ($users as $u) {
+        $userMap[$u['id']] = $u;
+    }
 
     // Filter notifications for this user (recipientId == myId OR recipientId == 0)
     $myNotifs = array_filter($notifications, function($n) use ($myId) {
         if ($n['senderUserId'] === $myId) return false; // don't notify self
         return $n['recipientUserId'] === $myId || $n['recipientUserId'] === 0;
     });
+
+    foreach ($myNotifs as &$n) {
+        if (isset($userMap[$n['senderUserId']])) {
+            $n['senderPhotoUri'] = $userMap[$n['senderUserId']]['customPhotoUri'] ?? '';
+            $n['senderAvatarColor'] = $userMap[$n['senderUserId']]['avatarColor'] ?? $n['senderAvatarColor'];
+            $n['senderAvatarIcon'] = $userMap[$n['senderUserId']]['avatarIcon'] ?? $n['senderAvatarIcon'];
+        }
+    }
 
     // Sort newest first
     usort($myNotifs, function($a, $b) {

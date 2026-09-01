@@ -6,6 +6,15 @@ $users = get_json_data('users.json');
 
 if ($action === 'get_current') {
     $user = get_current_user_session();
+    if ($user) {
+        foreach ($users as $u) {
+            if ($u['id'] === $user['id']) {
+                $user = $u;
+                $_SESSION['user'] = $u;
+                break;
+            }
+        }
+    }
     json_response(true, ['user' => $user, 'all_users' => $users]);
 }
 
@@ -108,7 +117,23 @@ if ($action === 'update_profile') {
     $bio = trim($_POST['bio'] ?? $currentUser['bio']);
     $avatarColor = $_POST['avatarColor'] ?? $currentUser['avatarColor'];
     $avatarIcon = $_POST['avatarIcon'] ?? $currentUser['avatarIcon'];
-    $customPhotoUri = $_POST['customPhotoUri'] ?? $currentUser['customPhotoUri'];
+    $customPhotoUri = $_POST['customPhotoUri'] ?? ($currentUser['customPhotoUri'] ?? '');
+
+    // Handle photo file upload
+    if (isset($_FILES['photoFile']) && $_FILES['photoFile']['error'] === UPLOAD_ERR_OK) {
+        $uploadsDir = __DIR__ . '/../uploads';
+        if (!file_exists($uploadsDir)) {
+            mkdir($uploadsDir, 0755, true);
+        }
+        $ext = pathinfo($_FILES['photoFile']['name'], PATHINFO_EXTENSION);
+        $fileName = 'avatar_' . $currentUser['id'] . '_' . time() . '.' . ($ext ?: 'jpg');
+        $targetPath = $uploadsDir . '/' . $fileName;
+        if (move_uploaded_file($_FILES['photoFile']['tmp_name'], $targetPath)) {
+            $customPhotoUri = 'uploads/' . $fileName;
+        }
+    } elseif (isset($_POST['removePhoto']) && $_POST['removePhoto'] === '1') {
+        $customPhotoUri = '';
+    }
 
     foreach ($users as &$u) {
         if ($u['id'] === $currentUser['id']) {
@@ -117,7 +142,7 @@ if ($action === 'update_profile') {
             $u['bio'] = $bio;
             $u['avatarColor'] = $avatarColor;
             $u['avatarIcon'] = $avatarIcon;
-            if (!empty($customPhotoUri)) $u['customPhotoUri'] = $customPhotoUri;
+            $u['customPhotoUri'] = $customPhotoUri;
             $_SESSION['user'] = $u;
             $currentUser = $u;
             break;

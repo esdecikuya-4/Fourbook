@@ -428,6 +428,32 @@ session_start();
       </div>
       <form onsubmit="handleEditProfileSubmit(event)">
         <div class="modal-body">
+          <!-- Photo Upload Section -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; margin-bottom: 12px;">
+            <div id="ep-photo-container" style="position: relative; width: 84px; height: 84px;">
+              <div id="ep-avatar-fallback" class="avatar-circle" style="width: 84px; height: 84px; font-size: 32px; border: 3px solid #1877F2;">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <img id="ep-photo-preview" src="#" alt="Preview" style="display: none; width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid #1877F2;">
+              <button type="button" onclick="document.getElementById('ep-photo-input').click()" style="position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%; background: #1877F2; color: #fff; border: 2px solid #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px;">
+                <i class="fa-solid fa-camera"></i>
+              </button>
+            </div>
+            
+            <input type="file" id="ep-photo-input" accept="image/*" onchange="previewProfilePhoto(event)" style="display: none;">
+            <input type="hidden" id="ep-remove-photo-flag" value="0">
+
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-fb-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="document.getElementById('ep-photo-input').click()">
+                <i class="fa-solid fa-upload"></i> Unggah Foto Sendiri
+              </button>
+              <button type="button" class="btn-fb-secondary" id="ep-remove-photo-btn" onclick="removeProfilePhoto()" style="font-size: 12px; padding: 6px 10px; color: #FA3E3E; border-color: #FECACA; background: #FEF2F2; display: none;">
+                <i class="fa-solid fa-trash-can"></i> Hapus Foto
+              </button>
+            </div>
+            <div style="font-size: 11px; color: #64748B;">Pilih foto dari galeri/penyimpanan perangkat Anda</div>
+          </div>
+
           <div class="form-group">
             <label class="form-label">Nama Lengkap</label>
             <input type="text" id="ep-name" class="form-input" required>
@@ -522,6 +548,72 @@ session_start();
       }
     }
 
+    function previewProfilePhoto(event) {
+      const input = event.target;
+      const preview = document.getElementById('ep-photo-preview');
+      const fallback = document.getElementById('ep-avatar-fallback');
+      const removeBtn = document.getElementById('ep-remove-photo-btn');
+      const removeFlag = document.getElementById('ep-remove-photo-flag');
+
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          fallback.style.display = 'none';
+          removeBtn.style.display = 'inline-flex';
+          removeFlag.value = '0';
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function removeProfilePhoto() {
+      const preview = document.getElementById('ep-photo-preview');
+      const fallback = document.getElementById('ep-avatar-fallback');
+      const input = document.getElementById('ep-photo-input');
+      const removeBtn = document.getElementById('ep-remove-photo-btn');
+      const removeFlag = document.getElementById('ep-remove-photo-flag');
+
+      input.value = '';
+      preview.src = '#';
+      preview.style.display = 'none';
+      fallback.style.display = 'flex';
+      removeBtn.style.display = 'none';
+      removeFlag.value = '1';
+    }
+
+    function prepareEditProfileModal() {
+      const u = state.currentUser;
+      if (!u) return;
+
+      document.getElementById('ep-name').value = u.fullName || '';
+      document.getElementById('ep-number').value = u.studentNumber || '';
+      document.getElementById('ep-bio').value = u.bio || '';
+      document.getElementById('ep-remove-photo-flag').value = '0';
+      document.getElementById('ep-photo-input').value = '';
+
+      const preview = document.getElementById('ep-photo-preview');
+      const fallback = document.getElementById('ep-avatar-fallback');
+      const removeBtn = document.getElementById('ep-remove-photo-btn');
+
+      fallback.style.backgroundColor = getHexColor(u.avatarColor);
+      fallback.innerHTML = `<i class="fa-solid ${getAvatarIcon(u.avatarIcon)}"></i>`;
+
+      if (u.customPhotoUri && u.customPhotoUri.trim() !== '') {
+        preview.src = u.customPhotoUri;
+        preview.style.display = 'block';
+        fallback.style.display = 'none';
+        removeBtn.style.display = 'inline-flex';
+      } else {
+        preview.style.display = 'none';
+        fallback.style.display = 'flex';
+        removeBtn.style.display = 'none';
+      }
+
+      openModal('editProfileModal');
+    }
+
     async function handleEditProfileSubmit(e) {
       e.preventDefault();
       const formData = new FormData();
@@ -529,11 +621,26 @@ session_start();
       formData.append('studentNumber', document.getElementById('ep-number').value);
       formData.append('bio', document.getElementById('ep-bio').value);
 
+      const photoInput = document.getElementById('ep-photo-input');
+      if (photoInput.files && photoInput.files[0]) {
+        formData.append('photoFile', photoInput.files[0]);
+      }
+      formData.append('removePhoto', document.getElementById('ep-remove-photo-flag').value);
+
       const res = await apiRequest('auth.php?action=update_profile', { method: 'POST', body: formData });
-      if (res.status) {
-        alert(res.message);
+      if (res.status && res.data.user) {
+        state.currentUser = res.data.user;
+        // Update user in allUsers list as well
+        const idx = state.allUsers.findIndex(u => u.id === res.data.user.id);
+        if (idx !== -1) state.allUsers[idx] = res.data.user;
+
+        alert(res.message || 'Profil berhasil diperbarui!');
         closeModal('editProfileModal');
-        location.reload();
+        updateUserUI();
+        renderProfileView();
+        fetchPosts();
+      } else {
+        alert(res.message || 'Gagal memperbarui profil');
       }
     }
   </script>

@@ -6,6 +6,26 @@ $posts = get_json_data('posts.json');
 $currentUser = get_current_user_session();
 
 if ($action === 'get_posts') {
+    $users = get_json_data('users.json');
+    $userMap = [];
+    foreach ($users as $u) {
+        $userMap[$u['id']] = $u;
+    }
+    foreach ($posts as &$p) {
+        if (isset($userMap[$p['uploaderId']])) {
+            $p['uploaderPhotoUri'] = $userMap[$p['uploaderId']]['customPhotoUri'] ?? ($p['uploaderPhotoUri'] ?? '');
+            $p['uploaderName'] = $userMap[$p['uploaderId']]['fullName'] ?? $p['uploaderName'];
+            $p['uploaderRole'] = $userMap[$p['uploaderId']]['role'] ?? $p['uploaderRole'];
+        }
+        if (!empty($p['comments'])) {
+            foreach ($p['comments'] as &$c) {
+                if (isset($userMap[$c['userId']])) {
+                    $c['userPhotoUri'] = $userMap[$c['userId']]['customPhotoUri'] ?? ($c['userPhotoUri'] ?? '');
+                    $c['userName'] = $userMap[$c['userId']]['fullName'] ?? $c['userName'];
+                }
+            }
+        }
+    }
     // Sort descending by timestamp
     usort($posts, function($a, $b) {
         return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
@@ -48,6 +68,7 @@ if ($action === 'create_post') {
         'uploaderRole' => $currentUser['role'],
         'uploaderAvatarColor' => $currentUser['avatarColor'],
         'uploaderAvatarIcon' => $currentUser['avatarIcon'],
+        'uploaderPhotoUri' => $currentUser['customPhotoUri'] ?? '',
         'title' => $title,
         'description' => $description,
         'mediaUri' => $mediaUri,
@@ -163,6 +184,7 @@ if ($action === 'add_comment') {
                 'userRole' => $currentUser['role'],
                 'userAvatarColor' => $currentUser['avatarColor'],
                 'userAvatarIcon' => $currentUser['avatarIcon'],
+                'userPhotoUri' => $currentUser['customPhotoUri'] ?? '',
                 'commentText' => $commentText,
                 'timestamp' => round(microtime(true) * 1000)
             ];

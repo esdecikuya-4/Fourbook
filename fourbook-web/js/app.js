@@ -160,8 +160,13 @@ function updateUserUI() {
   if (!u) return;
 
   document.querySelectorAll('.my-avatar').forEach(el => {
-    el.style.backgroundColor = getHexColor(u.avatarColor);
-    el.innerHTML = `<i class="fa-solid ${getAvatarIcon(u.avatarIcon)}"></i>`;
+    if (u.customPhotoUri && u.customPhotoUri.trim() !== '') {
+      el.style.backgroundColor = 'transparent';
+      el.innerHTML = `<img src="${u.customPhotoUri}" alt="${escapeHtml(u.fullName)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
+    } else {
+      el.style.backgroundColor = getHexColor(u.avatarColor);
+      el.innerHTML = `<i class="fa-solid ${getAvatarIcon(u.avatarIcon)}"></i>`;
+    }
   });
 
   const nameEl = document.getElementById('topbar-user-name');
@@ -249,9 +254,7 @@ function renderPosts() {
     const timeFormatted = formatTimestamp(p.timestamp);
     const commentsList = (p.comments || []).map(c => `
       <div class="comment-item">
-        <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 13px; background-color: ${getHexColor(c.userAvatarColor)}">
-          <i class="fa-solid ${getAvatarIcon(c.userAvatarIcon)}"></i>
-        </div>
+        ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
         <div class="comment-bubble">
           <div class="comment-author">${escapeHtml(c.userName)} <span class="role-tag ${c.userRole}">${getRoleLabel(c.userRole)}</span></div>
           <div class="comment-text">${escapeHtml(c.commentText)}</div>
@@ -263,9 +266,7 @@ function renderPosts() {
       <div class="fb-post-card" id="post-card-${p.id}">
         <div class="post-header">
           <div class="post-user-info">
-            <div class="avatar-circle" style="background-color: ${getHexColor(p.uploaderAvatarColor)}">
-              <i class="fa-solid ${getAvatarIcon(p.uploaderAvatarIcon)}"></i>
-            </div>
+            ${renderAvatarHtml(p.uploaderPhotoUri, p.uploaderAvatarColor, p.uploaderAvatarIcon, 40, 16)}
             <div>
               <div class="post-author-name">
                 ${escapeHtml(p.uploaderName)}
@@ -481,9 +482,7 @@ function renderFriendsView() {
     return `
       <div class="member-card">
         <div class="member-card-top">
-          <div class="avatar-circle" style="width: 50px; height: 50px; background-color: ${getHexColor(u.avatarColor)}">
-            <i class="fa-solid ${getAvatarIcon(u.avatarIcon)}"></i>
-          </div>
+          ${renderAvatarHtml(u.customPhotoUri, u.avatarColor, u.avatarIcon, 50, 20)}
           <div style="flex: 1;">
             <div style="font-weight: 700; font-size: 15px;">
               ${escapeHtml(u.fullName)}
@@ -599,9 +598,7 @@ function renderNotificationsView() {
     return `
       <div class="notif-item-card ${!n.isRead ? 'unread' : ''}" onclick="handleNotifClick(${n.id}, '${n.type}', ${n.targetId}, ${n.senderUserId})">
         <div style="position: relative;">
-          <div class="avatar-circle" style="width: 44px; height: 44px; background-color: ${getHexColor(n.senderAvatarColor)}">
-            <i class="fa-solid ${getAvatarIcon(n.senderAvatarIcon)}"></i>
-          </div>
+          ${renderAvatarHtml(n.senderPhotoUri, n.senderAvatarColor, n.senderAvatarIcon, 44, 16)}
           <div class="notif-badge-icon" style="background-color: ${iconBg};">
             <i class="fa-solid ${iconClass}"></i>
           </div>
@@ -696,9 +693,7 @@ async function renderMessagesView() {
       html += convs.map(c => `
         <div class="member-card" style="cursor: pointer;" onclick="openChatWithUser(${c.user.id})">
           <div class="member-card-top">
-            <div class="avatar-circle" style="width: 46px; height: 46px; background-color: ${getHexColor(c.user.avatarColor)}">
-              <i class="fa-solid ${getAvatarIcon(c.user.avatarIcon)}"></i>
-            </div>
+            ${renderAvatarHtml(c.user.customPhotoUri, c.user.avatarColor, c.user.avatarIcon, 46, 18)}
             <div style="flex: 1;">
               <div style="font-weight: 700; font-size: 14px;">${escapeHtml(c.user.fullName)}</div>
               <div style="font-size: 12px; color: #65676B; margin-top: 2px;">${escapeHtml(c.lastMessage)}</div>
@@ -754,9 +749,7 @@ function renderChatWindow(silent = false) {
           <button class="fb-icon-btn" style="width: 32px; height: 32px;" onclick="closeChatWindow()">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
-          <div class="avatar-circle" style="width: 38px; height: 38px; font-size: 14px; background-color: ${getHexColor(partner.avatarColor)}">
-            <i class="fa-solid ${getAvatarIcon(partner.avatarIcon)}"></i>
-          </div>
+          ${renderAvatarHtml(partner.customPhotoUri, partner.avatarColor, partner.avatarIcon, 38, 14)}
           <div>
             <div style="font-weight: 700; font-size: 14px;">${escapeHtml(partner.fullName)}</div>
             <div style="font-size: 10px; color: #10B981;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> ${getRoleLabel(partner.role)}</div>
@@ -933,9 +926,7 @@ function renderProfileView() {
   container.innerHTML = `
     <div style="background: linear-gradient(135deg, #1877F2 0%, #0052CC 100%); border-radius: 16px 16px 0 0; height: 110px; position: relative;">
       <div style="position: absolute; bottom: -35px; left: 20px;">
-        <div class="avatar-circle" style="width: 70px; height: 70px; font-size: 28px; border: 3px solid #fff; background-color: ${getHexColor(u.avatarColor)}">
-          <i class="fa-solid ${getAvatarIcon(u.avatarIcon)}"></i>
-        </div>
+        ${renderAvatarHtml(u.customPhotoUri, u.avatarColor, u.avatarIcon, 70, 28, 'border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);')}
       </div>
     </div>
     <div class="fb-post-card" style="border-radius: 0 0 16px 16px; padding: 45px 20px 20px 20px;">
@@ -952,7 +943,7 @@ function renderProfileView() {
       </div>
 
       <div style="display: flex; gap: 8px; margin-top: 16px;">
-        <button class="btn-fb-primary" style="flex: 1;" onclick="openModal('editProfileModal')"><i class="fa-solid fa-pen"></i> Edit Profil</button>
+        <button class="btn-fb-primary" style="flex: 1;" onclick="prepareEditProfileModal()"><i class="fa-solid fa-pen"></i> Edit Profil & Foto</button>
         <button class="btn-fb-secondary" style="color: #FA3E3E; border-color: #FECACA; background: #FEF2F2;" onclick="handleLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
       </div>
     </div>
@@ -962,6 +953,12 @@ function renderProfileView() {
 // ----------------------------------------------------
 // HELPERS
 // ----------------------------------------------------
+function renderAvatarHtml(photoUri, color, icon, size = 40, fontSize = 16, extraStyle = '') {
+  if (photoUri && photoUri.trim() !== '') {
+    return `<img src="${photoUri}" alt="Avatar" class="avatar-circle" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; flex-shrink: 0; display: inline-block; ${extraStyle}">`;
+  }
+  return `<div class="avatar-circle" style="width: ${size}px; height: ${size}px; font-size: ${fontSize}px; background-color: ${getHexColor(color)}; flex-shrink: 0; ${extraStyle}"><i class="fa-solid ${getAvatarIcon(icon)}"></i></div>`;
+}
 function getHexColor(colorStr) {
   if (!colorStr) return '#1877F2';
   if (colorStr.startsWith('0xFF')) return '#' + colorStr.substring(4);
