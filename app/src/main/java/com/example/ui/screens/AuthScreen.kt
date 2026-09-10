@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,6 +65,8 @@ fun AuthScreen(
     var regAvatarColor by remember { mutableStateOf(0xFF2563EBL) }
     var regAvatarIcon by remember { mutableStateOf("smile") }
     var regBio by remember { mutableStateOf("Semangat belajar di SDN 4 Putrajawa!") }
+
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(isRegisterMode) {
         viewModel.clearAuthMessages()
@@ -351,7 +355,97 @@ fun AuthScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Creator Attribution Card Footer (Identik dengan versi Web Fourbook)
+                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> balallica.my.id)
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(0xFF1E3A8A).copy(alpha = 0.85f),
+                            border = androidx.compose.foundation.BorderStroke(1.2.dp, Color(0xFF60A5FA).copy(alpha = 0.8f)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    uriHandler.openUri("https://balallica.my.id")
+                                }
+                                .testTag("btn_access_web_version")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    // Circular Web Browser / Globe Icon Logo
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = Color(0xFF2563EB),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF93C5FD)),
+                                        modifier = Modifier.size(42.dp)
+                                    ) {
+                                        Box(
+                                            contentAlignment = Alignment.Center,
+                                            modifier = Modifier.fillMaxSize()
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Language,
+                                                contentDescription = "Versi Web",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Column {
+                                        Text(
+                                            text = "Klik Buat Akses Versi Web",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = "balallica.my.id",
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF93C5FD)
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = Color(0xFF3B82F6),
+                                    modifier = Modifier.padding(start = 6.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.OpenInBrowser,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(15.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "Buka",
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Creator Attribution Card Footer (Tanpa simbol < >)
                         Surface(
                             shape = RoundedCornerShape(14.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
@@ -368,13 +462,6 @@ fun AuthScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-                                    Icon(
-                                        Icons.Default.Code,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(15.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "Created By : Teten Kurniawan",
                                         fontSize = 13.sp,
@@ -516,12 +603,12 @@ fun AuthScreen(
                                 .padding(vertical = 4.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            UserRole.values().forEach { role ->
+                            listOf(UserRole.MURID, UserRole.WALI_KELAS).forEach { role ->
                                 val selected = regRole == role
                                 FilterChip(
                                     selected = selected,
                                     onClick = { regRole = role },
-                                    label = { Text(role.label, fontSize = 11.sp) },
+                                    label = { Text(role.label, fontSize = 12.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal) },
                                     leadingIcon = if (selected) {
                                         { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) }
                                     } else null,
@@ -530,9 +617,9 @@ fun AuthScreen(
                             }
                         }
 
-                        // Dropdown Pilihan Kelas (Kelas 1 - Kelas 6) untuk Siswa / Murid
+                        // Dropdown Pilihan Kelas (Kelas 1 - Kelas 6) untuk Siswa
                         AnimatedVisibility(
-                            visible = regRole == UserRole.MURID || regRole == UserRole.KETUA_KELAS,
+                            visible = regRole == UserRole.MURID,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
@@ -728,6 +815,174 @@ fun AuthScreen(
                             Icon(Icons.Default.PersonAdd, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Daftar Sekarang", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> balallica.my.id)
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(0xFF1E3A8A).copy(alpha = 0.85f),
+                            border = androidx.compose.foundation.BorderStroke(1.2.dp, Color(0xFF60A5FA).copy(alpha = 0.8f)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    uriHandler.openUri("https://balallica.my.id")
+                                }
+                                .testTag("btn_access_web_version_register")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = Color(0xFF2563EB),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF93C5FD)),
+                                        modifier = Modifier.size(42.dp)
+                                    ) {
+                                        Box(
+                                            contentAlignment = Alignment.Center,
+                                            modifier = Modifier.fillMaxSize()
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Language,
+                                                contentDescription = "Versi Web",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Column {
+                                        Text(
+                                            text = "Klik Buat Akses Versi Web",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = "balallica.my.id",
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF93C5FD)
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = Color(0xFF3B82F6),
+                                    modifier = Modifier.padding(start = 6.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.OpenInBrowser,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(15.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "Buka",
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Creator Attribution Card Footer (Register view)
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "Created By : Teten Kurniawan",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.School,
+                                        contentDescription = null,
+                                        tint = Color(0xFF16A34A),
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "SDN 4 PUTRAJAWA",
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        letterSpacing = 0.8.sp,
+                                        color = Color(0xFF16A34A)
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        tint = Color(0xFFDC2626),
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "Garut, Indonesia",
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = " • ",
+                                        fontSize = 11.5.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = "@2026",
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
                         }
                     }
                 }

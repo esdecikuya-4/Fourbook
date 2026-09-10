@@ -111,14 +111,28 @@ async function handleAuthLogin(e) {
   }
 }
 
+function handleRoleChange(role) {
+  const classGroup = document.getElementById('reg-class-group');
+  if (classGroup) {
+    if (role === 'MURID') {
+      classGroup.style.display = 'block';
+    } else {
+      classGroup.style.display = 'none';
+    }
+  }
+}
+
 async function handleAuthRegister(e) {
   e.preventDefault();
   const fullName = document.getElementById('reg-fullname').value.trim();
   const role = document.getElementById('reg-role').value;
-  const studentNumber = document.getElementById('reg-number').value.trim();
+  const classSelect = document.getElementById('reg-class');
+  const selectedClass = (role === 'MURID' && classSelect) ? classSelect.value : '';
+  const studentNumber = (role === 'MURID') ? selectedClass : 'Guru';
   const username = document.getElementById('reg-username').value.trim();
   const password = document.getElementById('reg-password').value.trim();
-  const bio = document.getElementById('reg-bio').value.trim();
+  const bioInput = document.getElementById('reg-bio');
+  const bio = (bioInput && bioInput.value.trim()) ? bioInput.value.trim() : (role === 'MURID' ? `Siswa ${selectedClass} SDN 4 Putrajawa` : 'Guru SDN 4 Putrajawa');
 
   if (!fullName || !username || !password) {
     alert('Nama lengkap, username, dan kata sandi wajib diisi');

@@ -387,15 +387,15 @@ fun DrawScope.drawBambooGateScene(size: Size, textMeasurer: TextMeasurer) {
     val text1 = textMeasurer.measure(
         AnnotatedString("Selamat Datang"),
         style = TextStyle(
-            color = Color(0xFFFEF08A),
-            fontSize = (height * 0.046f).coerceIn(12f, 26f).sp,
-            fontWeight = FontWeight.Bold,
+            color = Color(0xFFFFFBEB),
+            fontSize = (height * 0.048f).coerceIn(12f, 26f).sp,
+            fontWeight = FontWeight.ExtraBold,
             fontStyle = FontStyle.Italic,
             fontFamily = FontFamily.Serif,
             shadow = Shadow(
-                color = Color(0xFF451A03),
+                color = Color(0xFF1E0E03),
                 offset = Offset(1.5f, 2f),
-                blurRadius = 3f
+                blurRadius = 4f
             )
         )
     )
@@ -420,12 +420,12 @@ fun DrawScope.drawBambooGateScene(size: Size, textMeasurer: TextMeasurer) {
     val text2 = textMeasurer.measure(
         AnnotatedString("Di"),
         style = TextStyle(
-            color = Color(0xFFFEF08A),
+            color = Color(0xFFFFFBEB),
             fontSize = (height * 0.024f).coerceIn(10f, 16f).sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif,
             shadow = Shadow(
-                color = Color(0xFF451A03),
+                color = Color(0xFF1E0E03),
                 offset = Offset(1f, 1.5f),
                 blurRadius = 2f
             )
@@ -453,14 +453,14 @@ fun DrawScope.drawBambooGateScene(size: Size, textMeasurer: TextMeasurer) {
     val text3 = textMeasurer.measure(
         AnnotatedString("SDN 4 PUTRAJAWA"),
         style = TextStyle(
-            color = Color(0xFFFEF08A),
-            fontSize = (height * 0.048f).coerceIn(13f, 30f).sp,
+            color = Color(0xFFFFFDE7),
+            fontSize = (height * 0.050f).coerceIn(13f, 32f).sp,
             fontWeight = FontWeight.Black,
-            letterSpacing = 1.2.sp,
+            letterSpacing = 1.3.sp,
             shadow = Shadow(
-                color = Color(0xFF451A03),
+                color = Color(0xFF1E0E03),
                 offset = Offset(2f, 2.5f),
-                blurRadius = 4f
+                blurRadius = 5f
             )
         )
     )

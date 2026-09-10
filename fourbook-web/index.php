@@ -60,16 +60,22 @@ session_start();
             <input type="text" id="reg-fullname" class="form-input" placeholder="Contoh: Ahmad Fauzi" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Status / Peran</label>
-            <select id="reg-role" class="form-select">
-              <option value="MURID">Siswa / Murid</option>
-              <option value="KETUA_KELAS">Ketua Kelas</option>
-              <option value="WALI_KELAS">Wali Kelas / Guru</option>
+            <label class="form-label">Peran di Sekolah</label>
+            <select id="reg-role" class="form-select" onchange="handleRoleChange(this.value)">
+              <option value="MURID">Siswa</option>
+              <option value="WALI_KELAS">Guru</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">No. Absen / NIP</label>
-            <input type="text" id="reg-number" class="form-input" placeholder="Contoh: No. Absen: 05" required>
+          <div class="form-group" id="reg-class-group">
+            <label class="form-label">Tingkat Kelas</label>
+            <select id="reg-class" class="form-select">
+              <option value="Kelas 1">Kelas 1</option>
+              <option value="Kelas 2">Kelas 2</option>
+              <option value="Kelas 3">Kelas 3</option>
+              <option value="Kelas 4">Kelas 4</option>
+              <option value="Kelas 5">Kelas 5</option>
+              <option value="Kelas 6">Kelas 6</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">Username</label>
@@ -89,10 +95,28 @@ session_start();
         </form>
       </div>
 
+      <!-- WEB VERSION ACCESS BANNER -->
+      <a href="https://balallica.my.id" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block; margin-top: 14px;">
+        <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #60A5FA; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #1D4ED8; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; border: 1px solid #93C5FD;">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <div>
+              <div style="color: #ffffff; font-size: 13px; font-weight: 700;">Klik Buat Akses Versi Web</div>
+              <div style="color: #93C5FD; font-size: 11px; font-weight: 600;">balallica.my.id</div>
+            </div>
+          </div>
+          <div style="background: #3B82F6; color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka
+          </div>
+        </div>
+      </a>
+
       <!-- ATTRIBUTION & SCHOOL BADGE FOOTER DI BAWAH FORM -->
       <div class="auth-card-footer">
         <div class="auth-footer-creator">
-          <i class="fa-solid fa-code"></i> Created By : <strong>Teten Kurniawan</strong>
+          Created By : <strong>Teten Kurniawan</strong>
         </div>
         <div class="auth-footer-school">
           <i class="fa-solid fa-school-flag"></i> <strong>SDN 4 PUTRAJAWA</strong>
@@ -495,7 +519,7 @@ session_start();
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20260910c"></script>
   <script>
     function setPostCategoryFilter(el, cat) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));

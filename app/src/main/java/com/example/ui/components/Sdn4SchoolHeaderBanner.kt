@@ -54,7 +54,7 @@ fun Sdn4SchoolHeaderBanner(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(156.dp)
+                .height(180.dp)
         ) {
             // 1. Traditional Bamboo Gate Scenery (SDN 4 Putrajawa - Foto Gerbang Bambu)
             Sdn4BambooGateBackground(
@@ -197,10 +197,12 @@ fun Sdn4SchoolHeaderBanner(
             }
 
             // 2. Center-Aligned Header: "Fourbook" with School Emblem and Online Community Subtitle
+            // Shifted down and sized precisely so it sits cleanly below the wooden billboard ("SDN 4 PUTRAJAWA")
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 70.dp, bottom = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -213,22 +215,22 @@ fun Sdn4SchoolHeaderBanner(
                     ) {
                         // Official Circular SDN 4 Putrajawa Emblem Logo
                         Sdn4SchoolLogo(
-                            size = 46.dp,
+                            size = 38.dp,
                             showGlow = true
                         )
 
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         // "Fourbook"
                         Text(
                             text = "Fourbook",
                             color = Color.White,
-                            fontSize = 32.sp,
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = (-0.5).sp,
                             style = androidx.compose.ui.text.TextStyle(
                                 shadow = androidx.compose.ui.graphics.Shadow(
-                                    color = Color.Black.copy(alpha = 0.7f),
+                                    color = Color.Black.copy(alpha = 0.85f),
                                     offset = Offset(2f, 3f),
                                     blurRadius = 8f
                                 )
@@ -236,21 +238,21 @@ fun Sdn4SchoolHeaderBanner(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
 
                     // Subtitle: SDN 4 PUTRAJAWA ONLINE COMMUNITY
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = Color.Black.copy(alpha = 0.45f),
-                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFFDE047).copy(alpha = 0.5f))
+                        color = Color.Black.copy(alpha = 0.55f),
+                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFFDE047).copy(alpha = 0.6f))
                     ) {
                         Text(
                             text = "SDN 4 PUTRAJAWA ONLINE COMMUNITY",
                             color = Color(0xFFFDE047),
-                            fontSize = 10.5.sp,
+                            fontSize = 9.5.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.1.sp,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.5.dp)
                         )
                     }
                 }

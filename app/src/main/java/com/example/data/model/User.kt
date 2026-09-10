@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 enum class UserRole(val label: String, val badgeColorHex: Long) {
-    MURID("Murid", 0xFF1877F2),
+    MURID("Siswa", 0xFF1877F2),
     KETUA_KELAS("Ketua Kelas", 0xFFD97706),
     WALI_KELAS("Guru", 0xFF059669)
 }
