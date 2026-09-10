@@ -993,8 +993,7 @@ function getAvatarIcon(iconStr) {
 
 function getRoleLabel(role) {
   switch (role) {
-    case 'WALI_KELAS': return 'Wali Kelas';
-    case 'KETUA_KELAS': return 'Ketua Kelas';
+    case 'WALI_KELAS': return 'Guru';
     default: return 'Siswa';
   }
 }

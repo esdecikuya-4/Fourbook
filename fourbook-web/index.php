@@ -60,14 +60,14 @@ session_start();
             <input type="text" id="reg-fullname" class="form-input" placeholder="Contoh: Ahmad Fauzi" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Peran di Sekolah</label>
+            <label class="form-label">Status / Peran</label>
             <select id="reg-role" class="form-select" onchange="handleRoleChange(this.value)">
               <option value="MURID">Siswa</option>
               <option value="WALI_KELAS">Guru</option>
             </select>
           </div>
           <div class="form-group" id="reg-class-group">
-            <label class="form-label">Tingkat Kelas</label>
+            <label class="form-label">Pilih Kelas (1 - 6)</label>
             <select id="reg-class" class="form-select">
               <option value="Kelas 1">Kelas 1</option>
               <option value="Kelas 2">Kelas 2</option>
@@ -112,6 +112,16 @@ session_start();
           </div>
         </div>
       </a>
+
+      <!-- ATTRIBUTION & SCHOOL BADGE FOOTER -->
+      <div style="margin-top: 14px; padding: 10px 14px; background: rgba(241, 245, 249, 0.9); border-radius: 12px; text-align: center; border: 1px solid #CBD5E1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 13px; font-weight: 800; color: #1E293B;">
+          Created By : <span style="color: #1D4ED8;">Teten Kurniawan</span>
+        </div>
+        <div style="font-size: 11.5px; font-weight: 700; color: #15803D; margin-top: 3px;">
+          <i class="fa-solid fa-school"></i> SDN 4 PUTRAJAWA &bull; Garut, Indonesia
+        </div>
+      </div>
     </div>
   </div>
 
@@ -493,8 +503,16 @@ session_start();
             <input type="text" id="ep-name" class="form-input" required>
           </div>
           <div class="form-group">
-            <label class="form-label">No. Absen / NIP</label>
-            <input type="text" id="ep-number" class="form-input" required>
+            <label class="form-label">Tingkat Kelas / Posisi</label>
+            <select id="ep-number" class="form-select">
+              <option value="Kelas 1">Kelas 1</option>
+              <option value="Kelas 2">Kelas 2</option>
+              <option value="Kelas 3">Kelas 3</option>
+              <option value="Kelas 4">Kelas 4</option>
+              <option value="Kelas 5">Kelas 5</option>
+              <option value="Kelas 6">Kelas 6</option>
+              <option value="Guru">Guru</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">Bio / Status</label>

@@ -61,7 +61,6 @@ fun AuthScreen(
     var regRole by remember { mutableStateOf(UserRole.MURID) }
     var regSelectedClass by remember { mutableStateOf("Kelas 4") }
     var classDropdownExpanded by remember { mutableStateOf(false) }
-    var regStudentNumber by remember { mutableStateOf("") }
     var regAvatarColor by remember { mutableStateOf(0xFF2563EBL) }
     var regAvatarIcon by remember { mutableStateOf("smile") }
     var regBio by remember { mutableStateOf("Semangat belajar di SDN 4 Putrajawa!") }
@@ -394,6 +393,35 @@ fun AuthScreen(
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Creator Attribution
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 7.dp, horizontal = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Created By : Teten Kurniawan",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "SDN 4 PUTRAJAWA • Garut, Indonesia",
+                                    fontSize = 10.5.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     } else {
                         // REGISTER FORM
                         Text(
@@ -446,27 +474,12 @@ fun AuthScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        OutlinedTextField(
-                            value = regStudentNumber,
-                            onValueChange = { regStudentNumber = it },
-                            label = { Text("No. Absen / NISN (Opsional)") },
-                            placeholder = { Text("Absen 07 / NISN 014...") },
-                            leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(14.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("register_number_input")
-                        )
-
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Role Selection
+                        // Role Selection: Hanya Siswa dan Guru
                         Text(
-                            text = "Peran Di Sekolah:",
-                            fontSize = 12.sp,
+                            text = "Status / Peran:",
+                            fontSize = 12.5.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.Start)
                         )
@@ -474,23 +487,29 @@ fun AuthScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             listOf(UserRole.MURID, UserRole.WALI_KELAS).forEach { role ->
                                 val selected = regRole == role
                                 FilterChip(
                                     selected = selected,
                                     onClick = { regRole = role },
-                                    label = { Text(role.label, fontSize = 12.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal) },
+                                    label = {
+                                        Text(
+                                            text = if (role == UserRole.MURID) "Siswa" else "Guru",
+                                            fontSize = 13.sp,
+                                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
                                     leadingIcon = if (selected) {
-                                        { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) }
+                                        { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(15.dp)) }
                                     } else null,
                                     modifier = Modifier.testTag("chip_role_${role.name}")
                                 )
                             }
                         }
 
-                        // Dropdown Pilihan Kelas (Kelas 1 - Kelas 6) untuk Siswa
+                        // Dropdown Pilihan Kelas (Kelas 1 sampai 6) untuk Siswa
                         AnimatedVisibility(
                             visible = regRole == UserRole.MURID,
                             modifier = Modifier.fillMaxWidth()
@@ -501,8 +520,8 @@ fun AuthScreen(
                                     .padding(top = 6.dp, bottom = 4.dp)
                             ) {
                                 Text(
-                                    text = "Pilih Tingkat Kelas Siswa:",
-                                    fontSize = 12.sp,
+                                    text = "Pilih Kelas (1 - 6):",
+                                    fontSize = 12.5.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(bottom = 6.dp)
@@ -516,7 +535,7 @@ fun AuthScreen(
                                         value = regSelectedClass,
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("Tingkat Kelas (Kelas 1 - 6) *") },
+                                        label = { Text("Tingkat Kelas *") },
                                         leadingIcon = { Icon(Icons.Default.School, contentDescription = null) },
                                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = classDropdownExpanded) },
                                         shape = RoundedCornerShape(14.dp),
@@ -658,11 +677,7 @@ fun AuthScreen(
 
                         Button(
                             onClick = {
-                                val resolvedNumber = if (regRole != UserRole.WALI_KELAS) {
-                                    if (regStudentNumber.isNotBlank()) "$regSelectedClass • $regStudentNumber" else regSelectedClass
-                                } else {
-                                    regStudentNumber
-                                }
+                                val resolvedNumber = if (regRole != UserRole.WALI_KELAS) regSelectedClass else "Guru"
                                 val resolvedBio = if (regBio.isBlank() || regBio == "Semangat belajar di SDN 4 Putrajawa!") {
                                     if (regRole != UserRole.WALI_KELAS) "Siswa $regSelectedClass SDN 4 Putrajawa" else "Guru SDN 4 Putrajawa"
                                 } else {
@@ -778,17 +793,78 @@ fun AuthScreen(
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Creator Attribution in Register card
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 7.dp, horizontal = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Created By : Teten Kurniawan",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "SDN 4 PUTRAJAWA • Garut, Indonesia",
+                                    fontSize = 10.5.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "SDN 4 Putrajawa • Fourbook Digital",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 11.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color.Black.copy(alpha = 0.4f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
+                modifier = Modifier.padding(bottom = 6.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 7.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Created By : Teten Kurniawan",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.School,
+                            contentDescription = null,
+                            tint = Color(0xFFFDE047),
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "SDN 4 PUTRAJAWA • Garut, Indonesia",
+                            color = Color(0xFFFDE047),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(6.dp))
         }
     }
 }

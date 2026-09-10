@@ -5,10 +5,10 @@
     "password": "qqq",
     "fullName": "Teten Kurniawan, S.Pd.",
     "role": "WALI_KELAS",
-    "studentNumber": "NIP. 198507122010011015",
+    "studentNumber": "Guru",
     "avatarColor": "0xFF1877F2",
     "avatarIcon": "teacher",
-    "bio": "Wali Kelas & Guru Pembimbing SDN 4 Putrajawa. Mari wujudkan generasi cerdas, berkarakter, dan berprestasi!",
+    "bio": "Guru SDN 4 Putrajawa. Mari wujudkan generasi cerdas, berkarakter, dan berprestasi!",
     "customPhotoUri": ""
   },
   {
@@ -16,11 +16,11 @@
     "username": "dimas",
     "password": "123",
     "fullName": "Dimas Aditya Pratama",
-    "role": "KETUA_KELAS",
-    "studentNumber": "No. Absen: 01",
-    "avatarColor": "0xFFD97706",
+    "role": "MURID",
+    "studentNumber": "Kelas 4",
+    "avatarColor": "0xFF1877F2",
     "avatarIcon": "star",
-    "bio": "Ketua Kelas SDN 4 Putrajawa. Siap membantu teman-teman dan menjaga kekompakan kelas!",
+    "bio": "Siswa Kelas 4 SDN 4 Putrajawa. Semangat belajar dan menjaga kekompakan teman!",
     "customPhotoUri": ""
   },
   {
@@ -29,10 +29,10 @@
     "password": "123",
     "fullName": "Siti Nurhaliza",
     "role": "MURID",
-    "studentNumber": "No. Absen: 02",
+    "studentNumber": "Kelas 4",
     "avatarColor": "0xFFEC4899",
     "avatarIcon": "palette",
-    "bio": "Suka melukis, seni tari, dan belajar sains bersama teman-teman di sekolah.",
+    "bio": "Siswa Kelas 4 SDN 4 Putrajawa. Suka melukis, seni tari, dan belajar sains.",
     "customPhotoUri": ""
   },
   {
@@ -41,10 +41,10 @@
     "password": "123",
     "fullName": "Rizky Alfaridzi",
     "role": "MURID",
-    "studentNumber": "No. Absen: 03",
+    "studentNumber": "Kelas 5",
     "avatarColor": "0xFF3B82F6",
     "avatarIcon": "sports",
-    "bio": "Hobi sepak bola, atletik, dan kegiatan pramuka SDN 4 Putrajawa.",
+    "bio": "Siswa Kelas 5 SDN 4 Putrajawa. Hobi sepak bola, atletik, dan kegiatan pramuka.",
     "customPhotoUri": ""
   },
   {
@@ -53,10 +53,10 @@
     "password": "123",
     "fullName": "Aurelia Putri",
     "role": "MURID",
-    "studentNumber": "No. Absen: 04",
+    "studentNumber": "Kelas 3",
     "avatarColor": "0xFF10B981",
     "avatarIcon": "music",
-    "bio": "Anggota paduan suara SDN 4 Putrajawa. Menyanyi dan membaca puisi.",
+    "bio": "Siswa Kelas 3 SDN 4 Putrajawa. Anggota paduan suara, menyanyi dan membaca puisi.",
     "customPhotoUri": ""
   }
 ]

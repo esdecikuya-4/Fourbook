@@ -808,7 +808,8 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = editStudentNumber,
                     onValueChange = { editStudentNumber = it },
-                    label = { Text("No. Absen / NISN / NIP") },
+                    label = { Text("Tingkat Kelas / Posisi") },
+                    placeholder = { Text("Contoh: Kelas 4 atau Guru") },
                     leadingIcon = { Icon(Icons.Default.Badge, contentDescription = null) },
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),

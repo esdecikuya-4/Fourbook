@@ -1365,7 +1365,7 @@ fun PostReactionsDialog(
                                         }
                                         if (user.studentNumber.isNotBlank()) {
                                             Text(
-                                                text = "No. Absen: ${user.studentNumber}",
+                                                text = user.studentNumber,
                                                 fontSize = 11.sp,
                                                 color = FbTextSec
                                             )
