@@ -54,12 +54,12 @@ fun Sdn4SchoolHeaderBanner(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(148.dp)
         ) {
-            // 1. Traditional Bamboo Gate Scenery (SDN 4 Putrajawa - Foto Gerbang Bambu)
-            Sdn4BambooGateBackground(
+            // 1. Futuristic, Realistic Digital School Header Background (SDN 4 Putrajawa)
+            DigitalSchoolHeaderBackground(
                 modifier = Modifier.fillMaxSize(),
-                dimOverlayAlpha = 0.15f
+                dimOverlayAlpha = 0.05f
             )
 
             // Subtle top atmospheric gradient for status bar & top button clarity
@@ -197,12 +197,11 @@ fun Sdn4SchoolHeaderBanner(
             }
 
             // 2. Center-Aligned Header: "Fourbook" with School Emblem and Online Community Subtitle
-            // Shifted down and sized precisely so it sits cleanly below the wooden billboard ("SDN 4 PUTRAJAWA")
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(top = 70.dp, bottom = 10.dp),
+                    .padding(top = 46.dp, bottom = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(

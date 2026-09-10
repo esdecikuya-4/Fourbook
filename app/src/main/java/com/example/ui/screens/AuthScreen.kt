@@ -73,28 +73,37 @@ fun AuthScreen(
     }
 
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFF070F1E))
     ) {
-        // Fullscreen Bamboo Gate Scenery (SDN 4 Putrajawa - Foto Gerbang Bambu)
-        Sdn4BambooGateBackground(
-            modifier = Modifier.fillMaxSize(),
-            dimOverlayAlpha = 0.0f
-        )
-
-        // Gradient overlay for optimal readability & contrast
+        // Compact, realistic & futuristic digital school header background (only behind logos, branding & texts)
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xCC091E3A),
-                            Color(0x991E3A8A),
-                            Color(0xEE0B192C)
+                .fillMaxWidth()
+                .height(310.dp)
+        ) {
+            DigitalSchoolHeaderBackground(
+                modifier = Modifier.fillMaxSize(),
+                dimOverlayAlpha = 0.05f
+            )
+
+            // Smooth subtle fade at bottom into dark body background
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color(0xFF070F1E)
+                            )
                         )
                     )
-                )
-        )
+            )
+        }
 
         Column(
             modifier = Modifier
