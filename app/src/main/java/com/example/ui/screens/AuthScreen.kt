@@ -110,104 +110,52 @@ fun AuthScreen(
                 .fillMaxSize()
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
-            // School Emblem Logo (Large High-Res Circular Emblem)
+            // School Emblem Logo (Compact High-Res Circular Emblem)
             com.example.ui.components.Sdn4SchoolLogo(
-                size = 92.dp,
+                size = 56.dp,
                 showGlow = true
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // School & App Header
-            Surface(
-                shape = CircleShape,
-                color = Color.White.copy(alpha = 0.2f),
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = null,
-                        tint = Color(0xFFFDE047),
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "SDN 4 PUTRAJAWA",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 1.2.sp
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "fourbook",
                 color = Color.White,
-                fontSize = 34.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = (-0.5).sp,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = "SDN 4 PUTRAJAWA Online Community",
+                text = "SDN 4 PUTRAJAWA",
                 color = Color.White.copy(alpha = 0.95f),
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
+                modifier = Modifier.padding(top = 1.dp, bottom = 8.dp)
             )
-
-            // Server Online / Hosting Badge
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color.Black.copy(alpha = 0.35f),
-                modifier = Modifier.padding(bottom = 18.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(7.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF22C55E))
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Terhubung: balallica.my.id",
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
 
             // Auth Card Container
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 520.dp),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(horizontal = 18.dp, vertical = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Tab Selector: Masuk / Daftar
@@ -216,7 +164,7 @@ fun AuthScreen(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .padding(4.dp)
+                            .padding(3.dp)
                     ) {
                         Tab(
                             selected = !isRegisterMode,
@@ -224,6 +172,7 @@ fun AuthScreen(
                             text = {
                                 Text(
                                     "Masuk Akun",
+                                    fontSize = 13.5.sp,
                                     fontWeight = if (!isRegisterMode) FontWeight.Bold else FontWeight.Normal
                                 )
                             },
@@ -235,6 +184,7 @@ fun AuthScreen(
                             text = {
                                 Text(
                                     "Daftar",
+                                    fontSize = 13.5.sp,
                                     fontWeight = if (isRegisterMode) FontWeight.Bold else FontWeight.Normal
                                 )
                             },
@@ -242,7 +192,7 @@ fun AuthScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // Error & Success Feedback
                     AnimatedVisibility(visible = authError != null) {
@@ -302,27 +252,20 @@ fun AuthScreen(
                     }
 
                     if (!isRegisterMode) {
-                        // LOGIN FORM
-                        Text(
-                            text = "Silakan masuk dengan akun masing-masing",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
+                        // LOGIN FORM (Compact & Direct)
                         OutlinedTextField(
                             value = loginUsername,
                             onValueChange = { loginUsername = it },
                             label = { Text("Username / Nama Pengguna") },
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                             singleLine = true,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("login_username_input")
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         OutlinedTextField(
                             value = loginPassword,
@@ -339,13 +282,13 @@ fun AuthScreen(
                             },
                             visualTransformation = if (loginPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             singleLine = true,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("login_password_input")
                         )
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         Button(
                             onClick = {
@@ -353,22 +296,22 @@ fun AuthScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(46.dp)
                                 .testTag("login_submit_button"),
-                            shape = RoundedCornerShape(14.dp)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(Icons.Default.Login, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Masuk", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            Text("Masuk", fontSize = 14.5.sp, fontWeight = FontWeight.Bold)
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         // Web Version Access Banner ("Klik Buat Akses Versi Web" -> balallica.my.id)
                         Surface(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = Color(0xFF1E3A8A).copy(alpha = 0.85f),
-                            border = androidx.compose.foundation.BorderStroke(1.2.dp, Color(0xFF60A5FA).copy(alpha = 0.8f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF60A5FA).copy(alpha = 0.8f)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
@@ -379,7 +322,7 @@ fun AuthScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 12.dp, horizontal = 14.dp),
+                                    .padding(vertical = 8.dp, horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -392,7 +335,7 @@ fun AuthScreen(
                                         shape = CircleShape,
                                         color = Color(0xFF2563EB),
                                         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF93C5FD)),
-                                        modifier = Modifier.size(42.dp)
+                                        modifier = Modifier.size(34.dp)
                                     ) {
                                         Box(
                                             contentAlignment = Alignment.Center,
@@ -402,23 +345,23 @@ fun AuthScreen(
                                                 Icons.Default.Language,
                                                 contentDescription = "Versi Web",
                                                 tint = Color.White,
-                                                modifier = Modifier.size(24.dp)
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
 
                                     Column {
                                         Text(
                                             text = "Klik Buat Akses Versi Web",
-                                            fontSize = 13.sp,
+                                            fontSize = 12.5.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White
                                         )
                                         Text(
                                             text = "balallica.my.id",
-                                            fontSize = 11.5.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF93C5FD)
                                         )
@@ -426,107 +369,28 @@ fun AuthScreen(
                                 }
 
                                 Surface(
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = RoundedCornerShape(6.dp),
                                     color = Color(0xFF3B82F6),
                                     modifier = Modifier.padding(start = 6.dp)
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                     ) {
                                         Icon(
                                             Icons.Default.OpenInBrowser,
                                             contentDescription = null,
                                             tint = Color.White,
-                                            modifier = Modifier.size(15.dp)
+                                            modifier = Modifier.size(13.dp)
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(
                                             text = "Buka",
-                                            fontSize = 11.5.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White
                                         )
                                     }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // Creator Attribution Card Footer (Tanpa simbol < >)
-                        Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp, horizontal = 14.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Created By : Teten Kurniawan",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.School,
-                                        contentDescription = null,
-                                        tint = Color(0xFF16A34A),
-                                        modifier = Modifier.size(15.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "SDN 4 PUTRAJAWA",
-                                        fontSize = 12.5.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.8.sp,
-                                        color = Color(0xFF16A34A)
-                                    )
-                                }
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.LocationOn,
-                                        contentDescription = null,
-                                        tint = Color(0xFFDC2626),
-                                        modifier = Modifier.size(13.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "Garut, Indonesia",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = " • ",
-                                        fontSize = 11.5.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = "@2026",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
                                 }
                             }
                         }
@@ -914,96 +778,17 @@ fun AuthScreen(
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // Creator Attribution Card Footer (Register view)
-                        Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp, horizontal = 14.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Created By : Teten Kurniawan",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.School,
-                                        contentDescription = null,
-                                        tint = Color(0xFF16A34A),
-                                        modifier = Modifier.size(15.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "SDN 4 PUTRAJAWA",
-                                        fontSize = 12.5.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.8.sp,
-                                        color = Color(0xFF16A34A)
-                                    )
-                                }
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.LocationOn,
-                                        contentDescription = null,
-                                        tint = Color(0xFFDC2626),
-                                        modifier = Modifier.size(13.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "Garut, Indonesia",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = " • ",
-                                        fontSize = 11.5.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = "@2026",
-                                        fontSize = 11.5.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "SDN 4 Putrajawa • Fourbook Digital",
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 11.sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
