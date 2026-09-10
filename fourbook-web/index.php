@@ -10,9 +10,9 @@ session_start();
   <title>Fourbook - Media Sosial SDN 4 Putrajawa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20260910b">
 </head>
 <body>
 
@@ -111,8 +111,8 @@ session_start();
       <div class="fb-brand" onclick="switchTab('beranda')">
         <div class="fb-logo-circle">4</div>
         <div class="fb-brand-title">
-          <span class="fb-brand-name">fourbook</span>
-          <span class="fb-school-tag">SDN 4 Putrajawa</span>
+          <span class="fb-brand-name">Fourbook</span>
+          <span class="fb-school-tag">SDN 4 PUTRAJAWA ONLINE COMMUNITY</span>
         </div>
       </div>
 
@@ -164,13 +164,23 @@ session_start();
 
       <!-- TAB 1: BERANDA -->
       <div id="view-beranda" class="tab-view-container">
-        <!-- SDN 4 Hero -->
+        <!-- SDN 4 Hero / Community Header Banner -->
         <div class="sdn-hero-card">
+          <div class="hero-glow-circle"></div>
           <div class="hero-left">
-            <h2>SDN 4 Putrajawa</h2>
-            <p>Sdn 4 Putrajawa Online Community</p>
+            <div class="hero-branding-wrapper">
+              <div class="hero-logo-box">4</div>
+              <div>
+                <h2 class="hero-title-main">Fourbook</h2>
+                <div class="hero-school-sub">SDN 4 PUTRAJAWA ONLINE COMMUNITY</div>
+              </div>
+            </div>
+            <p class="hero-description">Wadah kreatifitas, prestasi, galeri karya, dan interaksi akrab seluruh warga sekolah.</p>
           </div>
-          <div class="hero-badge">T.A. 2026/2027</div>
+          <div class="hero-right-actions">
+            <div class="hero-badge"><i class="fa-solid fa-graduation-cap"></i> T.A. 2026/2027</div>
+            <div class="hero-stat-pill"><i class="fa-solid fa-circle-check text-green"></i> Portal Aktif</div>
+          </div>
         </div>
 
         <!-- Admin Quick Actions Bar -->
@@ -207,12 +217,12 @@ session_start();
         </div>
 
         <!-- Category Filters -->
-        <div class="filter-chips-row" style="margin-top: 12px;">
-          <div class="filter-chip active" onclick="setPostCategoryFilter(this, 'SEMUA')">Semua</div>
-          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Akademik')">Akademik</div>
-          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Kesenian')">Kesenian</div>
-          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Pengumuman')">Pengumuman</div>
-          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Olahraga')">Olahraga</div>
+        <div class="filter-chips-row" style="margin-top: 14px;">
+          <div class="filter-chip active" onclick="setPostCategoryFilter(this, 'SEMUA')"><i class="fa-solid fa-shapes"></i> Semua</div>
+          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Akademik')"><i class="fa-solid fa-book-open"></i> Akademik</div>
+          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Kesenian')"><i class="fa-solid fa-palette"></i> Kesenian</div>
+          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Pengumuman')"><i class="fa-solid fa-bullhorn"></i> Pengumuman</div>
+          <div class="filter-chip" onclick="setPostCategoryFilter(this, 'Olahraga')"><i class="fa-solid fa-futbol"></i> Olahraga</div>
         </div>
 
         <!-- Posts Feed -->

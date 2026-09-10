@@ -196,40 +196,63 @@ fun Sdn4SchoolHeaderBanner(
                 }
             }
 
-            // 2. Center-Aligned Header: "Fourbook" with School Emblem
+            // 2. Center-Aligned Header: "Fourbook" with School Emblem and Online Community Subtitle
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    // Official Circular SDN 4 Putrajawa Emblem Logo
-                    Sdn4SchoolLogo(
-                        size = 48.dp,
-                        showGlow = true
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        // Official Circular SDN 4 Putrajawa Emblem Logo
+                        Sdn4SchoolLogo(
+                            size = 46.dp,
+                            showGlow = true
+                        )
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
-                    // "Fourbook"
-                    Text(
-                        text = "Fourbook",
-                        color = Color.White,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.5).sp,
-                        style = androidx.compose.ui.text.TextStyle(
-                            shadow = androidx.compose.ui.graphics.Shadow(
-                                color = Color.Black.copy(alpha = 0.7f),
-                                offset = Offset(2f, 3f),
-                                blurRadius = 8f
+                        // "Fourbook"
+                        Text(
+                            text = "Fourbook",
+                            color = Color.White,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = (-0.5).sp,
+                            style = androidx.compose.ui.text.TextStyle(
+                                shadow = androidx.compose.ui.graphics.Shadow(
+                                    color = Color.Black.copy(alpha = 0.7f),
+                                    offset = Offset(2f, 3f),
+                                    blurRadius = 8f
+                                )
                             )
                         )
-                    )
+                    }
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    // Subtitle: SDN 4 PUTRAJAWA ONLINE COMMUNITY
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.Black.copy(alpha = 0.45f),
+                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFFDE047).copy(alpha = 0.5f))
+                    ) {
+                        Text(
+                            text = "SDN 4 PUTRAJAWA ONLINE COMMUNITY",
+                            color = Color(0xFFFDE047),
+                            fontSize = 10.5.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 1.1.sp,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                        )
+                    }
                 }
             }
         }

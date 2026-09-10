@@ -1,7 +1,29 @@
 <?php
 // fourbook-web/api/helper.php
 header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 session_start();
+
+// Automatically parse JSON request body if sent from Android Retrofit/REST client
+$rawInput = file_get_contents('php://input');
+if (!empty($rawInput)) {
+    $jsonData = json_decode($rawInput, true);
+    if (is_array($jsonData)) {
+        foreach ($jsonData as $key => $value) {
+            if (!isset($_POST[$key])) {
+                $_POST[$key] = $value;
+            }
+        }
+    }
+}
 
 function get_json_data($filename) {
     $filepath = __DIR__ . '/../data/' . $filename;
@@ -20,11 +42,21 @@ function save_json_data($filename, $data) {
 }
 
 function json_response($status, $data = [], $message = '') {
-    echo json_encode([
-        'status' => $status,
+    $response = [
+        'status' => (bool)$status,
+        'success' => (bool)$status,
         'message' => $message,
         'data' => $data
-    ]);
+    ];
+    if (is_array($data)) {
+        if (isset($data['user'])) {
+            $response['user'] = $data['user'];
+        }
+        if (isset($data['posts'])) {
+            $response['posts'] = $data['posts'];
+        }
+    }
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
     exit;
 }
 

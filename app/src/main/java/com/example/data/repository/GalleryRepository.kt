@@ -6,6 +6,10 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import com.example.data.local.AppDatabase
 import com.example.data.model.*
+import com.example.data.remote.FourbookApiClient
+import com.example.data.remote.RemoteAuthRequest
+import com.example.data.remote.RemoteCreatePostRequest
+import com.example.data.remote.RemoteRegisterRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -348,7 +352,27 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         )
 
         val id = userDao.insertUser(newUser)
-        Result.success(newUser.copy(id = id))
+        val savedUser = newUser.copy(id = id)
+
+        // Sync registration with Live Web Server Fourbook balallica.my.id
+        try {
+            FourbookApiClient.service.register(
+                RemoteRegisterRequest(
+                    username = cleanUsername,
+                    password = password.trim(),
+                    fullName = fullName.trim(),
+                    role = role.name,
+                    studentNumber = studentNumber.trim(),
+                    avatarColor = avatarColor,
+                    avatarIcon = avatarIcon,
+                    bio = savedUser.bio
+                )
+            )
+        } catch (_: Exception) {
+            // Offline fallback - account already saved locally in Room
+        }
+
+        Result.success(savedUser)
     }
 
     suspend fun loginUser(username: String, password: String): Result<UserEntity> = withContext(Dispatchers.IO) {
@@ -389,6 +413,50 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
             }
         }
 
+        // 1. Try Live Server Login first if online (balallica.my.id)
+        try {
+            val response = FourbookApiClient.service.login(RemoteAuthRequest(cleanUsername, cleanPassword))
+            if (response.isSuccessful && response.body()?.success == true) {
+                val remoteUser = response.body()?.user
+                if (remoteUser != null) {
+                    val existing = userDao.getUserByUsername(remoteUser.username.lowercase())
+                    val localRole = try {
+                        UserRole.valueOf(remoteUser.role).name
+                    } catch (_: Exception) {
+                        UserRole.MURID.name
+                    }
+                    val syncedUser = if (existing != null) {
+                        existing.copy(
+                            fullName = remoteUser.fullName,
+                            password = cleanPassword,
+                            role = localRole,
+                            studentNumber = remoteUser.studentNumber ?: existing.studentNumber,
+                            avatarColor = remoteUser.avatarColor,
+                            avatarIcon = remoteUser.avatarIcon,
+                            customPhotoUri = remoteUser.customPhotoUri ?: existing.customPhotoUri,
+                            bio = remoteUser.bio ?: existing.bio
+                        ).also { userDao.updateUser(it) }
+                    } else {
+                        UserEntity(
+                            username = remoteUser.username.lowercase(),
+                            password = cleanPassword,
+                            fullName = remoteUser.fullName,
+                            role = localRole,
+                            studentNumber = remoteUser.studentNumber ?: "",
+                            avatarColor = remoteUser.avatarColor,
+                            avatarIcon = remoteUser.avatarIcon,
+                            customPhotoUri = remoteUser.customPhotoUri ?: "",
+                            bio = remoteUser.bio ?: "Warga SDN 4 Putrajawa"
+                        ).let { it.copy(id = userDao.insertUser(it)) }
+                    }
+                    return@withContext Result.success(syncedUser)
+                }
+            }
+        } catch (_: Exception) {
+            // Network failure or timeout -> continue with local database check
+        }
+
+        // 2. Fallback to Local Database
         if (user == null) {
             return@withContext Result.failure(Exception("Akun tidak ditemukan. Silakan periksa username atau daftar terlebih dahulu."))
         }
@@ -532,6 +600,24 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         )
 
         val id = photoDao.insertPhoto(post)
+
+        // Sync new post to Live Web Server balallica.my.id
+        try {
+            FourbookApiClient.service.createPost(
+                RemoteCreatePostRequest(
+                    uploaderId = uploader.id,
+                    uploaderName = uploader.fullName,
+                    uploaderRole = uploader.role,
+                    title = title.trim(),
+                    description = description.trim(),
+                    feeling = feelingOrActivity.trim().ifEmpty { null },
+                    postType = postType.name
+                )
+            )
+        } catch (_: Exception) {
+            // Offline fallback
+        }
+
         // Broadcast notification for new post to class members
         notificationDao.insertNotification(
             NotificationEntity(

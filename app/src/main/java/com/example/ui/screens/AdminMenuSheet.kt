@@ -194,6 +194,48 @@ fun AdminMenuSheet(
                     viewModel.setActiveTab(MainTab.PROFIL)
                 }
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Server Hosting Status Info
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color(0xFFF0FDF4),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBBF7D0)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF16A34A))
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Server Hosting Terhubung",
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF166534)
+                        )
+                        Text(
+                            text = "https://balallica.my.id (API Sinkronisasi Aktif)",
+                            fontSize = 11.sp,
+                            color = Color(0xFF15803D)
+                        )
+                    }
+                    Icon(
+                        Icons.Default.CloudDone,
+                        contentDescription = null,
+                        tint = Color(0xFF16A34A),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
         }
     }
 }
