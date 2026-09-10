@@ -88,6 +88,19 @@ session_start();
           </button>
         </form>
       </div>
+
+      <!-- ATTRIBUTION & SCHOOL BADGE FOOTER DI BAWAH FORM -->
+      <div class="auth-card-footer">
+        <div class="auth-footer-creator">
+          <i class="fa-solid fa-code"></i> Created By : <strong>Teten Kurniawan</strong>
+        </div>
+        <div class="auth-footer-school">
+          <i class="fa-solid fa-school-flag"></i> <strong>SDN 4 PUTRAJAWA</strong>
+        </div>
+        <div class="auth-footer-location">
+          <i class="fa-solid fa-location-dot"></i> Garut, Indonesia &bull; <span>@2026</span>
+        </div>
+      </div>
     </div>
   </div>
 
