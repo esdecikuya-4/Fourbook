@@ -14,6 +14,10 @@ if ($action === 'get_current') {
                 break;
             }
         }
+    } else if (!empty($users)) {
+        // Auto default to primary user (Teten Kurniawan / Wali Kelas)
+        $user = $users[0];
+        $_SESSION['user'] = $user;
     }
     json_response(true, ['user' => $user, 'all_users' => $users]);
 }

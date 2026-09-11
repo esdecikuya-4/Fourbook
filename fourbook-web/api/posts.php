@@ -41,6 +41,10 @@ if ($action === 'create_post') {
     $category = $_POST['category'] ?? 'Umum';
     $postType = $_POST['postType'] ?? 'TEXT_STATUS';
     $mediaUri = trim($_POST['mediaUri'] ?? '');
+    $mediaType = 'NONE';
+    $embedUrl = trim($_POST['embedUrl'] ?? '');
+    $audioTitle = trim($_POST['audioTitle'] ?? '');
+    $audioArtist = trim($_POST['audioArtist'] ?? ($currentUser['fullName'] ?? 'SDN 4 Putrajawa'));
 
     // Handle file upload if any
     if (isset($_FILES['mediaFile']) && $_FILES['mediaFile']['error'] === UPLOAD_ERR_OK) {
@@ -48,15 +52,37 @@ if ($action === 'create_post') {
         if (!file_exists($uploadsDir)) {
             mkdir($uploadsDir, 0755, true);
         }
+        $ext = strtolower(pathinfo($_FILES['mediaFile']['name'], PATHINFO_EXTENSION));
         $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $_FILES['mediaFile']['name']);
         $targetPath = $uploadsDir . '/' . $fileName;
         if (move_uploaded_file($_FILES['mediaFile']['tmp_name'], $targetPath)) {
             $mediaUri = 'uploads/' . $fileName;
-            $postType = 'PHOTO';
+            if (in_array($ext, ['mp3', 'm4a', 'wav', 'ogg', 'aac', 'flac'])) {
+                $mediaType = 'AUDIO';
+                $postType = 'AUDIO';
+                if (empty($audioTitle)) {
+                    $audioTitle = pathinfo($_FILES['mediaFile']['name'], PATHINFO_FILENAME);
+                }
+            } elseif (in_array($ext, ['mp4', 'webm', 'mov', 'm4v', '3gp', 'mkv'])) {
+                $mediaType = 'VIDEO';
+                $postType = 'VIDEO';
+            } else {
+                $mediaType = 'PHOTO';
+                $postType = 'PHOTO';
+            }
         }
     }
 
-    if (empty($title) && empty($description) && empty($mediaUri)) {
+    // Auto-detect YouTube links in description, title, or embedUrl
+    $textForEmbed = $embedUrl . ' ' . $description . ' ' . $title;
+    if (preg_match('/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i', $textForEmbed, $matches)) {
+        $embedUrl = 'https://www.youtube.com/embed/' . $matches[1];
+        if ($postType === 'TEXT_STATUS') {
+            $postType = 'VIDEO';
+        }
+    }
+
+    if (empty($title) && empty($description) && empty($mediaUri) && empty($embedUrl)) {
         json_response(false, [], 'Konten postingan tidak boleh kosong');
     }
 
@@ -72,7 +98,10 @@ if ($action === 'create_post') {
         'title' => $title,
         'description' => $description,
         'mediaUri' => $mediaUri,
-        'mediaType' => !empty($mediaUri) ? 'PHOTO' : 'NONE',
+        'mediaType' => $mediaType != 'NONE' ? $mediaType : (!empty($mediaUri) ? 'PHOTO' : 'NONE'),
+        'embedUrl' => $embedUrl,
+        'audioTitle' => $audioTitle,
+        'audioArtist' => $audioArtist,
         'postType' => $postType,
         'category' => $category,
         'likeCount' => 0,
@@ -170,8 +199,33 @@ if ($action === 'add_comment') {
     if (!$currentUser) json_response(false, [], 'Harus login');
     $postId = (int)($_POST['postId'] ?? 0);
     $commentText = trim($_POST['commentText'] ?? '');
+    $mediaUri = trim($_POST['mediaUri'] ?? '');
+    $mediaType = trim($_POST['mediaType'] ?? 'NONE');
 
-    if (empty($commentText)) json_response(false, [], 'Komentar tidak boleh kosong');
+    // Handle media file upload in comment (photo, video, audio)
+    if (isset($_FILES['commentMediaFile']) && $_FILES['commentMediaFile']['error'] === UPLOAD_ERR_OK) {
+        $uploadsDir = __DIR__ . '/../uploads';
+        if (!file_exists($uploadsDir)) {
+            mkdir($uploadsDir, 0755, true);
+        }
+        $ext = strtolower(pathinfo($_FILES['commentMediaFile']['name'], PATHINFO_EXTENSION));
+        $fileName = 'cmt_' . time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $_FILES['commentMediaFile']['name']);
+        $targetPath = $uploadsDir . '/' . $fileName;
+        if (move_uploaded_file($_FILES['commentMediaFile']['tmp_name'], $targetPath)) {
+            $mediaUri = 'uploads/' . $fileName;
+            if (in_array($ext, ['mp3', 'm4a', 'wav', 'ogg', 'aac', 'flac'])) {
+                $mediaType = 'AUDIO';
+            } elseif (in_array($ext, ['mp4', 'webm', 'mov', 'm4v', '3gp', 'mkv'])) {
+                $mediaType = 'VIDEO';
+            } else {
+                $mediaType = 'PHOTO';
+            }
+        }
+    }
+
+    if (empty($commentText) && empty($mediaUri)) {
+        json_response(false, [], 'Komentar tidak boleh kosong');
+    }
 
     foreach ($posts as &$p) {
         if ($p['id'] === $postId) {
@@ -186,6 +240,8 @@ if ($action === 'add_comment') {
                 'userAvatarIcon' => $currentUser['avatarIcon'],
                 'userPhotoUri' => $currentUser['customPhotoUri'] ?? '',
                 'commentText' => $commentText,
+                'mediaUri' => $mediaUri,
+                'mediaType' => $mediaType,
                 'timestamp' => round(microtime(true) * 1000)
             ];
             $p['comments'][] = $newComment;
@@ -195,6 +251,12 @@ if ($action === 'add_comment') {
             if ($p['uploaderId'] !== $currentUser['id']) {
                 $notifications = get_json_data('notifications.json');
                 $notifId = empty($notifications) ? 1 : max(array_column($notifications, 'id')) + 1;
+                $notifMsg = $currentUser['fullName'] . ' mengomentari';
+                if (!empty($commentText)) {
+                    $notifMsg .= ': "' . mb_substr($commentText, 0, 40) . '"';
+                } else {
+                    $notifMsg .= ' dengan lampiran ' . strtolower($mediaType);
+                }
                 $notifications[] = [
                     'id' => $notifId,
                     'recipientUserId' => $p['uploaderId'],
@@ -205,7 +267,7 @@ if ($action === 'add_comment') {
                     'senderAvatarIcon' => $currentUser['avatarIcon'],
                     'type' => 'COMMENT',
                     'title' => 'Komentar Baru',
-                    'message' => $currentUser['fullName'] . ' mengomentari: "' . mb_substr($commentText, 0, 40) . '"',
+                    'message' => $notifMsg,
                     'targetId' => $postId,
                     'createdAt' => round(microtime(true) * 1000),
                     'isRead' => false

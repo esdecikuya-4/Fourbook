@@ -457,6 +457,21 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: var(--radius-md);
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.post-user-info:hover {
+  background-color: var(--fb-hover);
+}
+
+.post-user-info:hover .post-author-name {
+  color: var(--fb-blue);
+  text-decoration: underline;
 }
 
 .post-author-name {
@@ -595,6 +610,13 @@ body {
   font-size: 12px;
   font-weight: 700;
   color: var(--fb-text-primary);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.comment-author:hover {
+  color: var(--fb-blue);
+  text-decoration: underline;
 }
 
 .comment-text {

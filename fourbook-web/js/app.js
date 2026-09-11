@@ -243,6 +243,149 @@ async function fetchPosts() {
   }
 }
 
+// Global state for comment attachments (postId -> { file, type, name })
+const commentAttachments = {};
+
+// Helper: Extract YouTube embed URL from text or URL
+function extractYoutubeEmbed(urlOrText) {
+  if (!urlOrText) return null;
+  const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i;
+  const match = String(urlOrText).match(regExp);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+}
+
+// Media handlers for Post Modal
+function handlePostDescInput(text) {
+  const embedUrl = extractYoutubeEmbed(text);
+  const detectBox = document.getElementById('post-yt-detect-box');
+  const iframe = document.getElementById('post-yt-iframe');
+  if (embedUrl) {
+    if (detectBox) detectBox.style.display = 'block';
+    if (iframe && iframe.src !== embedUrl) iframe.src = embedUrl;
+  }
+}
+
+function cancelYtEmbed() {
+  const detectBox = document.getElementById('post-yt-detect-box');
+  const iframe = document.getElementById('post-yt-iframe');
+  const embedInput = document.getElementById('post-embed-url');
+  if (detectBox) detectBox.style.display = 'none';
+  if (iframe) iframe.src = '';
+  if (embedInput) embedInput.value = '';
+}
+
+function toggleEmbedLinkInput() {
+  const box = document.getElementById('post-embed-input-box');
+  if (box) {
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    if (box.style.display === 'block') {
+      const inp = document.getElementById('post-embed-url');
+      if (inp) inp.focus();
+    }
+  }
+}
+
+function handleEmbedUrlInput(url) {
+  const embedUrl = extractYoutubeEmbed(url);
+  const detectBox = document.getElementById('post-yt-detect-box');
+  const iframe = document.getElementById('post-yt-iframe');
+  if (embedUrl) {
+    if (detectBox) detectBox.style.display = 'block';
+    if (iframe) iframe.src = embedUrl;
+  } else {
+    if (detectBox) detectBox.style.display = 'none';
+    if (iframe) iframe.src = '';
+  }
+}
+
+function triggerPostFileInput(type) {
+  const fileInp = document.getElementById('post-media-file-input');
+  if (!fileInp) return;
+  if (type === 'image') fileInp.accept = 'image/*';
+  else if (type === 'video') fileInp.accept = 'video/*, .mp4, .webm, .mov, .m4v';
+  else if (type === 'audio') fileInp.accept = 'audio/*, .mp3, .m4a, .wav, .ogg, .aac, .flac';
+  fileInp.click();
+}
+
+function handlePostMediaSelected(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const previewArea = document.getElementById('post-media-preview-area');
+  const previewImg = document.getElementById('post-preview-img');
+  const previewVideo = document.getElementById('post-preview-video');
+  const previewAudioCard = document.getElementById('post-preview-audio-card');
+  const previewAudio = document.getElementById('post-preview-audio');
+  const previewAudioName = document.getElementById('post-preview-audio-name');
+  const label = document.getElementById('active-media-label');
+
+  // Reset previews
+  previewImg.style.display = 'none';
+  previewVideo.style.display = 'none';
+  previewAudioCard.style.display = 'none';
+  previewArea.style.display = 'block';
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  const fileUrl = URL.createObjectURL(file);
+
+  if (file.type.startsWith('image/')) {
+    previewImg.src = fileUrl;
+    previewImg.style.display = 'block';
+    if (label) label.textContent = `Foto: ${file.name}`;
+  } else if (file.type.startsWith('video/') || ['mp4', 'webm', 'mov', 'm4v', '3gp'].includes(ext)) {
+    previewVideo.src = fileUrl;
+    previewVideo.style.display = 'block';
+    if (label) label.textContent = `Video: ${file.name}`;
+  } else if (file.type.startsWith('audio/') || ['mp3', 'm4a', 'wav', 'ogg', 'aac', 'flac'].includes(ext)) {
+    previewAudio.src = fileUrl;
+    if (previewAudioName) previewAudioName.textContent = file.name;
+    previewAudioCard.style.display = 'block';
+    if (label) label.textContent = `Audio: ${file.name}`;
+  }
+}
+
+function clearPostMedia() {
+  const fileInp = document.getElementById('post-media-file-input');
+  if (fileInp) fileInp.value = '';
+  const previewArea = document.getElementById('post-media-preview-area');
+  if (previewArea) previewArea.style.display = 'none';
+  const label = document.getElementById('active-media-label');
+  if (label) label.textContent = '';
+}
+
+// Media handlers for comments
+function triggerCommentFile(postId, type) {
+  const inp = document.getElementById(`comment-file-${type}-${postId}`);
+  if (inp) inp.click();
+}
+
+function handleCommentFileSelected(postId, input, type) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  commentAttachments[postId] = { file, type, name: file.name };
+
+  const previewBar = document.getElementById(`comment-preview-bar-${postId}`);
+  const previewName = document.getElementById(`comment-preview-name-${postId}`);
+  const previewIcon = document.getElementById(`comment-preview-icon-${postId}`);
+
+  if (previewBar && previewName && previewIcon) {
+    previewName.textContent = `${file.name} (${type})`;
+    if (type === 'PHOTO') previewIcon.className = 'fa-solid fa-image';
+    else if (type === 'VIDEO') previewIcon.className = 'fa-solid fa-video';
+    else if (type === 'AUDIO') previewIcon.className = 'fa-solid fa-music';
+    previewBar.style.display = 'flex';
+  }
+}
+
+function clearCommentAttachment(postId) {
+  delete commentAttachments[postId];
+  const previewBar = document.getElementById(`comment-preview-bar-${postId}`);
+  if (previewBar) previewBar.style.display = 'none';
+  ['image', 'video', 'audio'].forEach(t => {
+    const inp = document.getElementById(`comment-file-${t}-${postId}`);
+    if (inp) inp.value = '';
+  });
+}
+
 function renderPosts() {
   const container = document.getElementById('posts-feed-container');
   if (!container) return;
@@ -266,19 +409,98 @@ function renderPosts() {
   container.innerHTML = filtered.map(p => {
     const isLiked = p.reactions && p.reactions['LIKE'] && p.reactions['LIKE'].includes(state.currentUser?.id);
     const timeFormatted = formatTimestamp(p.timestamp);
-    const commentsList = (p.comments || []).map(c => `
-      <div class="comment-item">
-        <div onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
-          ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
-        </div>
-        <div class="comment-bubble">
-          <div class="comment-author" onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
-            ${escapeHtml(c.userName)} <span class="role-tag ${c.userRole}">${getRoleLabel(c.userRole)}</span>
+
+    // Auto-detect YouTube embed if not explicitly saved
+    let embedUrl = p.embedUrl || '';
+    if (!embedUrl) {
+      embedUrl = extractYoutubeEmbed(p.description) || extractYoutubeEmbed(p.title) || '';
+    }
+
+    const commentsList = (p.comments || []).map(c => {
+      let commentMediaHtml = '';
+      if (c.mediaUri) {
+        const isAudio = c.mediaType === 'AUDIO' || !!c.mediaUri.match(/\.(mp3|m4a|wav|ogg|aac|flac)$/i);
+        const isVideo = c.mediaType === 'VIDEO' || !!c.mediaUri.match(/\.(mp4|webm|mov|m4v|3gp|mkv)$/i);
+        if (isAudio) {
+          commentMediaHtml = `
+            <div style="margin-top: 6px; background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 8px; padding: 6px 10px; max-width: 290px;">
+              <div style="font-size: 11px; font-weight: 700; color: #1E40AF; margin-bottom: 4px;">
+                <i class="fa-solid fa-music"></i> Lampiran Audio
+              </div>
+              <audio controls src="${escapeHtml(c.mediaUri)}" style="width: 100%; height: 32px; outline: none;"></audio>
+            </div>
+          `;
+        } else if (isVideo) {
+          commentMediaHtml = `
+            <div style="margin-top: 6px; border-radius: 8px; overflow: hidden; max-width: 320px; background: #000;">
+              <video controls src="${escapeHtml(c.mediaUri)}" style="width: 100%; max-height: 200px; display: block;"></video>
+            </div>
+          `;
+        } else {
+          commentMediaHtml = `
+            <div style="margin-top: 6px;">
+              <img src="${escapeHtml(c.mediaUri)}" alt="Lampiran komentar" style="max-width: 100%; max-height: 180px; border-radius: 8px; cursor: pointer; object-fit: cover; border: 1px solid #E4E6EB;" onclick="window.open('${escapeHtml(c.mediaUri)}', '_blank')" onerror="this.style.display='none'">
+            </div>
+          `;
+        }
+      }
+
+      return `
+        <div class="comment-item">
+          <div onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
+            ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
           </div>
-          <div class="comment-text">${escapeHtml(c.commentText)}</div>
+          <div class="comment-bubble">
+            <div class="comment-author" onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
+              ${escapeHtml(c.userName)} <span class="role-tag ${c.userRole}">${getRoleLabel(c.userRole)}</span>
+            </div>
+            ${c.commentText ? `<div class="comment-text">${escapeHtml(c.commentText)}</div>` : ''}
+            ${commentMediaHtml}
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    // Post Media Rendering
+    let postMediaHtml = '';
+    if (embedUrl) {
+      postMediaHtml = `
+        <div class="post-media-container" style="margin-top: 10px; border-radius: 12px; overflow: hidden; position: relative; padding-bottom: 56.25%; height: 0; background: #000;">
+          <iframe src="${escapeHtml(embedUrl)}" style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      `;
+    } else if (p.mediaType === 'AUDIO' || (p.mediaUri && p.mediaUri.match(/\.(mp3|m4a|wav|ogg|aac|flac)$/i)) || p.postType === 'AUDIO') {
+      postMediaHtml = `
+        <div class="post-audio-player-card" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 1.5px solid #BFDBFE; border-radius: 14px; padding: 14px; margin-top: 10px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #1877F2; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; font-size: 14px; color: #1E3A8A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${escapeHtml(p.audioTitle || p.title || 'Audio / Musik SDN 4')}
+              </div>
+              <div style="font-size: 12px; color: #3B82F6;">
+                <i class="fa-solid fa-microphone-lines"></i> ${escapeHtml(p.audioArtist || p.uploaderName || 'SDN 4 Putrajawa')}
+              </div>
+            </div>
+          </div>
+          <audio controls src="${escapeHtml(p.mediaUri)}" style="width: 100%; height: 38px; border-radius: 8px; outline: none;"></audio>
+        </div>
+      `;
+    } else if (p.mediaType === 'VIDEO' || (p.mediaUri && p.mediaUri.match(/\.(mp4|webm|mov|m4v|3gp|mkv)$/i)) || p.postType === 'VIDEO') {
+      postMediaHtml = `
+        <div class="post-media-container" style="margin-top: 10px; border-radius: 12px; overflow: hidden; background: #000;">
+          <video controls src="${escapeHtml(p.mediaUri)}" style="width: 100%; max-height: 420px; display: block;"></video>
+        </div>
+      `;
+    } else if (p.mediaUri) {
+      postMediaHtml = `
+        <div class="post-media-container" style="margin-top: 10px; border-radius: 12px; overflow: hidden;">
+          <img src="${escapeHtml(p.mediaUri)}" alt="Media Post" onerror="this.style.display='none'" style="width: 100%; max-height: 450px; object-fit: cover; cursor: pointer;" onclick="window.open('${escapeHtml(p.mediaUri)}', '_blank')">
+        </div>
+      `;
+    }
 
     return `
       <div class="fb-post-card" id="post-card-${p.id}">
@@ -306,11 +528,7 @@ function renderPosts() {
           ${p.category ? `<div class="post-category-tag"><i class="fa-solid fa-tag"></i> ${escapeHtml(p.category)}</div>` : ''}
         </div>
 
-        ${p.mediaUri ? `
-          <div class="post-media-container">
-            <img src="${p.mediaUri}" alt="Media Post" onerror="this.style.display='none'">
-          </div>
-        ` : ''}
+        ${postMediaHtml}
 
         <div class="post-stats">
           <div><i class="fa-solid fa-thumbs-up" style="color: #1877F2;"></i> <span id="like-count-${p.id}">${p.likeCount || 0}</span> Suka</div>
@@ -331,12 +549,41 @@ function renderPosts() {
 
         <div class="post-comments-wrapper">
           <div id="comments-list-${p.id}">${commentsList}</div>
-          <div class="comment-input-row">
-            <div class="avatar-circle my-avatar" style="width: 32px; height: 32px; font-size: 13px; background-color: ${getHexColor(state.currentUser?.avatarColor)}">
-              <i class="fa-solid ${getAvatarIcon(state.currentUser?.avatarIcon)}"></i>
+          
+          <div class="comment-input-area" id="comment-area-${p.id}" style="margin-top: 8px;">
+            <!-- Attachment Preview Chip (hidden until attached) -->
+            <div id="comment-preview-bar-${p.id}" class="comment-attachment-preview" style="display: none; align-items: center; justify-content: space-between; background: #EFF6FF; border: 1.5px dashed #3B82F6; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; font-size: 12px; color: #1D4ED8;">
+              <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                <i id="comment-preview-icon-${p.id}" class="fa-solid fa-paperclip"></i>
+                <span id="comment-preview-name-${p.id}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">Lampiran</span>
+              </div>
+              <button type="button" onclick="clearCommentAttachment(${p.id})" style="background: none; border: none; color: #DC2626; cursor: pointer; font-size: 14px; font-weight: bold;" title="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" class="comment-input-field" id="comment-input-${p.id}" placeholder="Tulis komentar..." onkeypress="handleCommentKeyPress(event, ${p.id})">
-            <button class="comment-send-btn" onclick="sendComment(${p.id})"><i class="fa-solid fa-paper-plane"></i></button>
+
+            <div class="comment-input-row" style="display: flex; align-items: center; gap: 6px;">
+              <div class="avatar-circle my-avatar" style="width: 32px; height: 32px; font-size: 13px; background-color: ${getHexColor(state.currentUser?.avatarColor)}">
+                <i class="fa-solid ${getAvatarIcon(state.currentUser?.avatarIcon)}"></i>
+              </div>
+              <input type="text" class="comment-input-field" id="comment-input-${p.id}" placeholder="Tulis komentar atau lampirkan media..." onkeypress="handleCommentKeyPress(event, ${p.id})" style="flex: 1;">
+              
+              <!-- Media attachment buttons in comment -->
+              <button type="button" class="fb-icon-btn" onclick="triggerCommentFile(${p.id}, 'image')" title="Lampirkan Foto" style="width: 32px; height: 32px; color: #10B981;">
+                <i class="fa-solid fa-camera"></i>
+              </button>
+              <button type="button" class="fb-icon-btn" onclick="triggerCommentFile(${p.id}, 'video')" title="Lampirkan Video" style="width: 32px; height: 32px; color: #EF4444;">
+                <i class="fa-solid fa-video"></i>
+              </button>
+              <button type="button" class="fb-icon-btn" onclick="triggerCommentFile(${p.id}, 'audio')" title="Lampirkan Audio / Rekaman MP3" style="width: 32px; height: 32px; color: #8B5CF6;">
+                <i class="fa-solid fa-microphone-lines"></i>
+              </button>
+
+              <!-- Hidden file inputs for comments -->
+              <input type="file" id="comment-file-image-${p.id}" accept="image/*" style="display: none;" onchange="handleCommentFileSelected(${p.id}, this, 'PHOTO')">
+              <input type="file" id="comment-file-video-${p.id}" accept="video/*, .mp4, .webm, .mov, .m4v" style="display: none;" onchange="handleCommentFileSelected(${p.id}, this, 'VIDEO')">
+              <input type="file" id="comment-file-audio-${p.id}" accept="audio/*, .mp3, .m4a, .wav, .ogg, .aac, .flac" style="display: none;" onchange="handleCommentFileSelected(${p.id}, this, 'AUDIO')">
+
+              <button class="comment-send-btn" onclick="sendComment(${p.id})" title="Kirim Komentar"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
           </div>
         </div>
       </div>
@@ -357,7 +604,8 @@ async function createNewPost(e) {
   if (res.status) {
     closeModal('createPostModal');
     form.reset();
-    document.getElementById('post-image-preview').style.display = 'none';
+    clearPostMedia();
+    cancelYtEmbed();
     fetchPosts();
     fetchNotifications();
   } else {
@@ -382,12 +630,19 @@ async function toggleLikePost(postId) {
 
 async function sendComment(postId) {
   const input = document.getElementById(`comment-input-${postId}`);
-  const text = input.value.trim();
-  if (!text) return;
+  const text = input ? input.value.trim() : '';
+  const attachment = commentAttachments[postId];
+
+  if (!text && !attachment) return;
 
   const formData = new FormData();
   formData.append('postId', postId);
   formData.append('commentText', text);
+
+  if (attachment) {
+    formData.append('commentMediaFile', attachment.file);
+    formData.append('mediaType', attachment.type);
+  }
 
   const res = await apiRequest('posts.php?action=add_comment', {
     method: 'POST',
@@ -395,8 +650,11 @@ async function sendComment(postId) {
   });
 
   if (res.status) {
-    input.value = '';
+    if (input) input.value = '';
+    clearCommentAttachment(postId);
     fetchPosts();
+  } else {
+    alert(res.message || 'Gagal mengirim komentar');
   }
 }
 
@@ -1346,3 +1604,10 @@ function closeModal(id) {
   const m = document.getElementById(id);
   if (m) m.classList.remove('active');
 }
+
+// Close modal when clicking overlay background
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.classList && e.target.classList.contains('fb-modal-overlay')) {
+    e.target.classList.remove('active');
+  }
+});

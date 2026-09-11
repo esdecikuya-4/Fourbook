@@ -312,16 +312,16 @@ session_start();
 
   <!-- MODAL: CREATE POST -->
   <div id="createPostModal" class="fb-modal-overlay">
-    <div class="fb-modal-content">
+    <div class="fb-modal-content" style="max-width: 520px;">
       <div class="modal-header">
-        <div class="modal-title">Buat Postingan Baru</div>
+        <div class="modal-title"><i class="fa-solid fa-pen-to-square" style="color: #1877F2;"></i> Buat Postingan Fourbook</div>
         <button class="modal-close-btn" onclick="closeModal('createPostModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form id="create-post-form" onsubmit="createNewPost(event)">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Judul Postingan (Opsional)</label>
-            <input type="text" name="title" class="form-input" placeholder="Contoh: Praktikum IPA Hari Ini">
+            <input type="text" name="title" id="create-post-title" class="form-input" placeholder="Contoh: Lagu Mars SDN 4 / Praktikum IPA">
           </div>
           <div class="form-group">
             <label class="form-label">Kategori</label>
@@ -331,19 +331,68 @@ session_start();
               <option value="Kesenian">Kesenian</option>
               <option value="Pengumuman">Pengumuman</option>
               <option value="Olahraga">Olahraga</option>
+              <option value="Pramuka">Pramuka</option>
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">Isi Postingan</label>
-            <textarea name="description" class="form-textarea" rows="4" placeholder="Ceritakan kegiatan, pengalaman, atau informasi..." required></textarea>
+            <textarea name="description" id="create-post-desc" class="form-textarea" rows="3" placeholder="Apa yang ingin Anda bagikan? (Tempel tautan YouTube di sini untuk otomatis ter-embed)" oninput="handlePostDescInput(this.value)" required></textarea>
           </div>
+
+          <!-- YouTube Embed Detected Live Box -->
+          <div id="post-yt-detect-box" style="display: none; background: #FEF2F2; border: 1.5px solid #FCA5A5; border-radius: 10px; padding: 10px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; color: #DC2626; font-weight: 700; font-size: 12.5px; margin-bottom: 8px;">
+              <span><i class="fa-brands fa-youtube" style="font-size: 16px; margin-right: 4px;"></i> Video YouTube Terdeteksi (Disematkan Otomatis)</span>
+              <button type="button" onclick="cancelYtEmbed()" style="background:none; border:none; color:#DC2626; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="post-yt-preview-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000;">
+              <iframe id="post-yt-iframe" src="" style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <!-- Media Selector Bar (Photo, Video, Audio, YouTube) -->
           <div class="form-group">
-            <label class="form-label">Lampirkan Foto/Gambar (Opsional)</label>
-            <input type="file" name="mediaFile" accept="image/*" class="form-input" onchange="previewPostImage(event)">
-            <img id="post-image-preview" src="#" alt="Preview" style="display: none; width: 100%; border-radius: 8px; margin-top: 8px; max-height: 200px; object-fit: cover;">
+            <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Tambahkan Media:</span>
+              <span id="active-media-label" style="font-size: 11.5px; color: #1877F2; font-weight: 700;"></span>
+            </label>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+              <button type="button" class="btn-fb-secondary" style="padding: 8px 4px; font-size: 11.5px; text-align: center;" onclick="triggerPostFileInput('image')">
+                <i class="fa-solid fa-image" style="color: #10B981; display: block; font-size: 16px; margin-bottom: 3px;"></i> Foto
+              </button>
+              <button type="button" class="btn-fb-secondary" style="padding: 8px 4px; font-size: 11.5px; text-align: center;" onclick="triggerPostFileInput('video')">
+                <i class="fa-solid fa-video" style="color: #EF4444; display: block; font-size: 16px; margin-bottom: 3px;"></i> Video
+              </button>
+              <button type="button" class="btn-fb-secondary" style="padding: 8px 4px; font-size: 11.5px; text-align: center;" onclick="triggerPostFileInput('audio')">
+                <i class="fa-solid fa-music" style="color: #8B5CF6; display: block; font-size: 16px; margin-bottom: 3px;"></i> Audio/MP3
+              </button>
+              <button type="button" class="btn-fb-secondary" style="padding: 8px 4px; font-size: 11.5px; text-align: center;" onclick="toggleEmbedLinkInput()">
+                <i class="fa-brands fa-youtube" style="color: #DC2626; display: block; font-size: 16px; margin-bottom: 3px;"></i> YouTube
+              </button>
+            </div>
+
+            <!-- Embed Link Input Field -->
+            <div id="post-embed-input-box" style="display: none; margin-top: 8px;">
+              <input type="url" name="embedUrl" id="post-embed-url" class="form-input" placeholder="Tempel URL YouTube (contoh: https://www.youtube.com/watch?v=...)" oninput="handleEmbedUrlInput(this.value)">
+            </div>
+
+            <!-- Hidden File Input for Post Media -->
+            <input type="file" name="mediaFile" id="post-media-file-input" style="display: none;" onchange="handlePostMediaSelected(this)">
           </div>
-          <button type="submit" class="btn-fb-primary" style="height: 42px; width: 100%; font-size: 14px; margin-top: 6px;">
-            <i class="fa-solid fa-paper-plane"></i> Bagikan Postingan
+
+          <!-- Media Live Previews -->
+          <div id="post-media-preview-area" style="display: none; margin-top: 8px; position: relative;">
+            <button type="button" onclick="clearPostMedia()" style="position: absolute; top: 8px; right: 8px; z-index: 10; background: rgba(0,0,0,0.75); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Hapus Media"><i class="fa-solid fa-xmark"></i></button>
+            <img id="post-preview-img" src="#" alt="Preview" style="display: none; width: 100%; border-radius: 8px; max-height: 220px; object-fit: cover;">
+            <video id="post-preview-video" controls src="#" style="display: none; width: 100%; border-radius: 8px; max-height: 220px; background: #000;"></video>
+            <div id="post-preview-audio-card" style="display: none; background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 10px; padding: 12px;">
+              <div style="font-weight: 700; font-size: 13px; color: #1E40AF; margin-bottom: 6px;"><i class="fa-solid fa-music"></i> Audio Terpilih: <span id="post-preview-audio-name"></span></div>
+              <audio id="post-preview-audio" controls src="#" style="width: 100%; height: 36px;"></audio>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-fb-primary" style="height: 44px; width: 100%; font-size: 14px; margin-top: 14px; font-weight: 700;">
+            <i class="fa-solid fa-paper-plane"></i> Bagikan ke Fourbook
           </button>
         </div>
       </form>
