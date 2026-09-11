@@ -95,24 +95,6 @@ session_start();
         </form>
       </div>
 
-      <!-- WEB VERSION ACCESS BANNER -->
-      <a href="https://balallica.my.id" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block; margin-top: 14px;">
-        <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #60A5FA; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #1D4ED8; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; border: 1px solid #93C5FD;">
-              <i class="fa-solid fa-globe"></i>
-            </div>
-            <div>
-              <div style="color: #ffffff; font-size: 13px; font-weight: 700;">Klik Buat Akses Versi Web</div>
-              <div style="color: #93C5FD; font-size: 11px; font-weight: 600;">balallica.my.id</div>
-            </div>
-          </div>
-          <div style="background: #3B82F6; color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka
-          </div>
-        </div>
-      </a>
-
       <!-- ATTRIBUTION & SCHOOL BADGE FOOTER -->
       <div style="margin-top: 14px; padding: 10px 14px; background: rgba(241, 245, 249, 0.9); border-radius: 12px; text-align: center; border: 1px solid #CBD5E1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
         <div style="font-size: 13px; font-weight: 800; color: #1E293B;">
