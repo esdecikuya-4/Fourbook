@@ -104,6 +104,24 @@ session_start();
           <i class="fa-solid fa-school"></i> SDN 4 PUTRAJAWA &bull; Garut, Indonesia
         </div>
       </div>
+
+      <!-- DOWNLOAD FOURBOOK ANDROID APK MENU (MENU PALING BAWAH) -->
+      <a href="fourbook.apk" download="fourbook.apk" style="text-decoration: none; display: block; margin-top: 12px;">
+        <div style="background: linear-gradient(135deg, #059669 0%, #10B981 100%); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #34D399; box-shadow: 0 4px 14px rgba(16,185,129,0.25); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #047857; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 20px; border: 1.5px solid #6EE7B7; flex-shrink: 0;">
+              <i class="fa-brands fa-android"></i>
+            </div>
+            <div style="text-align: left;">
+              <div style="color: #ffffff; font-size: 13.5px; font-weight: 800; letter-spacing: -0.2px;">Download Fourbook Android</div>
+              <div style="color: #D1FAE5; font-size: 11px; font-weight: 600;">Klik untuk unduh langsung file APK HP</div>
+            </div>
+          </div>
+          <div style="background: #ffffff; color: #047857; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0;">
+            <i class="fa-solid fa-download"></i> Unduh APK
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 
