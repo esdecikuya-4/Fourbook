@@ -58,6 +58,7 @@ fun FacebookPostCard(
     allUsers: List<UserEntity> = emptyList(),
     viewModel: GalleryViewModel,
     onPhotoClick: (PhotoEntity) -> Unit,
+    onUserClick: ((Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -217,10 +218,15 @@ fun FacebookPostCard(
                         avatarColor = photo.uploaderAvatarColor,
                         avatarIcon = photo.uploaderAvatarIcon,
                         customPhotoUri = photo.uploaderCustomPhotoUri,
-                        size = 44.dp
+                        size = 44.dp,
+                        modifier = Modifier
+                            .clickable { onUserClick?.invoke(photo.uploaderId) }
+                            .testTag("post_author_avatar_${photo.id}")
                     )
 
-                    Column {
+                    Column(
+                        modifier = Modifier.clickable { onUserClick?.invoke(photo.uploaderId) }
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -229,7 +235,8 @@ fun FacebookPostCard(
                                 text = photo.uploaderName,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.testTag("post_author_name_${photo.id}")
                             )
                             RoleBadge(role = photo.uploaderRole)
                         }
@@ -849,7 +856,8 @@ fun FacebookPostCard(
                                     currentUserId = currentUser?.id ?: 0L,
                                     currentUserRole = currentUser?.role ?: "",
                                     onDelete = { viewModel.deleteComment(comment) },
-                                    onEdit = { newText -> viewModel.updateComment(comment, newText) }
+                                    onEdit = { newText -> viewModel.updateComment(comment, newText) },
+                                    onUserClick = onUserClick
                                 )
                             }
                         }
@@ -947,7 +955,8 @@ fun PostCommentBubble(
     currentUserId: Long,
     currentUserRole: String,
     onDelete: () -> Unit,
-    onEdit: (String) -> Unit
+    onEdit: (String) -> Unit,
+    onUserClick: ((Long) -> Unit)? = null
 ) {
     val isTeacherComment = comment.userRole == UserRole.WALI_KELAS.name
     val canModify = currentUserId == comment.userId || currentUserRole == UserRole.WALI_KELAS.name
@@ -1044,7 +1053,10 @@ fun PostCommentBubble(
             avatarColor = comment.userAvatarColor,
             avatarIcon = if (isTeacherComment) "teacher" else "star",
             customPhotoUri = comment.userCustomPhotoUri,
-            size = 34.dp
+            size = 34.dp,
+            modifier = Modifier
+                .clickable { onUserClick?.invoke(comment.userId) }
+                .testTag("comment_author_avatar_${comment.id}")
         )
 
         Column(modifier = Modifier.weight(1f)) {
@@ -1059,13 +1071,15 @@ fun PostCommentBubble(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.clickable { onUserClick?.invoke(comment.userId) }
                     ) {
                         Text(
                             text = comment.userName,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
-                            color = authorTextColor
+                            color = authorTextColor,
+                            modifier = Modifier.testTag("comment_author_name_${comment.id}")
                         )
                         RoleBadge(role = comment.userRole)
                     }

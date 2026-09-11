@@ -408,21 +408,27 @@ fun PhotoDetailScreen(
                             avatarColor = photo.uploaderAvatarColor,
                             avatarIcon = photo.uploaderAvatarIcon,
                             customPhotoUri = photo.uploaderCustomPhotoUri,
-                            size = 44.dp
+                            size = 44.dp,
+                            modifier = Modifier
+                                .clickable { viewModel.showMemberProfileById(photo.uploaderId) }
+                                .testTag("detail_uploader_avatar")
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        Column {
+                        Column(
+                            modifier = Modifier.clickable { viewModel.showMemberProfileById(photo.uploaderId) }
+                        ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = photo.uploaderName,
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.testTag("detail_uploader_name")
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 RoleBadge(photo.uploaderRole)
                             }
                             Text(
-                                text = "Pengunggah Foto",
+                                text = "Pengunggah Foto • Klik untuk profil / tambah teman",
                                 fontSize = 11.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -514,7 +520,8 @@ fun PhotoDetailScreen(
                         currentUserId = currentUser?.id ?: 0L,
                         canModify = currentUser != null && (currentUser!!.id == comment.userId || currentUser!!.role == UserRole.WALI_KELAS.name),
                         onDelete = { viewModel.deleteComment(comment) },
-                        onEdit = { newText -> viewModel.updateComment(comment, newText) }
+                        onEdit = { newText -> viewModel.updateComment(comment, newText) },
+                        onUserClick = { userId -> viewModel.showMemberProfileById(userId) }
                     )
                 }
             }
@@ -528,7 +535,8 @@ fun CommentItem(
     currentUserId: Long,
     canModify: Boolean,
     onDelete: () -> Unit,
-    onEdit: (String) -> Unit
+    onEdit: (String) -> Unit,
+    onUserClick: (Long) -> Unit = {}
 ) {
     val formattedTime = remember(comment.createdAt) {
         val sdf = SimpleDateFormat("d MMM, HH:mm", Locale("id", "ID"))
@@ -623,7 +631,10 @@ fun CommentItem(
             avatarColor = comment.userAvatarColor,
             avatarIcon = if (isTeacherComment) "teacher" else "star",
             customPhotoUri = comment.userCustomPhotoUri,
-            size = 32.dp
+            size = 32.dp,
+            modifier = Modifier
+                .clickable { onUserClick(comment.userId) }
+                .testTag("detail_comment_avatar_${comment.id}")
         )
         Spacer(modifier = Modifier.width(10.dp))
         Surface(
@@ -638,12 +649,16 @@ fun CommentItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { onUserClick(comment.userId) }
+                    ) {
                         Text(
                             text = comment.userName,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = authorTextColor
+                            color = authorTextColor,
+                            modifier = Modifier.testTag("detail_comment_author_${comment.id}")
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         RoleBadge(comment.userRole)

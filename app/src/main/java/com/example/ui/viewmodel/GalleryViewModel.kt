@@ -479,9 +479,34 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         _showAdminJournalManager.value = show
     }
 
+    // Selected Member Profile for Add Friend & Profile Inspection Dialog
+    private val _selectedMemberProfile = MutableStateFlow<UserEntity?>(null)
+    val selectedMemberProfile: StateFlow<UserEntity?> = _selectedMemberProfile.asStateFlow()
+
+    fun showMemberProfile(user: UserEntity?) {
+        _selectedMemberProfile.value = user
+    }
+
+    fun showMemberProfileById(userId: Long) {
+        val found = allUsers.value.find { it.id == userId }
+        if (found != null) {
+            _selectedMemberProfile.value = found
+        } else {
+            viewModelScope.launch {
+                val user = repository.getUserById(userId)
+                _selectedMemberProfile.value = user
+            }
+        }
+    }
+
+    fun dismissMemberProfile() {
+        _selectedMemberProfile.value = null
+    }
+
     fun openChatWith(recipient: UserEntity?) {
         _activeChatRecipient.value = recipient
         _showChatConversationSheet.value = true
+        _activeTab.value = MainTab.PESAN
         // Mark as read if user is logged in
         val user = _currentUser.value
         if (user != null && recipient != null) {

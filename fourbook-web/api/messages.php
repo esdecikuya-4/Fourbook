@@ -101,8 +101,10 @@ if ($action === 'send_message') {
         'senderRole' => $currentUser['role'],
         'senderAvatarColor' => $currentUser['avatarColor'],
         'senderAvatarIcon' => $currentUser['avatarIcon'],
+        'senderPhotoUri' => $currentUser['customPhotoUri'] ?? '',
         'recipientId' => $recipient['id'],
         'recipientName' => $recipient['fullName'],
+        'recipientPhotoUri' => $recipient['customPhotoUri'] ?? '',
         'messageText' => $text,
         'timestamp' => round(microtime(true) * 1000),
         'isRead' => false
@@ -122,6 +124,7 @@ if ($action === 'send_message') {
         'senderRole' => $currentUser['role'],
         'senderAvatarColor' => $currentUser['avatarColor'],
         'senderAvatarIcon' => $currentUser['avatarIcon'],
+        'senderPhotoUri' => $currentUser['customPhotoUri'] ?? '',
         'type' => 'MESSAGE',
         'title' => 'Pesan Baru dari ' . $currentUser['fullName'],
         'message' => mb_substr($text, 0, 50),

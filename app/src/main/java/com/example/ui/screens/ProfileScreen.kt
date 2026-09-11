@@ -612,7 +612,8 @@ fun ProfileScreen(
                         currentUser = user,
                         comments = emptyList(),
                         viewModel = viewModel,
-                        onPhotoClick = { viewModel.selectPhoto(photo) }
+                        onPhotoClick = { viewModel.selectPhoto(photo) },
+                        onUserClick = { userId -> viewModel.showMemberProfileById(userId) }
                     )
                 }
             }

@@ -268,9 +268,13 @@ function renderPosts() {
     const timeFormatted = formatTimestamp(p.timestamp);
     const commentsList = (p.comments || []).map(c => `
       <div class="comment-item">
-        ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
+        <div onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
+          ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
+        </div>
         <div class="comment-bubble">
-          <div class="comment-author">${escapeHtml(c.userName)} <span class="role-tag ${c.userRole}">${getRoleLabel(c.userRole)}</span></div>
+          <div class="comment-author" onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
+            ${escapeHtml(c.userName)} <span class="role-tag ${c.userRole}">${getRoleLabel(c.userRole)}</span>
+          </div>
           <div class="comment-text">${escapeHtml(c.commentText)}</div>
         </div>
       </div>
@@ -279,7 +283,7 @@ function renderPosts() {
     return `
       <div class="fb-post-card" id="post-card-${p.id}">
         <div class="post-header">
-          <div class="post-user-info">
+          <div class="post-user-info" onclick="showUserProfileModal(${p.uploaderId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
             ${renderAvatarHtml(p.uploaderPhotoUri, p.uploaderAvatarColor, p.uploaderAvatarIcon, 40, 16)}
             <div>
               <div class="post-author-name">
@@ -495,7 +499,7 @@ function renderFriendsView() {
 
     return `
       <div class="member-card">
-        <div class="member-card-top">
+        <div class="member-card-top" onclick="showUserProfileModal(${u.id})" style="cursor: pointer;" title="Lihat profil / detail">
           ${renderAvatarHtml(u.customPhotoUri, u.avatarColor, u.avatarIcon, 50, 20)}
           <div style="flex: 1;">
             <div style="font-weight: 700; font-size: 15px;">
@@ -563,6 +567,127 @@ function setFriendsFilter(filter) {
 function handleFriendsSearch(query) {
   state.searchQuery = query;
   renderFriendsView();
+}
+
+function showUserProfileModal(userId) {
+  const user = state.allUsers.find(u => u.id === Number(userId));
+  if (!user) return;
+
+  const myId = state.currentUser?.id || 0;
+  const isMe = user.id === myId;
+  const friendship = state.friendships.find(f => 
+    (f.senderId === myId && f.receiverId === user.id) ||
+    (f.senderId === user.id && f.receiverId === myId)
+  );
+
+  const modalTitle = document.getElementById('upm-title');
+  if (modalTitle) {
+    modalTitle.innerHTML = `<i class="fa-solid fa-address-card" style="color: #1877F2;"></i> Profil ${escapeHtml(user.fullName)}`;
+  }
+
+  const container = document.getElementById('upm-content');
+  if (!container) return;
+
+  let friendActionBtn = '';
+  if (!isMe) {
+    if (!friendship) {
+      friendActionBtn = `
+        <button class="btn-fb-primary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="sendFriendRequestFromModal(${user.id})">
+          <i class="fa-solid fa-user-plus"></i> Tambah Teman
+        </button>
+      `;
+    } else if (friendship.status === 'ACCEPTED') {
+      friendActionBtn = `
+        <button class="btn-fb-outlined" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px; color: #10B981; border-color: #10B981;" onclick="removeFriendshipFromModal(${user.id})">
+          <i class="fa-solid fa-user-check"></i> Berteman (Hapus)
+        </button>
+      `;
+    } else if (friendship.status === 'PENDING' && friendship.senderId === myId) {
+      friendActionBtn = `
+        <button class="btn-fb-secondary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="removeFriendshipFromModal(${user.id})">
+          <i class="fa-solid fa-clock"></i> Batal Permintaan
+        </button>
+      `;
+    } else if (friendship.status === 'PENDING' && friendship.receiverId === myId) {
+      friendActionBtn = `
+        <button class="btn-fb-primary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="acceptFriendRequestFromModal(${user.id})">
+          <i class="fa-solid fa-check"></i> Terima Permintaan
+        </button>
+      `;
+    }
+  }
+
+  // Count user's posts
+  const userPosts = state.posts.filter(p => p.uploaderId === user.id);
+
+  container.innerHTML = `
+    <div style="text-align: center; padding: 10px 0 16px;">
+      <div style="display: inline-block; margin-bottom: 12px;">
+        ${renderAvatarHtml(user.customPhotoUri, user.avatarColor, user.avatarIcon, 84, 34)}
+      </div>
+      <h3 style="font-size: 18px; font-weight: 800; color: #050505; margin: 0 0 6px;">
+        ${escapeHtml(user.fullName)}
+        ${isMe ? '<span style="background: #1877F2; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 6px; margin-left: 6px; vertical-align: middle;">Saya</span>' : ''}
+      </h3>
+      <div style="display: flex; justify-content: center; gap: 8px; align-items: center; margin-bottom: 8px;">
+        <span class="role-tag ${user.role}">${getRoleLabel(user.role)}</span>
+        <span style="font-size: 12px; color: #65676B; background: #F0F2F5; padding: 2px 8px; border-radius: 6px;">${escapeHtml(user.studentNumber || 'SDN 4 Putrajawa')}</span>
+      </div>
+      ${user.bio ? `
+        <p style="font-size: 13px; color: #4B5563; background: #F8FAFC; padding: 8px 14px; border-radius: 10px; border: 1px solid #E2E8F0; margin: 8px 0 14px; font-style: italic;">
+          "${escapeHtml(user.bio)}"
+        </p>
+      ` : ''}
+
+      <div style="display: flex; gap: 10px; margin-top: 14px;">
+        ${friendActionBtn}
+        ${!isMe ? `
+          <button class="btn-fb-secondary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="closeModal('userProfileModal'); openChatWithUser(${user.id});">
+            <i class="fa-solid fa-comment-dots" style="color: #1877F2;"></i> Kirim Pesan
+          </button>
+        ` : `
+          <button class="btn-fb-secondary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="closeModal('userProfileModal'); switchTab('profil');">
+            <i class="fa-solid fa-user-pen" style="color: #1877F2;"></i> Lihat Profil Saya
+          </button>
+        `}
+      </div>
+
+      <div style="margin-top: 20px; border-top: 1px solid #E4E6EB; padding-top: 14px; text-align: left;">
+        <div style="font-weight: 700; font-size: 13px; color: #050505; margin-bottom: 8px;">
+          <i class="fa-solid fa-images" style="color: #1877F2;"></i> Postingan (${userPosts.length})
+        </div>
+        ${userPosts.length === 0 ? `
+          <p style="font-size: 12px; color: #8A8D91; font-style: italic;">Belum ada postingan dari ${escapeHtml(user.fullName)}.</p>
+        ` : `
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto;">
+            ${userPosts.map(p => `
+              <div style="padding: 8px 10px; background: #F0F2F5; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="closeModal('userProfileModal'); switchTab('beranda'); const el = document.getElementById('post-card-${p.id}'); if (el) el.scrollIntoView({behavior: 'smooth'});">
+                <span style="font-weight: 600; color: #050505; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px;">${escapeHtml(p.title || p.description || 'Foto Kegiatan')}</span>
+                <span style="font-size: 10px; color: #65676B;">${formatTimestamp(p.timestamp)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+
+  openModal('userProfileModal');
+}
+
+async function sendFriendRequestFromModal(targetId) {
+  await sendFriendRequest(targetId);
+  showUserProfileModal(targetId);
+}
+
+async function acceptFriendRequestFromModal(targetId) {
+  await acceptFriendRequest(targetId);
+  showUserProfileModal(targetId);
+}
+
+async function removeFriendshipFromModal(targetId) {
+  await removeFriendship(targetId);
+  showUserProfileModal(targetId);
 }
 
 // ----------------------------------------------------
@@ -756,6 +881,16 @@ function renderChatWindow(silent = false) {
     `;
   }).join('');
 
+  if (silent) {
+    const chatBody = document.getElementById('chat-body-scroll');
+    if (chatBody) {
+      const wasAtBottom = chatBody.scrollHeight - chatBody.scrollTop <= chatBody.clientHeight + 60;
+      chatBody.innerHTML = messagesHtml;
+      if (wasAtBottom) chatBody.scrollTop = chatBody.scrollHeight;
+      return;
+    }
+  }
+
   container.innerHTML = `
     <div class="chat-window">
       <div class="chat-header">
@@ -763,10 +898,12 @@ function renderChatWindow(silent = false) {
           <button class="fb-icon-btn" style="width: 32px; height: 32px;" onclick="closeChatWindow()">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
-          ${renderAvatarHtml(partner.customPhotoUri, partner.avatarColor, partner.avatarIcon, 38, 14)}
-          <div>
-            <div style="font-weight: 700; font-size: 14px;">${escapeHtml(partner.fullName)}</div>
-            <div style="font-size: 10px; color: #10B981;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> ${getRoleLabel(partner.role)}</div>
+          <div onclick="showUserProfileModal(${partner.id})" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="Lihat profil ${escapeHtml(partner.fullName)}">
+            ${renderAvatarHtml(partner.customPhotoUri, partner.avatarColor, partner.avatarIcon, 38, 14)}
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">${escapeHtml(partner.fullName)}</div>
+              <div style="font-size: 10px; color: #10B981;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> ${getRoleLabel(partner.role)}</div>
+            </div>
           </div>
         </div>
       </div>

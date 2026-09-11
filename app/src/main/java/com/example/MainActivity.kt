@@ -71,10 +71,14 @@ fun GalleryApp(
     val showAdminJournalManager by viewModel.showAdminJournalManager.collectAsState()
     val unreadMessagesCount by viewModel.unreadMessagesCount.collectAsState()
     val unreadNotificationsCount by viewModel.unreadNotificationsCount.collectAsState()
+    val selectedMemberProfile by viewModel.selectedMemberProfile.collectAsState()
+    val allPhotos by viewModel.allPhotos.collectAsState()
+    val myFriendships by viewModel.myFriendships.collectAsState()
 
     // Handle system back press intelligently
-    BackHandler(enabled = selectedPhoto != null || filterStudentId != null || showAdminQuizManager || showAdminJournalManager || activeTab != MainTab.BERANDA) {
+    BackHandler(enabled = selectedMemberProfile != null || selectedPhoto != null || filterStudentId != null || showAdminQuizManager || showAdminJournalManager || activeTab != MainTab.BERANDA) {
         when {
+            selectedMemberProfile != null -> viewModel.dismissMemberProfile()
             selectedPhoto != null -> viewModel.selectPhoto(null)
             filterStudentId != null -> viewModel.setFilterStudent(null)
             showAdminQuizManager -> viewModel.setShowAdminQuizManager(false)
@@ -419,6 +423,28 @@ fun GalleryApp(
                 quiz = quiz,
                 viewModel = viewModel,
                 onDismiss = { viewModel.setActiveQuizToTake(null) }
+            )
+        }
+
+        // Member Profile & Add Friend Dialog
+        selectedMemberProfile?.let { member ->
+            MemberProfileDetailDialog(
+                member = member,
+                currentUser = currentUser,
+                allPhotos = allPhotos,
+                myFriendships = myFriendships,
+                onDismiss = { viewModel.dismissMemberProfile() },
+                onSendFriendRequest = { viewModel.sendFriendRequest(member) },
+                onAcceptFriendRequest = { viewModel.acceptFriendRequest(member) },
+                onRemoveFriendship = { viewModel.removeOrCancelFriendship(member.id) },
+                onOpenChat = {
+                    viewModel.dismissMemberProfile()
+                    viewModel.openChatWith(member)
+                },
+                onSelectPhoto = { photo ->
+                    viewModel.dismissMemberProfile()
+                    viewModel.selectPhoto(photo)
+                }
             )
         }
     }

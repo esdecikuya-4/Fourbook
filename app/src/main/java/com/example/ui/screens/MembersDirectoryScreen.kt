@@ -47,7 +47,6 @@ fun MembersDirectoryScreen(
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedTabFilter by remember { mutableStateOf("SEMUA") } // SEMUA, TEMAN, PERMINTAAN
-    var selectedMemberProfile by remember { mutableStateOf<UserEntity?>(null) }
 
     val pendingRequestsCount = remember(myFriendships, currentUser) {
         val myId = currentUser?.id ?: 0L
@@ -263,7 +262,7 @@ fun MembersDirectoryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            selectedMemberProfile = user
+                            viewModel.showMemberProfile(user)
                         }
                         .testTag("member_card_${user.id}"),
                     shape = RoundedCornerShape(16.dp),
@@ -375,7 +374,7 @@ fun MembersDirectoryScreen(
                                     }
                                     friendship.status == FriendshipStatus.ACCEPTED.name -> {
                                         OutlinedButton(
-                                            onClick = { selectedMemberProfile = user },
+                                            onClick = { viewModel.showMemberProfile(user) },
                                             shape = RoundedCornerShape(8.dp),
                                             colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF10B981)),
                                             border = BorderStroke(1.dp, Color(0xFF10B981)),
@@ -457,34 +456,6 @@ fun MembersDirectoryScreen(
                 }
             }
         }
-    }
-
-    // Fullscreen / Modal Profile Dialog for selected member (including Admin Pak Teten & all students)
-    selectedMemberProfile?.let { member ->
-        MemberProfileDetailDialog(
-            member = member,
-            currentUser = currentUser,
-            allPhotos = allPhotos,
-            myFriendships = myFriendships,
-            onDismiss = { selectedMemberProfile = null },
-            onSendFriendRequest = {
-                viewModel.sendFriendRequest(member)
-            },
-            onAcceptFriendRequest = {
-                viewModel.acceptFriendRequest(member)
-            },
-            onRemoveFriendship = {
-                viewModel.removeOrCancelFriendship(member.id)
-            },
-            onOpenChat = {
-                selectedMemberProfile = null
-                viewModel.openChatWith(member)
-            },
-            onSelectPhoto = { photo ->
-                selectedMemberProfile = null
-                viewModel.selectPhoto(photo)
-            }
-        )
     }
 }
 

@@ -523,7 +523,20 @@ session_start();
     </div>
   </div>
 
-  <script src="js/app.js?v=20260910c"></script>
+  <!-- MODAL: USER PROFILE & ADD FRIEND -->
+  <div id="userProfileModal" class="fb-modal-overlay">
+    <div class="fb-modal-content" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title" id="upm-title">Profil Pengguna</div>
+        <button class="modal-close-btn" onclick="closeModal('userProfileModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="upm-content">
+        <!-- Profile detail rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js?v=20260910d"></script>
   <script>
     function setPostCategoryFilter(el, cat) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));

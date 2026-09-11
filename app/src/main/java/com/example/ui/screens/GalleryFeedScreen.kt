@@ -639,7 +639,8 @@ fun GalleryFeedScreen(
                         comments = commentsByPhotoId[post.id] ?: emptyList(),
                         allUsers = allUsers,
                         viewModel = viewModel,
-                        onPhotoClick = { viewModel.selectPhoto(it) }
+                        onPhotoClick = { viewModel.selectPhoto(it) },
+                        onUserClick = { userId -> viewModel.showMemberProfileById(userId) }
                     )
                 }
             }
