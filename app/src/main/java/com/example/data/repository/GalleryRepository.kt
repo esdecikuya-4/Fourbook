@@ -6,10 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import com.example.data.local.AppDatabase
 import com.example.data.model.*
-import com.example.data.remote.FourbookApiClient
-import com.example.data.remote.RemoteAuthRequest
-import com.example.data.remote.RemoteCreatePostRequest
-import com.example.data.remote.RemoteRegisterRequest
+import com.example.data.remote.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -356,6 +353,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
 
         // Sync registration with Live Web Server Fourbook balallica.my.id
         try {
+            val hexColor = "0x" + java.lang.Long.toHexString(avatarColor).uppercase()
             FourbookApiClient.service.register(
                 RemoteRegisterRequest(
                     username = cleanUsername,
@@ -363,7 +361,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                     fullName = fullName.trim(),
                     role = role.name,
                     studentNumber = studentNumber.trim(),
-                    avatarColor = avatarColor,
+                    avatarColor = hexColor,
                     avatarIcon = avatarIcon,
                     bio = savedUser.bio
                 )
@@ -416,8 +414,8 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         // 1. Try Live Server Login first if online (balallica.my.id)
         try {
             val response = FourbookApiClient.service.login(RemoteAuthRequest(cleanUsername, cleanPassword))
-            if (response.isSuccessful && response.body()?.success == true) {
-                val remoteUser = response.body()?.user
+            if (response.isSuccessful && (response.body()?.success == true || response.body()?.status == true)) {
+                val remoteUser = response.body()?.user ?: response.body()?.data?.user
                 if (remoteUser != null) {
                     val existing = userDao.getUserByUsername(remoteUser.username.lowercase())
                     val localRole = try {
@@ -425,26 +423,28 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                     } catch (_: Exception) {
                         UserRole.MURID.name
                     }
+                    val userAvatarColor = parseAvatarColor(remoteUser.avatarColor)
                     val syncedUser = if (existing != null) {
                         existing.copy(
                             fullName = remoteUser.fullName,
                             password = cleanPassword,
                             role = localRole,
                             studentNumber = remoteUser.studentNumber ?: existing.studentNumber,
-                            avatarColor = remoteUser.avatarColor,
-                            avatarIcon = remoteUser.avatarIcon,
+                            avatarColor = userAvatarColor,
+                            avatarIcon = remoteUser.avatarIcon ?: existing.avatarIcon,
                             customPhotoUri = remoteUser.customPhotoUri ?: existing.customPhotoUri,
                             bio = remoteUser.bio ?: existing.bio
                         ).also { userDao.updateUser(it) }
                     } else {
                         UserEntity(
+                            id = if (remoteUser.id > 0) remoteUser.id else 0,
                             username = remoteUser.username.lowercase(),
                             password = cleanPassword,
                             fullName = remoteUser.fullName,
                             role = localRole,
                             studentNumber = remoteUser.studentNumber ?: "",
-                            avatarColor = remoteUser.avatarColor,
-                            avatarIcon = remoteUser.avatarIcon,
+                            avatarColor = userAvatarColor,
+                            avatarIcon = remoteUser.avatarIcon ?: "student",
                             customPhotoUri = remoteUser.customPhotoUri ?: "",
                             bio = remoteUser.bio ?: "Warga SDN 4 Putrajawa"
                         ).let { it.copy(id = userDao.insertUser(it)) }
@@ -599,24 +599,42 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
             shareCount = 0
         )
 
-        val id = photoDao.insertPhoto(post)
+        // 1. Ensure remote session with current uploader
+        val isSessionActive = ensureRemoteSession(uploader)
 
-        // Sync new post to Live Web Server balallica.my.id
-        try {
-            FourbookApiClient.service.createPost(
-                RemoteCreatePostRequest(
-                    uploaderId = uploader.id,
-                    uploaderName = uploader.fullName,
-                    uploaderRole = uploader.role,
-                    title = title.trim(),
-                    description = description.trim(),
-                    feeling = feelingOrActivity.trim().ifEmpty { null },
-                    postType = postType.name
+        // 2. Attempt remote post creation on balallica.my.id
+        var remotePostId: Long? = null
+        if (isSessionActive) {
+            try {
+                val hexColor = "0x" + java.lang.Long.toHexString(uploader.avatarColor).uppercase()
+                val createRes = FourbookApiClient.service.createPost(
+                    RemoteCreatePostRequest(
+                        title = title.trim(),
+                        description = description.trim(),
+                        category = category.displayName,
+                        postType = postType.name,
+                        mediaUri = if (imageUri.startsWith("http")) imageUri else "",
+                        uploaderId = uploader.id,
+                        uploaderName = uploader.fullName,
+                        uploaderRole = uploader.role,
+                        uploaderAvatarColor = hexColor,
+                        uploaderAvatarIcon = uploader.avatarIcon
+                    )
                 )
-            )
-        } catch (_: Exception) {
-            // Offline fallback
+                if (createRes.isSuccessful && (createRes.body()?.status == true || createRes.body()?.success == true)) {
+                    remotePostId = createRes.body()?.data?.post?.id
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
+        val postToInsert = if (remotePostId != null && remotePostId > 0) {
+            post.copy(id = remotePostId)
+        } else {
+            post
+        }
+        val id = photoDao.insertPhoto(postToInsert)
 
         // Broadcast notification for new post to class members
         notificationDao.insertNotification(
@@ -720,6 +738,18 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         )
         photoDao.updatePhoto(updatedPhoto)
 
+        // Remote sync reaction
+        try {
+            ensureRemoteSession(UserEntity(id = userId, username = "", password = "", fullName = "", role = UserRole.MURID.name, studentNumber = "", avatarColor = 0L, avatarIcon = ""))
+            FourbookApiClient.service.toggleReaction(
+                RemoteToggleReactionRequest(
+                    postId = photoId,
+                    reaction = reaction.name,
+                    userId = userId
+                )
+            )
+        } catch (_: Exception) {}
+
         if (isNowActive && userId != photo.uploaderId) {
             val reactingUser = userDao.getUserById(userId)
             if (reactingUser != null) {
@@ -792,6 +822,18 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         )
 
         val id = commentDao.insertComment(comment)
+
+        // Remote sync comment
+        try {
+            ensureRemoteSession(user)
+            FourbookApiClient.service.addComment(
+                RemoteAddCommentRequest(
+                    postId = photoId,
+                    commentText = text.trim(),
+                    userId = user.id
+                )
+            )
+        } catch (_: Exception) {}
         val photo = photoDao.getPhotoById(photoId)
         if (photo != null && photo.uploaderId != user.id) {
             notificationDao.insertNotification(
@@ -815,8 +857,17 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
 
     suspend fun deletePhoto(photoId: Long): Result<Unit> = withContext(Dispatchers.IO) {
         try {
+            val photo = photoDao.getPhotoById(photoId)
             commentDao.deleteCommentsForPhoto(photoId)
             photoDao.deletePhotoById(photoId)
+
+            if (photo != null) {
+                try {
+                    FourbookApiClient.service.deletePost(
+                        RemoteDeletePostRequest(postId = photoId, userId = photo.uploaderId)
+                    )
+                } catch (_: Exception) {}
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -899,7 +950,225 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         }
     }
 
+    // ----------------------------------------------------
+    // Live Server Realtime Sync Engine (balallica.my.id)
+    // ----------------------------------------------------
+
+    suspend fun ensureRemoteSession(user: UserEntity): Boolean = withContext(Dispatchers.IO) {
+        try {
+            if (user.id > 0) {
+                val switchRes = FourbookApiClient.service.switchUser(RemoteSwitchUserRequest(user.id))
+                if (switchRes.isSuccessful && (switchRes.body()?.status == true || switchRes.body()?.success == true)) {
+                    return@withContext true
+                }
+            }
+
+            if (user.username.isNotBlank() && user.password.isNotBlank()) {
+                val loginRes = FourbookApiClient.service.login(
+                    RemoteAuthRequest(user.username.lowercase(), user.password)
+                )
+                if (loginRes.isSuccessful && (loginRes.body()?.status == true || loginRes.body()?.success == true)) {
+                    return@withContext true
+                }
+            }
+
+            if (user.username.isNotBlank()) {
+                val hexColor = "0x" + java.lang.Long.toHexString(user.avatarColor).uppercase()
+                val regRes = FourbookApiClient.service.register(
+                    RemoteRegisterRequest(
+                        username = user.username.lowercase(),
+                        password = if (user.password.isNotBlank()) user.password else "123",
+                        fullName = user.fullName,
+                        role = user.role,
+                        studentNumber = user.studentNumber,
+                        avatarColor = hexColor,
+                        avatarIcon = user.avatarIcon,
+                        bio = user.bio
+                    )
+                )
+                return@withContext (regRes.isSuccessful && (regRes.body()?.status == true || regRes.body()?.success == true))
+            }
+            false
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    suspend fun syncRemoteUsers(): Result<Int> = withContext(Dispatchers.IO) {
+        try {
+            val response = FourbookApiClient.service.getAllUsers()
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(Exception("Gagal menghubungi server"))
+            }
+            val remoteUsers = response.body()?.data?.all_users ?: emptyList()
+            var count = 0
+
+            for (ru in remoteUsers) {
+                val cleanUser = ru.username.trim().lowercase()
+                if (cleanUser.isBlank()) continue
+
+                val existing = userDao.getUserByUsername(cleanUser)
+                val parsedColor = parseAvatarColor(ru.avatarColor)
+                val photoUrl = if (ru.customPhotoUri.isNullOrBlank()) "" else if (ru.customPhotoUri.startsWith("http")) ru.customPhotoUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${ru.customPhotoUri.trimStart('/')}"
+
+                if (existing == null) {
+                    val newUser = UserEntity(
+                        id = if (ru.id > 0) ru.id else 0,
+                        username = cleanUser,
+                        password = if (ru.password.isNotBlank()) ru.password else "123",
+                        fullName = if (ru.fullName.isNotBlank()) ru.fullName else cleanUser,
+                        role = if (ru.role.isNotBlank()) ru.role else UserRole.MURID.name,
+                        studentNumber = ru.studentNumber ?: "",
+                        avatarColor = parsedColor,
+                        avatarIcon = if (!ru.avatarIcon.isNullOrBlank()) ru.avatarIcon else "student",
+                        customPhotoUri = photoUrl,
+                        bio = if (!ru.bio.isNullOrBlank()) ru.bio else "Warga SDN 4 Putrajawa"
+                    )
+                    userDao.insertUser(newUser)
+                    count++
+                } else {
+                    val updated = existing.copy(
+                        fullName = if (ru.fullName.isNotBlank()) ru.fullName else existing.fullName,
+                        role = if (ru.role.isNotBlank()) ru.role else existing.role,
+                        studentNumber = ru.studentNumber ?: existing.studentNumber,
+                        avatarColor = parsedColor,
+                        avatarIcon = if (!ru.avatarIcon.isNullOrBlank()) ru.avatarIcon else existing.avatarIcon,
+                        customPhotoUri = if (photoUrl.isNotBlank()) photoUrl else existing.customPhotoUri,
+                        bio = if (!ru.bio.isNullOrBlank()) ru.bio else existing.bio
+                    )
+                    userDao.updateUser(updated)
+                }
+            }
+            Result.success(count)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun syncRemotePosts(): Result<Int> = withContext(Dispatchers.IO) {
+        try {
+            val response = FourbookApiClient.service.getPosts()
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(Exception("Gagal mengambil data"))
+            }
+            val remotePosts = response.body()?.posts ?: response.body()?.data?.posts ?: emptyList()
+            var count = 0
+
+            for (rp in remotePosts) {
+                if (rp.id <= 0) continue
+
+                val existing = photoDao.getPhotoById(rp.id)
+                val mappedCategory = mapRemoteCategory(rp.category)
+                val mappedPostType = mapRemotePostType(rp.postType)
+                val mediaUrl = if (rp.mediaUri.isNullOrBlank()) "" else if (rp.mediaUri.startsWith("http")) rp.mediaUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.mediaUri.trimStart('/')}"
+                val avatarUrl = if (rp.uploaderPhotoUri.isNullOrBlank()) "" else if (rp.uploaderPhotoUri.startsWith("http")) rp.uploaderPhotoUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.uploaderPhotoUri.trimStart('/')}"
+                val parsedColor = parseAvatarColor(rp.uploaderAvatarColor)
+
+                val postEntity = PhotoEntity(
+                    id = rp.id,
+                    title = rp.title ?: "",
+                    description = rp.description ?: "",
+                    category = mappedCategory,
+                    postType = mappedPostType,
+                    imageUri = if (mappedPostType == PostType.PHOTO.name) mediaUrl else "",
+                    videoUri = if (mappedPostType == PostType.VIDEO.name) mediaUrl else "",
+                    audioUri = if (mappedPostType == PostType.AUDIO.name) mediaUrl else "",
+                    audioTitle = if (mappedPostType == PostType.AUDIO.name) (rp.title ?: "") else "",
+                    audioArtist = if (mappedPostType == PostType.AUDIO.name) rp.uploaderName else "",
+                    statusBackgroundKey = existing?.statusBackgroundKey ?: "",
+                    feelingOrActivity = rp.feeling ?: (existing?.feelingOrActivity ?: ""),
+                    uploaderId = rp.uploaderId,
+                    uploaderName = if (rp.uploaderName.isNotBlank()) rp.uploaderName else "Warga SDN 4",
+                    uploaderRole = if (rp.uploaderRole.isNotBlank()) rp.uploaderRole else UserRole.MURID.name,
+                    uploaderAvatarColor = parsedColor,
+                    uploaderAvatarIcon = rp.uploaderAvatarIcon ?: "student",
+                    uploaderCustomPhotoUri = avatarUrl,
+                    createdAt = if (rp.timestamp > 0) rp.timestamp else System.currentTimeMillis(),
+                    likeCount = rp.likeCount,
+                    viewCount = existing?.viewCount ?: 1,
+                    likedByUserIds = existing?.likedByUserIds ?: "[]",
+                    reactionsJson = existing?.reactionsJson ?: "{}",
+                    taggedStudentNames = existing?.taggedStudentNames ?: "",
+                    shareCount = existing?.shareCount ?: 0
+                )
+
+                photoDao.insertPhoto(postEntity)
+                count++
+
+                // Sync comments if any
+                if (!rp.comments.isNullOrEmpty()) {
+                    for (rc in rp.comments) {
+                        val commentPhotoUrl = if (rc.userPhotoUri.isNullOrBlank()) "" else if (rc.userPhotoUri.startsWith("http")) rc.userPhotoUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rc.userPhotoUri.trimStart('/')}"
+                        val commentEntity = CommentEntity(
+                            id = if (rc.id > 0) rc.id else 0,
+                            photoId = rp.id,
+                            userId = rc.userId,
+                            userName = if (rc.userName.isNotBlank()) rc.userName else "Teman",
+                            userRole = if (rc.userRole.isNotBlank()) rc.userRole else UserRole.MURID.name,
+                            userAvatarColor = parseAvatarColor(rc.userAvatarColor),
+                            userCustomPhotoUri = commentPhotoUrl,
+                            text = rc.commentText ?: rc.text ?: "",
+                            createdAt = if (rc.timestamp > 0) rc.timestamp else System.currentTimeMillis()
+                        )
+                        commentDao.insertComment(commentEntity)
+                    }
+                }
+            }
+            Result.success(count)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun syncAll(): Result<Pair<Int, Int>> = withContext(Dispatchers.IO) {
+        try {
+            val userCount = syncRemoteUsers().getOrDefault(0)
+            val postCount = syncRemotePosts().getOrDefault(0)
+            Result.success(Pair(userCount, postCount))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     companion object {
+        fun parseAvatarColor(colorStr: String?): Long {
+            if (colorStr.isNullOrBlank()) return 0xFF1877F2L
+            return try {
+                val clean = colorStr.trim()
+                if (clean.startsWith("0x", ignoreCase = true)) {
+                    clean.substring(2).toLong(16)
+                } else if (clean.startsWith("#")) {
+                    clean.substring(1).toLong(16)
+                } else {
+                    clean.toLongOrNull() ?: 0xFF1877F2L
+                }
+            } catch (_: Exception) {
+                0xFF1877F2L
+            }
+        }
+
+        fun mapRemoteCategory(cat: String?): String {
+            if (cat.isNullOrBlank()) return PhotoCategory.BELAJAR.name
+            return when (cat.trim().lowercase()) {
+                "akademik", "belajar", "kegiatan belajar" -> PhotoCategory.BELAJAR.name
+                "seni", "kesenian", "karya seni", "karya & proyek" -> PhotoCategory.KARYA_SENI.name
+                "olahraga", "olahraga & senam" -> PhotoCategory.OLAHRAGA.name
+                "pramuka", "pramuka & ekskul" -> PhotoCategory.PRAMUKA.name
+                "prestasi", "prestasi & lomba" -> PhotoCategory.PRESTASI.name
+                "acara", "kegiatan bersama", "acara & pentas" -> PhotoCategory.KEGIATAN_BERSAMA.name
+                else -> PhotoCategory.SEMUA.name
+            }
+        }
+
+        fun mapRemotePostType(type: String?): String {
+            if (type.isNullOrBlank()) return PostType.TEXT_STATUS.name
+            return when (type.trim().uppercase()) {
+                "PHOTO", "FOTO" -> PostType.PHOTO.name
+                "VIDEO" -> PostType.VIDEO.name
+                "AUDIO", "MUSIK" -> PostType.AUDIO.name
+                else -> PostType.TEXT_STATUS.name
+            }
+        }
         fun parseLikedUserIds(json: String): List<Long> {
             val clean = json.trim().removeSurrounding("[", "]")
             if (clean.isBlank()) return emptyList()

@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
 import com.example.data.model.*
 import com.example.data.repository.GalleryRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 
@@ -87,6 +89,51 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     private val _currentUser = MutableStateFlow<UserEntity?>(null)
     val currentUser: StateFlow<UserEntity?> = _currentUser.asStateFlow()
+
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
+
+    private val _lastSyncTime = MutableStateFlow(System.currentTimeMillis())
+    val lastSyncTime: StateFlow<Long> = _lastSyncTime.asStateFlow()
+
+    init {
+        startRealtimeSync()
+    }
+
+    fun triggerManualSync() {
+        viewModelScope.launch {
+            _isSyncing.value = true
+            try {
+                repository.syncAll()
+                _lastSyncTime.value = System.currentTimeMillis()
+            } catch (_: Exception) {}
+            _isSyncing.value = false
+        }
+    }
+
+    private fun startRealtimeSync() {
+        viewModelScope.launch {
+            // Initial sync immediately
+            try {
+                _isSyncing.value = true
+                repository.syncAll()
+                _lastSyncTime.value = System.currentTimeMillis()
+            } catch (_: Exception) {}
+            _isSyncing.value = false
+
+            // Realtime polling loop every 5 seconds (synchronized with Web's initPolling)
+            while (isActive) {
+                delay(5000)
+                try {
+                    repository.syncRemotePosts()
+                    repository.syncRemoteUsers()
+                    _lastSyncTime.value = System.currentTimeMillis()
+                } catch (_: Exception) {
+                    // Continue polling on error
+                }
+            }
+        }
+    }
 
     private val _activeTab = MutableStateFlow(MainTab.BERANDA)
     val activeTab: StateFlow<MainTab> = _activeTab.asStateFlow()
@@ -671,6 +718,9 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     fun switchUser(user: UserEntity) {
         _currentUser.value = user
         _showQuickSwitchSheet.value = false
+        viewModelScope.launch {
+            repository.ensureRemoteSession(user)
+        }
     }
 
     fun logout() {

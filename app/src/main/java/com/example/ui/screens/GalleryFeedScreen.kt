@@ -355,6 +355,64 @@ fun GalleryFeedScreen(
                 }
             }
 
+            // 2b. Live Realtime Sync Status Bar with balallica.my.id
+            item {
+                val isSyncing by viewModel.isSyncing.collectAsState()
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 3.dp)
+                        .clickable { viewModel.triggerManualSync() },
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (isSyncing) Color(0xFFEFF6FF) else Color(0xFFF0FDF4),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isSyncing) Color(0xFFBFDBFE) else Color(0xFFBBF7D0)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(if (isSyncing) Color(0xFF3B82F6) else Color(0xFF16A34A))
+                            )
+                            Column {
+                                Text(
+                                    text = if (isSyncing) "Menyinkronkan dengan web balallica.my.id..." else "Online Realtime • balallica.my.id",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isSyncing) Color(0xFF1D4ED8) else Color(0xFF15803D)
+                                )
+                                Text(
+                                    text = if (isSyncing) "Mengambil postingan & data member terbaru" else "Ketuk untuk segarkan data secara manual",
+                                    fontSize = 10.sp,
+                                    color = if (isSyncing) Color(0xFF2563EB) else Color(0xFF16A34A).copy(alpha = 0.85f)
+                                )
+                            }
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.Sync,
+                            contentDescription = "Sinkronkan",
+                            tint = if (isSyncing) Color(0xFF1D4ED8) else Color(0xFF15803D),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+
             // 3. Featured Quiz Announcement Banner (if quizzes exist)
             if (allQuizzes.isNotEmpty()) {
                 val latestQuiz = allQuizzes.first()
