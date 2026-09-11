@@ -620,50 +620,152 @@ function showUserProfileModal(userId) {
   // Count user's posts
   const userPosts = state.posts.filter(p => p.uploaderId === user.id);
 
+  // Friends and Mutual Friends
+  const userFriendIds = (state.friendships || [])
+    .filter(f => f.status === 'ACCEPTED' && (f.senderId === user.id || f.receiverId === user.id))
+    .map(f => f.senderId === user.id ? f.receiverId : f.senderId);
+  
+  const myFriendIds = (state.friendships || [])
+    .filter(f => f.status === 'ACCEPTED' && (f.senderId === myId || f.receiverId === myId))
+    .map(f => f.senderId === myId ? f.receiverId : f.senderId);
+
+  const mutualFriendIds = userFriendIds.filter(id => myFriendIds.includes(id));
+  const mutualFriends = state.allUsers.filter(u => mutualFriendIds.includes(u.id));
+  const userFriends = state.allUsers.filter(u => userFriendIds.includes(u.id));
+
   container.innerHTML = `
-    <div style="text-align: center; padding: 10px 0 16px;">
-      <div style="display: inline-block; margin-bottom: 12px;">
-        ${renderAvatarHtml(user.customPhotoUri, user.avatarColor, user.avatarIcon, 84, 34)}
+    <div style="text-align: center; padding: 6px 0 12px;">
+      <!-- Profile Header Banner Background -->
+      <div style="background: linear-gradient(135deg, #1877F2 0%, #0052CC 100%); height: 80px; border-radius: 12px; position: relative; margin-bottom: 42px;">
+        <div style="position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%);">
+          <div style="border: 3.5px solid #fff; border-radius: 50%; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
+            ${renderAvatarHtml(user.customPhotoUri, user.avatarColor, user.avatarIcon, 74, 30)}
+          </div>
+        </div>
       </div>
-      <h3 style="font-size: 18px; font-weight: 800; color: #050505; margin: 0 0 6px;">
+
+      <h3 style="font-size: 18px; font-weight: 800; color: #050505; margin: 0 0 4px;">
         ${escapeHtml(user.fullName)}
         ${isMe ? '<span style="background: #1877F2; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 6px; margin-left: 6px; vertical-align: middle;">Saya</span>' : ''}
       </h3>
-      <div style="display: flex; justify-content: center; gap: 8px; align-items: center; margin-bottom: 8px;">
+      <div style="display: flex; justify-content: center; gap: 8px; align-items: center; margin-bottom: 6px;">
         <span class="role-tag ${user.role}">${getRoleLabel(user.role)}</span>
         <span style="font-size: 12px; color: #65676B; background: #F0F2F5; padding: 2px 8px; border-radius: 6px;">${escapeHtml(user.studentNumber || 'SDN 4 Putrajawa')}</span>
       </div>
       ${user.bio ? `
-        <p style="font-size: 13px; color: #4B5563; background: #F8FAFC; padding: 8px 14px; border-radius: 10px; border: 1px solid #E2E8F0; margin: 8px 0 14px; font-style: italic;">
+        <p style="font-size: 12.5px; color: #4B5563; background: #F8FAFC; padding: 8px 14px; border-radius: 10px; border: 1px solid #E2E8F0; margin: 8px 0 12px; font-style: italic;">
           "${escapeHtml(user.bio)}"
         </p>
       ` : ''}
 
-      <div style="display: flex; gap: 10px; margin-top: 14px;">
+      <!-- Primary Action Buttons -->
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
         ${friendActionBtn}
         ${!isMe ? `
-          <button class="btn-fb-secondary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="closeModal('userProfileModal'); openChatWithUser(${user.id});">
+          <button class="btn-fb-secondary" style="flex: 1; min-width: 120px; padding: 9px 12px; font-weight: 700; font-size: 12.5px;" onclick="closeModal('userProfileModal'); openChatWithUser(${user.id});">
             <i class="fa-solid fa-comment-dots" style="color: #1877F2;"></i> Kirim Pesan
           </button>
+          <button class="btn-fb-secondary" style="padding: 9px 14px; font-weight: 700; font-size: 12.5px; background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D;" onclick="sendWaveMessageToUser(${user.id})">
+            👋 Sapa
+          </button>
         ` : `
-          <button class="btn-fb-secondary" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 13px;" onclick="closeModal('userProfileModal'); switchTab('profil');">
-            <i class="fa-solid fa-user-pen" style="color: #1877F2;"></i> Lihat Profil Saya
+          <button class="btn-fb-secondary" style="flex: 1; padding: 9px 14px; font-weight: 700; font-size: 12.5px;" onclick="closeModal('userProfileModal'); switchTab('profil');">
+            <i class="fa-solid fa-user-pen" style="color: #1877F2;"></i> Buka Edit Profil Saya
           </button>
         `}
       </div>
 
-      <div style="margin-top: 20px; border-top: 1px solid #E4E6EB; padding-top: 14px; text-align: left;">
-        <div style="font-weight: 700; font-size: 13px; color: #050505; margin-bottom: 8px;">
-          <i class="fa-solid fa-images" style="color: #1877F2;"></i> Postingan (${userPosts.length})
+      <!-- Quick Action Pills -->
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button class="btn-fb-secondary" style="flex: 1; font-size: 11.5px; padding: 6px 10px;" onclick="filterFeedByAuthor(${user.id})">
+          <i class="fa-solid fa-newspaper" style="color: #1877F2;"></i> Lihat di Beranda
+        </button>
+        <button class="btn-fb-secondary" style="flex: 1; font-size: 11.5px; padding: 6px 10px;" onclick="copyUserProfileDetails(${user.id})">
+          <i class="fa-regular fa-copy"></i> Salin Info
+        </button>
+      </div>
+
+      <!-- Segmented Tabs Navigation -->
+      <div style="display: flex; border-bottom: 2px solid #E4E6EB; margin-top: 16px;">
+        <button id="upm-tab-btn-karya" onclick="switchUpmTab('karya')" style="flex: 1; padding: 8px; font-weight: 700; font-size: 12.5px; border: none; background: none; border-bottom: 2px solid #1877F2; color: #1877F2; cursor: pointer;">
+          Karya (${userPosts.length})
+        </button>
+        <button id="upm-tab-btn-info" onclick="switchUpmTab('info')" style="flex: 1; padding: 8px; font-weight: 600; font-size: 12.5px; border: none; background: none; color: #65676B; cursor: pointer;">
+          Info Lengkap
+        </button>
+        <button id="upm-tab-btn-teman" onclick="switchUpmTab('teman')" style="flex: 1; padding: 8px; font-weight: 600; font-size: 12.5px; border: none; background: none; color: #65676B; cursor: pointer;">
+          Teman (${userFriendIds.length})
+        </button>
+      </div>
+
+      <!-- TAB CONTENT: KARYA -->
+      <div id="upm-tab-content-karya" style="margin-top: 14px; text-align: left;">
+        <div style="display: flex; justify-content: space-around; background: #F8FAFC; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #E2E8F0; text-align: center;">
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: #1877F2;">${userPosts.length}</div>
+            <div style="font-size: 10.5px; color: #65676B;">Postingan</div>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: #E11D48;">${userPosts.reduce((acc, p) => acc + (p.likesCount || 0), 0)}</div>
+            <div style="font-size: 10.5px; color: #65676B;">Suka Diterima</div>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: #10B981;">${userPosts.reduce((acc, p) => acc + (p.viewsCount || 0), 0)}</div>
+            <div style="font-size: 10.5px; color: #65676B;">Tayangan</div>
+          </div>
         </div>
+
         ${userPosts.length === 0 ? `
-          <p style="font-size: 12px; color: #8A8D91; font-style: italic;">Belum ada postingan dari ${escapeHtml(user.fullName)}.</p>
+          <p style="font-size: 12px; color: #8A8D91; font-style: italic; text-align: center; padding: 12px 0;">Belum ada postingan dari ${escapeHtml(user.fullName)}.</p>
         ` : `
-          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto;">
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto;">
             ${userPosts.map(p => `
               <div style="padding: 8px 10px; background: #F0F2F5; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="closeModal('userProfileModal'); switchTab('beranda'); const el = document.getElementById('post-card-${p.id}'); if (el) el.scrollIntoView({behavior: 'smooth'});">
-                <span style="font-weight: 600; color: #050505; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px;">${escapeHtml(p.title || p.description || 'Foto Kegiatan')}</span>
+                <span style="font-weight: 600; color: #050505; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 250px;">
+                  <i class="fa-solid fa-image" style="color: #1877F2; margin-right: 4px;"></i>
+                  ${escapeHtml(p.title || p.description || 'Foto Kegiatan')}
+                </span>
                 <span style="font-size: 10px; color: #65676B;">${formatTimestamp(p.timestamp)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+
+      <!-- TAB CONTENT: INFO LENGKAP -->
+      <div id="upm-tab-content-info" style="margin-top: 14px; text-align: left; display: none;">
+        <div style="background: #F8FAFC; border-radius: 10px; padding: 12px; border: 1px solid #E2E8F0; font-size: 12.5px; display: flex; flex-direction: column; gap: 8px;">
+          <div><span style="color: #65676B; font-size: 11px; display: block;">Nama Lengkap</span><strong>${escapeHtml(user.fullName)}</strong></div>
+          <div><span style="color: #65676B; font-size: 11px; display: block;">NISN / NIP</span><strong>${escapeHtml(user.studentNumber || 'Belum diisi')}</strong></div>
+          <div><span style="color: #65676B; font-size: 11px; display: block;">Peran</span><strong>${getRoleLabel(user.role)}</strong></div>
+          <div><span style="color: #65676B; font-size: 11px; display: block;">Satuan Pendidikan</span><strong>SDN 4 Putrajawa - Kelas IV</strong></div>
+          <div><span style="color: #65676B; font-size: 11px; display: block;">Status Akun</span><strong style="color: #10B981;"><i class="fa-solid fa-circle-check"></i> Aktif Terdaftar</strong></div>
+        </div>
+      </div>
+
+      <!-- TAB CONTENT: TEMAN -->
+      <div id="upm-tab-content-teman" style="margin-top: 14px; text-align: left; display: none;">
+        ${!isMe && mutualFriends.length > 0 ? `
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; color: #1E40AF;">
+            <i class="fa-solid fa-user-group" style="margin-right: 4px;"></i>
+            <strong>${mutualFriends.length} Teman Bersama:</strong> ${mutualFriends.map(f => escapeHtml(f.fullName.split(' ')[0])).join(', ')}
+          </div>
+        ` : ''}
+
+        <div style="font-weight: 700; font-size: 12px; color: #050505; margin-bottom: 6px;">
+          Daftar Teman (${userFriends.length}):
+        </div>
+        ${userFriends.length === 0 ? `
+          <p style="font-size: 12px; color: #8A8D91; font-style: italic;">Belum ada pertemanan yang disetujui.</p>
+        ` : `
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto;">
+            ${userFriends.map(f => `
+              <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #F8FAFC; border-radius: 8px; cursor: pointer;" onclick="showUserProfileModal(${f.id})">
+                ${renderAvatarHtml(f.customPhotoUri, f.avatarColor, f.avatarIcon, 30, 12)}
+                <div style="flex: 1;">
+                  <div style="font-weight: 600; font-size: 12px;">${escapeHtml(f.fullName)}</div>
+                  <div style="font-size: 10px; color: #65676B;">${getRoleLabel(f.role)}</div>
+                </div>
               </div>
             `).join('')}
           </div>
@@ -688,6 +790,88 @@ async function acceptFriendRequestFromModal(targetId) {
 async function removeFriendshipFromModal(targetId) {
   await removeFriendship(targetId);
   showUserProfileModal(targetId);
+}
+
+function switchUpmTab(tabName) {
+  const tabs = ['karya', 'info', 'teman'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`upm-tab-btn-${t}`);
+    const content = document.getElementById(`upm-tab-content-${t}`);
+    if (t === tabName) {
+      if (btn) {
+        btn.style.borderBottom = '2px solid #1877F2';
+        btn.style.color = '#1877F2';
+        btn.style.fontWeight = '700';
+      }
+      if (content) content.style.display = 'block';
+    } else {
+      if (btn) {
+        btn.style.borderBottom = 'none';
+        btn.style.color = '#65676B';
+        btn.style.fontWeight = '600';
+      }
+      if (content) content.style.display = 'none';
+    }
+  });
+}
+
+async function sendWaveMessageToUser(targetId) {
+  const user = state.allUsers.find(u => u.id === Number(targetId));
+  if (!user) return;
+  const formData = new FormData();
+  formData.append('recipientId', targetId);
+  formData.append('messageText', `👋 Halo ${user.fullName.split(' ')[0]}! Saya menyapa kamu di SDN 4 Putrajawa.`);
+
+  const res = await apiRequest('messages.php?action=send_message', { method: 'POST', body: formData });
+  if (res.status) {
+    alert(`👋 Sapaan terkirim ke ${user.fullName.split(' ')[0]}! Pesan percakapan telah dibuat.`);
+    showUserProfileModal(targetId);
+  }
+}
+
+function filterFeedByAuthor(userId) {
+  closeModal('userProfileModal');
+  switchTab('beranda');
+  const user = state.allUsers.find(u => u.id === Number(userId));
+  if (!user) return;
+
+  const container = document.getElementById('feed-container');
+  if (!container) return;
+
+  const userPosts = state.posts.filter(p => p.uploaderId === Number(userId));
+  if (userPosts.length === 0) {
+    container.innerHTML = `
+      <div style="background: #fff; border-radius: 10px; padding: 24px; text-align: center; border: 1px solid #E4E6EB; margin-top: 12px;">
+        <i class="fa-solid fa-folder-open" style="font-size: 36px; color: #1877F2; margin-bottom: 10px;"></i>
+        <h4 style="font-weight: 700; color: #050505;">Belum Ada Karya</h4>
+        <p style="font-size: 13px; color: #65676B;">${escapeHtml(user.fullName)} belum membagikan karya foto di beranda.</p>
+        <button class="btn-fb-secondary" style="margin-top: 12px;" onclick="renderFeed()">Kembali ke Semua Postingan</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-size: 13px; color: #1E40AF; font-weight: 600;">
+        <i class="fa-solid fa-filter"></i> Menampilkan ${userPosts.length} postingan dari <strong>${escapeHtml(user.fullName)}</strong>
+      </div>
+      <button class="btn-fb-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="renderFeed()">
+        Reset Filter
+      </button>
+    </div>
+  ` + userPosts.map(p => renderSinglePost(p)).join('');
+}
+
+function copyUserProfileDetails(userId) {
+  const user = state.allUsers.find(u => u.id === Number(userId));
+  if (!user) return;
+  const text = `Profil SDN 4 Putrajawa:\nNama: ${user.fullName}\nPeran: ${user.role}\nNISN/NIP: ${user.studentNumber || '-'}\nBio: ${user.bio || '-'}`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert(`Profil ${user.fullName} disalin ke papan klip!`);
+  }).catch(() => {
+    alert(text);
+  });
 }
 
 // ----------------------------------------------------

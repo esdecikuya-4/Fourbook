@@ -74,6 +74,8 @@ fun GalleryApp(
     val selectedMemberProfile by viewModel.selectedMemberProfile.collectAsState()
     val allPhotos by viewModel.allPhotos.collectAsState()
     val myFriendships by viewModel.myFriendships.collectAsState()
+    val allUsers by viewModel.allUsers.collectAsState()
+    val allAcceptedFriendships by viewModel.allAcceptedFriendships.collectAsState()
 
     // Handle system back press intelligently
     BackHandler(enabled = selectedMemberProfile != null || selectedPhoto != null || filterStudentId != null || showAdminQuizManager || showAdminJournalManager || activeTab != MainTab.BERANDA) {
@@ -432,7 +434,9 @@ fun GalleryApp(
                 member = member,
                 currentUser = currentUser,
                 allPhotos = allPhotos,
+                allUsers = allUsers,
                 myFriendships = myFriendships,
+                allAcceptedFriendships = allAcceptedFriendships,
                 onDismiss = { viewModel.dismissMemberProfile() },
                 onSendFriendRequest = { viewModel.sendFriendRequest(member) },
                 onAcceptFriendRequest = { viewModel.acceptFriendRequest(member) },
@@ -440,6 +444,14 @@ fun GalleryApp(
                 onOpenChat = {
                     viewModel.dismissMemberProfile()
                     viewModel.openChatWith(member)
+                },
+                onSendWave = {
+                    viewModel.sendWaveMessage(member)
+                },
+                onViewInFeed = {
+                    viewModel.dismissMemberProfile()
+                    viewModel.setFilterStudent(member.id)
+                    viewModel.setActiveTab(MainTab.BERANDA)
                 },
                 onSelectPhoto = { photo ->
                     viewModel.dismissMemberProfile()

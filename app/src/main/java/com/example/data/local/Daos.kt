@@ -224,6 +224,9 @@ interface FriendshipDao {
 
     @Query("SELECT COUNT(*) FROM friendships WHERE (senderId = :userId OR receiverId = :userId) AND status = 'ACCEPTED'")
     fun getFriendCount(userId: Long): Flow<Int>
+
+    @Query("SELECT * FROM friendships WHERE status = 'ACCEPTED'")
+    fun getAllAcceptedFriendships(): Flow<List<com.example.data.model.FriendshipEntity>>
 }
 
 @Dao

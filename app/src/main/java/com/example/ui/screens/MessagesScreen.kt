@@ -612,14 +612,16 @@ fun ChatConversationDialog(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         if (recipient != null) {
-                            MemberAvatar(
-                                fullName = recipient!!.fullName,
-                                avatarColor = recipient!!.avatarColor,
-                                avatarIcon = recipient!!.avatarIcon,
-                                customPhotoUri = recipient!!.customPhotoUri,
-                                size = 40.dp,
-                                showOnlineDot = true
-                            )
+                            Box(modifier = Modifier.clickable { viewModel.showMemberProfile(recipient) }) {
+                                MemberAvatar(
+                                    fullName = recipient!!.fullName,
+                                    avatarColor = recipient!!.avatarColor,
+                                    avatarIcon = recipient!!.avatarIcon,
+                                    customPhotoUri = recipient!!.customPhotoUri,
+                                    size = 40.dp,
+                                    showOnlineDot = true
+                                )
+                            }
                         } else {
                             Box(
                                 modifier = Modifier
@@ -634,7 +636,11 @@ fun ChatConversationDialog(
 
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        Column {
+                        Column(
+                            modifier = Modifier.clickable(enabled = recipient != null) {
+                                recipient?.let { viewModel.showMemberProfile(it) }
+                            }
+                        ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = targetTitle,
@@ -665,6 +671,11 @@ fun ChatConversationDialog(
 
                     // Quick Actions
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (recipient != null) {
+                            IconButton(onClick = { viewModel.showMemberProfile(recipient) }) {
+                                Icon(Icons.Default.AccountCircle, contentDescription = "Lihat Profil Lengkap", tint = FbBluePrimary)
+                            }
+                        }
                         IconButton(onClick = { viewModel.sendChatMessage("👍", "STICKER") }) {
                             Text("👍", fontSize = 18.sp)
                         }

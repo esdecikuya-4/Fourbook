@@ -89,6 +89,9 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
     }
 
     // Friendship operations (Facebook-style)
+    val allAcceptedFriendships: Flow<List<FriendshipEntity>> =
+        friendshipDao.getAllAcceptedFriendships()
+
     fun getAllFriendshipsForUser(userId: Long): Flow<List<FriendshipEntity>> =
         friendshipDao.getAllFriendshipsForUser(userId)
 

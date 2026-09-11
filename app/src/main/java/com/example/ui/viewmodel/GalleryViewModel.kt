@@ -377,6 +377,9 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     // Friendships State
+    val allAcceptedFriendships: StateFlow<List<FriendshipEntity>> = repository.allAcceptedFriendships
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val myFriendships: StateFlow<List<FriendshipEntity>> = _currentUser
         .flatMapLatest { user ->
@@ -537,6 +540,30 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             timestamp = System.currentTimeMillis(),
             isRead = false,
             attachmentType = attachmentType
+        )
+        viewModelScope.launch {
+            repository.sendChatMessage(msg)
+        }
+    }
+
+    fun sendWaveMessage(targetUser: UserEntity) {
+        val user = _currentUser.value ?: return
+        val senderFirstName = user.fullName.split(" ").firstOrNull() ?: user.fullName
+        val targetFirstName = targetUser.fullName.split(" ").firstOrNull() ?: targetUser.fullName
+        val text = "👋 Halo $targetFirstName! Salam kenal dari $senderFirstName!"
+        val msg = ChatMessageEntity(
+            senderId = user.id,
+            senderName = user.fullName,
+            senderRole = user.role,
+            senderAvatarColor = user.avatarColor,
+            senderAvatarIcon = user.avatarIcon,
+            senderCustomPhoto = user.customPhotoUri,
+            recipientId = targetUser.id,
+            recipientName = targetUser.fullName,
+            messageText = text,
+            timestamp = System.currentTimeMillis(),
+            isRead = false,
+            attachmentType = "STICKER"
         )
         viewModelScope.launch {
             repository.sendChatMessage(msg)
