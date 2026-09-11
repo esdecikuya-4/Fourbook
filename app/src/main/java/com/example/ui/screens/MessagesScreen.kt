@@ -75,6 +75,8 @@ fun MessagesScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = FbBg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(
                 color = FbCardSurface,
@@ -178,9 +180,9 @@ fun MessagesScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(FbBg),
-            contentPadding = PaddingValues(bottom = 80.dp)
+                .background(FbBg)
+                .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             // Horizontal Active Friends Row (FB Messenger style)
             item {

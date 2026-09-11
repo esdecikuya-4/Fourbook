@@ -50,6 +50,9 @@ fun NotificationsScreen(
     }
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = FbBg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(
                 color = FbCardBg,
@@ -160,14 +163,13 @@ fun NotificationsScreen(
                 }
             }
         },
-        modifier = modifier
     ) { paddingValues ->
         if (filteredNotifications.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(FbBg),
+                    .background(FbBg)
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -209,8 +211,8 @@ fun NotificationsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(FbBg),
+                    .background(FbBg)
+                    .padding(paddingValues),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
                 items(filteredNotifications, key = { it.id }) { notif ->

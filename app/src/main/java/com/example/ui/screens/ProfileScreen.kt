@@ -96,6 +96,8 @@ fun ProfileScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = FbCanvasBg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(
                 color = FbCardSurface,

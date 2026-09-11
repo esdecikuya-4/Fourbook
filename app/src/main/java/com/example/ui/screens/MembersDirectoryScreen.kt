@@ -80,6 +80,8 @@ fun MembersDirectoryScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = FbBg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(
                 color = FbCardBg,
@@ -151,8 +153,8 @@ fun MembersDirectoryScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(FbBg),
+                .background(FbBg)
+                .padding(innerPadding),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {

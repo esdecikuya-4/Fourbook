@@ -199,7 +199,6 @@ session_start();
             <p class="hero-description">Wadah kreatifitas, prestasi, galeri karya, dan interaksi akrab seluruh warga sekolah.</p>
           </div>
           <div class="hero-right-actions">
-            <div class="hero-badge"><i class="fa-solid fa-graduation-cap"></i> T.A. 2026/2027</div>
             <div class="hero-stat-pill"><i class="fa-solid fa-circle-check text-green"></i> Portal Aktif</div>
           </div>
         </div>

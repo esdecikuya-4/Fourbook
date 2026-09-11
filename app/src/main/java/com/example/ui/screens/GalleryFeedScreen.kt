@@ -87,6 +87,8 @@ fun GalleryFeedScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = FbBg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Column {
                 // Official School Header with Realistic Indonesian SD Building and Centered Fourbook Logo
@@ -177,9 +179,9 @@ fun GalleryFeedScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(FbBg),
-            contentPadding = PaddingValues(bottom = 80.dp)
+                .background(FbBg)
+                .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             // 1. Stories Carousel Tray (Facebook style)
             item {

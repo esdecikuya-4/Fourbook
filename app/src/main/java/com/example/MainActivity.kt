@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.ui.screens.*
+import com.example.ui.theme.FbBg
 import com.example.ui.theme.FbBluePrimary
 import com.example.ui.theme.FbCardBg
 import com.example.ui.theme.FbTextPrimary
@@ -99,6 +101,8 @@ fun GalleryApp(
         } else {
             Scaffold(
                 modifier = modifier.fillMaxSize(),
+                containerColor = FbBg,
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 bottomBar = {
                     Surface(
                         color = FbCardBg,
@@ -112,9 +116,10 @@ fun GalleryApp(
                         NavigationBar(
                             containerColor = FbCardBg,
                             tonalElevation = 0.dp,
+                            windowInsets = WindowInsets(0, 0, 0, 0),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(64.dp)
+                                .height(58.dp)
                                 .padding(top = 2.dp, bottom = 4.dp)
                         ) {
                             // 1. BERANDA (Feed Utama)
@@ -274,6 +279,7 @@ fun GalleryApp(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(FbBg)
                         .padding(innerPadding)
                 ) {
                     when (activeTab) {
