@@ -12,7 +12,7 @@ session_start();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=20261014_smartcomm">
+  <link rel="stylesheet" href="css/style.css?v=20261014_desc_inline">
 </head>
 <body>
 
@@ -205,7 +205,7 @@ session_start();
         <!-- SDN 4 Hero / Community Header Banner -->
         <div class="sdn-hero-card">
           <div class="hero-glow-circle"></div>
-          <div class="hero-left">
+          <div class="hero-header-row">
             <div class="hero-branding-wrapper">
               <div class="hero-logo-box">
                 <img src="images/fourbook_emblem_logo.svg?v=20261014" alt="Logo Fourbook SDN 4 Putrajawa" class="hero-emblem-img">
@@ -219,11 +219,11 @@ session_start();
                 </div>
               </div>
             </div>
-            <p class="hero-description">Wadah kreatifitas, prestasi, galeri karya, dan interaksi akrab seluruh warga sekolah.</p>
+            <div class="hero-right-actions">
+              <div class="hero-stat-pill"><i class="fa-solid fa-circle-check text-green"></i> Portal Aktif</div>
+            </div>
           </div>
-          <div class="hero-right-actions">
-            <div class="hero-stat-pill"><i class="fa-solid fa-circle-check text-green"></i> Portal Aktif</div>
-          </div>
+          <p class="hero-description">Wadah kreatifitas, prestasi, galeri karya, dan interaksi akrab seluruh warga sekolah.</p>
         </div>
 
         <!-- Admin Quick Actions Bar -->

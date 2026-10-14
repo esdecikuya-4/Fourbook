@@ -248,11 +248,11 @@ body {
 .sdn-hero-card {
   background: linear-gradient(135deg, #0A4EB5 0%, #1877F2 45%, #00B4D8 100%);
   border-radius: 20px;
-  padding: 20px 24px;
+  padding: 16px 22px;
   color: #fff;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   box-shadow: 0 10px 25px -5px rgba(24, 119, 242, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
@@ -282,12 +282,14 @@ body {
   pointer-events: none;
 }
 
+.hero-header-row,
 .hero-left {
   position: relative;
   z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .hero-branding-wrapper {
@@ -297,8 +299,8 @@ body {
 }
 
 .hero-logo-box {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   background: transparent;
   border-radius: 50%;
   display: flex;
@@ -321,7 +323,7 @@ body {
 
 .hero-title-main {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 900;
   letter-spacing: -0.5px;
   line-height: 1.1;
@@ -363,11 +365,17 @@ body {
 }
 
 .hero-description {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.92);
-  line-height: 1.4;
-  max-width: 420px;
-  margin-top: 2px;
+  position: relative;
+  z-index: 2;
+  font-size: clamp(10.5px, 2.3vw, 12px);
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.35;
+  white-space: nowrap;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  letter-spacing: -0.15px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .hero-right-actions {
