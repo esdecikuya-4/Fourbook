@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -112,32 +113,92 @@ fun AuthScreen(
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // School Emblem Logo (Compact High-Res Circular Emblem)
-            com.example.ui.components.Sdn4SchoolLogo(
-                size = 56.dp,
-                showGlow = true
-            )
+            // School Emblem Logo in Modern Illuminated Frame
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(bottom = 6.dp)
+            ) {
+                // Subtle glowing ring
+                Box(
+                    modifier = Modifier
+                        .size(68.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF38BDF8).copy(alpha = 0.35f),
+                                    Color(0xFF1D4ED8).copy(alpha = 0.2f),
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                )
 
-            Spacer(modifier = Modifier.height(6.dp))
+                com.example.ui.components.Sdn4SchoolLogo(
+                    size = 56.dp,
+                    showGlow = true
+                )
+            }
 
             Text(
                 text = "fourbook",
                 color = Color.White,
-                fontSize = 26.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Black,
-                letterSpacing = (-0.5).sp,
+                letterSpacing = (-0.8).sp,
                 textAlign = TextAlign.Center
             )
+
+            // Modern glowing school pill badge
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = Color(0xFF0F172A).copy(alpha = 0.75f),
+                border = BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.7f)),
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.School,
+                        contentDescription = null,
+                        tint = Color(0xFFFDE047),
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "SDN 4 PUTRAJAWA",
+                        color = Color(0xFFFDE047),
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 0.8.sp
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF38BDF8))
+                    )
+                    Text(
+                        text = "SMART COMMUNITY",
+                        color = Color(0xFF38BDF8),
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.6.sp
+                    )
+                }
+            }
+
             Text(
-                text = "SDN 4 PUTRAJAWA",
-                color = Color.White.copy(alpha = 0.95f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp,
+                text = "Kec. Selaawi, Kab. Garut • Media Edukasi Digital",
+                color = Color(0xFFCBD5E1).copy(alpha = 0.85f),
+                fontSize = 11.5.sp,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 1.dp, bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             // Auth Card Container

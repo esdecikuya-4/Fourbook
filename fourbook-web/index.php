@@ -12,7 +12,7 @@ session_start();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=20260910c">
+  <link rel="stylesheet" href="css/style.css?v=20261014a">
 </head>
 <body>
 
@@ -20,18 +20,29 @@ session_start();
   <div id="auth-view-screen" class="fb-auth-overlay" style="display: none;">
     <div class="fb-auth-card">
       <div class="auth-header">
-        <div class="auth-logo-badge">4</div>
-        <h1 class="auth-title">fourbook</h1>
-        <div class="auth-school-subtitle">SDN 4 Putrajawa</div>
-        <p class="auth-tagline">Sdn 4 Putrajawa Online Community</p>
+        <div class="auth-header-content">
+          <div class="auth-logo-wrapper">
+            <div class="auth-logo-badge">
+              <span class="auth-logo-number">4</span>
+            </div>
+            <div class="auth-logo-ring"></div>
+          </div>
+          <h1 class="auth-title">fourbook</h1>
+          <div class="auth-school-badge">
+            <i class="fa-solid fa-graduation-cap"></i> SDN 4 PUTRAJAWA
+            <span class="auth-badge-dot"></span>
+            <span class="auth-badge-tag">SMART COMMUNITY</span>
+          </div>
+          <p class="auth-tagline"><i class="fa-solid fa-location-dot" style="color: #F87171; margin-right: 4px;"></i>Kec. Selaawi, Kab. Garut • Media Sosial Sekolah</p>
 
-        <div class="auth-tabs-toggle">
-          <button type="button" class="auth-tab-btn active" id="auth-tab-login-btn" onclick="toggleAuthTab('login')">
-            <i class="fa-solid fa-right-to-bracket"></i> Masuk
-          </button>
-          <button type="button" class="auth-tab-btn" id="auth-tab-register-btn" onclick="toggleAuthTab('register')">
-            <i class="fa-solid fa-user-plus"></i> Daftar Akun
-          </button>
+          <div class="auth-tabs-toggle">
+            <button type="button" class="auth-tab-btn active" id="auth-tab-login-btn" onclick="toggleAuthTab('login')">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk
+            </button>
+            <button type="button" class="auth-tab-btn" id="auth-tab-register-btn" onclick="toggleAuthTab('register')">
+              <i class="fa-solid fa-user-plus"></i> Daftar Akun
+            </button>
+          </div>
         </div>
       </div>
 

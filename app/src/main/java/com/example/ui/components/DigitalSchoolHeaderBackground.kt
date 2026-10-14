@@ -112,6 +112,43 @@ private fun DrawScope.drawFuturisticDigitalSchool(
         )
     )
 
+    // Dynamic Cyber Aurora Ribbons in the night sky
+    val aurora1 = Path().apply {
+        moveTo(0f, h * 0.16f)
+        cubicTo(w * 0.28f, h * 0.08f, w * 0.65f, h * 0.22f, w, h * 0.12f)
+        lineTo(w, h * 0.34f)
+        cubicTo(w * 0.62f, h * 0.42f, w * 0.32f, h * 0.26f, 0f, h * 0.32f)
+        close()
+    }
+    drawPath(
+        path = aurora1,
+        brush = Brush.horizontalGradient(
+            colors = listOf(
+                Color(0x2238BDF8),
+                Color(0x446366F1),
+                Color(0x5538BDF8),
+                Color(0x3310B981),
+                Color(0x110284C7)
+            )
+        )
+    )
+
+    // Sparkling Constellations & Cyber Data Stream Dots
+    val stars = listOf(
+        Pair(0.08f, 0.08f), Pair(0.18f, 0.14f), Pair(0.25f, 0.06f),
+        Pair(0.38f, 0.12f), Pair(0.52f, 0.05f), Pair(0.68f, 0.15f),
+        Pair(0.82f, 0.07f), Pair(0.92f, 0.13f), Pair(0.12f, 0.24f),
+        Pair(0.44f, 0.22f), Pair(0.76f, 0.26f), Pair(0.88f, 0.28f)
+    )
+    stars.forEachIndexed { index, (fx, fy) ->
+        val starAlpha = (0.35f + 0.65f * kotlin.math.abs(kotlin.math.sin(pulseAlpha * 3.14f + index)))
+        drawCircle(
+            color = Color(0xFFBAE6FD).copy(alpha = starAlpha.coerceIn(0.1f, 1f)),
+            radius = if (index % 3 == 0) 2.2f else 1.4f,
+            center = Offset(w * fx, h * fy)
+        )
+    }
+
     val mountainNear = Path().apply {
         moveTo(0f, h * 0.53f)
         cubicTo(w * 0.28f, h * 0.42f, w * 0.48f, h * 0.50f, w * 0.72f, h * 0.40f)
