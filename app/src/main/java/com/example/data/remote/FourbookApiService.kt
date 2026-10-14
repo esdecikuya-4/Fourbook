@@ -125,6 +125,7 @@ data class RemoteCreatePostRequest(
     val category: String = "Umum",
     val postType: String = "TEXT_STATUS",
     val mediaUri: String = "",
+    val embedUrl: String = "",
     val uploaderId: Long = 0,
     val uploaderName: String = "",
     val uploaderRole: String = "MURID",

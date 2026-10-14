@@ -1072,18 +1072,36 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         title: String,
         description: String,
         category: PhotoCategory,
-        videoUri: Uri?,
-        videoPresetKey: String,
-        videoDurationSec: Int,
-        feeling: String,
-        taggedStudentNames: String,
+        videoUri: Uri? = null,
+        youtubeUrl: String = "",
+        videoPresetKey: String = "",
+        videoDurationSec: Int = 0,
+        feeling: String = "",
+        taggedStudentNames: String = "",
         onSuccess: () -> Unit
     ) {
         val user = _currentUser.value ?: return
         viewModelScope.launch {
             var savedPath = ""
-            if (videoUri != null) {
+            var realDuration = videoDurationSec
+            if (youtubeUrl.isNotBlank()) {
+                val embed = com.example.util.YouTubeHelper.extractEmbedUrl(youtubeUrl) ?: youtubeUrl.trim()
+                savedPath = embed
+                realDuration = 0
+            } else if (videoUri != null) {
                 savedPath = repository.saveVideoToInternalStorage(videoUri) ?: ""
+                if (savedPath.isNotBlank()) {
+                    try {
+                        val retriever = android.media.MediaMetadataRetriever()
+                        retriever.setDataSource(savedPath)
+                        val durationStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        val ms = durationStr?.toLongOrNull() ?: 0L
+                        if (ms > 0) {
+                            realDuration = (ms / 1000L).toInt()
+                        }
+                        retriever.release()
+                    } catch (_: Exception) {}
+                }
             }
             repository.createPost(
                 postType = PostType.VIDEO,
@@ -1091,8 +1109,8 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
                 description = description.trim(),
                 category = category,
                 videoUri = savedPath,
-                videoPresetKey = videoPresetKey,
-                videoDurationSec = if (videoDurationSec > 0) videoDurationSec else 45,
+                videoPresetKey = if (savedPath.isNotBlank()) "" else videoPresetKey,
+                videoDurationSec = realDuration,
                 feelingOrActivity = feeling.trim(),
                 uploader = user,
                 taggedStudentNames = taggedStudentNames

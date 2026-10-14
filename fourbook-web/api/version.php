@@ -14,11 +14,11 @@ $dataFile = __DIR__ . '/../data/app_version.json';
 // Return current version metadata
 if (!file_exists($dataFile)) {
     $defaultData = [
-        'versionCode' => 3,
-        'versionName' => '1.0.3',
+        'versionCode' => 4,
+        'versionName' => '1.0.4',
         'apkUrl' => 'https://balallica.my.id/fourbook.apk',
         'apkSizeMb' => '24 MB',
-        'releaseNotes' => 'Pembaruan SDN 4 Putrajawa: Pemutar video YouTube langsung aktif dengan suara dan durasi penuh.',
+        'releaseNotes' => "1. Pemutaran video rekaman/lokal HP kini bersuara dan gambar asli dengan durasi penuh (bukan animasi 45 detik).\n2. Pemutar video link YouTube aktif langsung di aplikasi Android dengan suara jernih.\n3. Posting link YouTube langsung di aplikasi Android (tombol 'Tempel Link' instan & live preview).",
         'releaseDate' => '2026-10-14',
         'forceUpdate' => false
     ];
@@ -30,11 +30,11 @@ $versionData = json_decode($content, true);
 
 if (!$versionData) {
     $versionData = [
-        'versionCode' => 3,
-        'versionName' => '1.0.3',
+        'versionCode' => 4,
+        'versionName' => '1.0.4',
         'apkUrl' => 'https://balallica.my.id/fourbook.apk',
         'apkSizeMb' => '24 MB',
-        'releaseNotes' => 'Pembaruan SDN 4 Putrajawa',
+        'releaseNotes' => 'Pembaruan SDN 4 Putrajawa v1.0.4',
         'releaseDate' => '2026-10-14',
         'forceUpdate' => false
     ];

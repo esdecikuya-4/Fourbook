@@ -73,12 +73,23 @@ if ($action === 'create_post') {
         }
     }
 
-    // Auto-detect YouTube links in description, title, or embedUrl
-    $textForEmbed = $embedUrl . ' ' . $description . ' ' . $title;
-    if (preg_match('/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i', $textForEmbed, $matches)) {
-        $embedUrl = 'https://www.youtube.com/embed/' . $matches[1];
-        if ($postType === 'TEXT_STATUS') {
-            $postType = 'VIDEO';
+    // Auto-detect YouTube links in description, title, mediaUri, or embedUrl
+    $textForEmbed = $embedUrl . ' ' . $description . ' ' . $title . ' ' . $mediaUri;
+    $ytPatterns = [
+        '/[?&]v=([a-zA-Z0-9_-]{11})/i',
+        '/youtu\.be\/([a-zA-Z0-9_-]{11})/i',
+        '/youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{11})/i',
+        '/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i',
+        '/youtube\.com\/live\/([a-zA-Z0-9_-]{11})/i',
+        '/youtube\.com\/v\/([a-zA-Z0-9_-]{11})/i'
+    ];
+    foreach ($ytPatterns as $pat) {
+        if (preg_match($pat, $textForEmbed, $matches)) {
+            $embedUrl = 'https://www.youtube.com/embed/' . $matches[1];
+            if ($postType === 'TEXT_STATUS') {
+                $postType = 'VIDEO';
+            }
+            break;
         }
     }
 

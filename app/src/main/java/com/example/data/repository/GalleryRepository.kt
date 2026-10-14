@@ -618,13 +618,15 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         if (isSessionActive) {
             try {
                 val hexColor = "0x" + java.lang.Long.toHexString(uploader.avatarColor).uppercase()
+                val ytEmbed = detectedYouTube ?: if (resolvedVideoUri.contains("youtube") || resolvedVideoUri.contains("youtu.be")) resolvedVideoUri else ""
                 val createRes = FourbookApiClient.service.createPost(
                     RemoteCreatePostRequest(
                         title = title.trim(),
                         description = description.trim(),
                         category = category.displayName,
-                        postType = postType.name,
+                        postType = resolvedPostType.name,
                         mediaUri = if (imageUri.startsWith("http")) imageUri else "",
+                        embedUrl = ytEmbed,
                         uploaderId = uploader.id,
                         uploaderName = uploader.fullName,
                         uploaderRole = uploader.role,

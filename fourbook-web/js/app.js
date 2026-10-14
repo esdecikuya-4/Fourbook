@@ -249,9 +249,20 @@ const commentAttachments = {};
 // Helper: Extract YouTube embed URL from text or URL
 function extractYoutubeEmbed(urlOrText) {
   if (!urlOrText) return null;
-  const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i;
-  const match = String(urlOrText).match(regExp);
-  return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  const str = String(urlOrText).trim();
+  const patterns = [
+    /[?&]v=([a-zA-Z0-9_-]{11})/i,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/i,
+    /youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/i
+  ];
+  for (const pat of patterns) {
+    const m = str.match(pat);
+    if (m && m[1]) return `https://www.youtube.com/embed/${m[1]}`;
+  }
+  return null;
 }
 
 // Media handlers for Post Modal

@@ -12,8 +12,10 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
@@ -55,7 +57,7 @@ fun YouTubePlayerCard(
         <body>
             <div class="video-wrap">
                 <iframe 
-                    src="https://www.youtube-nocookie.com/embed/$videoId?autoplay=1&playsinline=1&rel=0&modestbranding=1" 
+                    src="https://www.youtube.com/embed/$videoId?autoplay=1&enablejsapi=1&playsinline=1&rel=0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     allowfullscreen>
                 </iframe>
@@ -93,6 +95,7 @@ fun YouTubePlayerCard(
                                 loadWithOverviewMode = true
                                 useWideViewPort = true
                                 cacheMode = WebSettings.LOAD_DEFAULT
+                                userAgentString = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
                             }
                             webChromeClient = WebChromeClient()
                             webViewClient = WebViewClient()
@@ -101,6 +104,23 @@ fun YouTubePlayerCard(
                     },
                     modifier = Modifier.fillMaxSize()
                 )
+
+                // Stop / Close player overlay button
+                IconButton(
+                    onClick = { isPlayerActive = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(32.dp)
+                        .background(Color.Black.copy(alpha = 0.7f), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Hentikan Pemutaran",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             } else {
                 // Pre-play preview with high-res YouTube thumbnail and Play button
                 val thumbnailUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg"

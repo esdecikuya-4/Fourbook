@@ -24,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import com.example.util.YouTubeHelper
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +69,7 @@ fun PostComposerDialog(
     var selectedVideoUri by remember { mutableStateOf<Uri?>(null) }
     var selectedVideoPresetKey by remember { mutableStateOf("video_science") }
     var videoDurationSec by remember { mutableIntStateOf(45) }
+    var youtubeUrlInput by remember { mutableStateOf("") }
 
     // Audio / Music Post fields
     var selectedAudioUri by remember { mutableStateOf<Uri?>(null) }
@@ -84,6 +87,7 @@ fun PostComposerDialog(
         }
     }
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         if (bitmap != null) {
             capturedBitmap = bitmap
@@ -207,13 +211,31 @@ fun PostComposerDialog(
                             onClick = {
                                 when (selectedPostType) {
                                     PostType.TEXT_STATUS -> {
-                                        if (contentText.isNotBlank()) {
+                                        val tags = taggedStudents.joinToString(", ")
+                                        val detectedYt = YouTubeHelper.extractEmbedUrl(youtubeUrlInput).takeIf { !it.isNullOrBlank() }
+                                            ?: YouTubeHelper.extractEmbedUrl(contentText)
+                                            ?: YouTubeHelper.extractEmbedUrl(title)
+
+                                        if (detectedYt != null) {
+                                            viewModel.createVideoPost(
+                                                title = if (title.isBlank()) "Video YouTube" else title.trim(),
+                                                description = contentText.trim(),
+                                                category = selectedCategory,
+                                                videoUri = null,
+                                                youtubeUrl = detectedYt,
+                                                videoPresetKey = "",
+                                                videoDurationSec = 0,
+                                                feeling = selectedFeeling,
+                                                taggedStudentNames = tags,
+                                                onSuccess = onDismiss
+                                            )
+                                        } else if (contentText.isNotBlank()) {
                                             viewModel.createStatusPost(
                                                 text = contentText,
                                                 bgGradientKey = if (selectedGradientKey == "none") "" else selectedGradientKey,
                                                 feeling = selectedFeeling,
                                                 category = selectedCategory,
-                                                taggedStudentNames = taggedStudents.joinToString(", "),
+                                                taggedStudentNames = tags,
                                                 onSuccess = onDismiss
                                             )
                                         }
@@ -259,7 +281,12 @@ fun PostComposerDialog(
                                         }
                                     }
                                     PostType.VIDEO -> {
-                                        val finalTitle = if (title.isBlank()) "Video Kegiatan SDN 4" else title
+                                        val detectedYt = YouTubeHelper.extractEmbedUrl(youtubeUrlInput).takeIf { !it.isNullOrBlank() }
+                                            ?: YouTubeHelper.extractEmbedUrl(contentText)
+                                            ?: YouTubeHelper.extractEmbedUrl(title)
+                                        val finalTitle = if (title.isBlank()) {
+                                            if (detectedYt != null) "Video YouTube" else "Video Kegiatan SDN 4"
+                                        } else title
                                         val finalDesc = contentText
                                         val tags = taggedStudents.joinToString(", ")
                                         viewModel.createVideoPost(
@@ -267,8 +294,9 @@ fun PostComposerDialog(
                                             description = finalDesc,
                                             category = selectedCategory,
                                             videoUri = selectedVideoUri,
-                                            videoPresetKey = selectedVideoPresetKey,
-                                            videoDurationSec = videoDurationSec,
+                                            youtubeUrl = detectedYt ?: youtubeUrlInput.trim(),
+                                            videoPresetKey = if (detectedYt != null || selectedVideoUri != null) "" else selectedVideoPresetKey,
+                                            videoDurationSec = if (detectedYt != null) 0 else videoDurationSec,
                                             feeling = selectedFeeling,
                                             taggedStudentNames = tags,
                                             onSuccess = onDismiss
@@ -295,9 +323,9 @@ fun PostComposerDialog(
                                 }
                             },
                             enabled = when (selectedPostType) {
-                                PostType.TEXT_STATUS -> contentText.isNotBlank()
+                                PostType.TEXT_STATUS -> contentText.isNotBlank() || youtubeUrlInput.isNotBlank()
                                 PostType.PHOTO -> (selectedImageUri != null || capturedBitmap != null || selectedPhotoPresetKey.isNotBlank())
-                                PostType.VIDEO -> (selectedVideoUri != null || selectedVideoPresetKey.isNotBlank())
+                                PostType.VIDEO -> (selectedVideoUri != null || selectedVideoPresetKey.isNotBlank() || youtubeUrlInput.isNotBlank() || YouTubeHelper.isYouTubeUrl(contentText) || YouTubeHelper.isYouTubeUrl(title))
                                 PostType.AUDIO -> (selectedAudioUri != null || selectedAudioPresetKey.isNotBlank() || title.isNotBlank())
                             },
                             shape = RoundedCornerShape(20.dp),
@@ -505,6 +533,67 @@ fun PostComposerDialog(
                                 )
                             }
 
+                            val statusYtId = YouTubeHelper.extractVideoId(contentText)
+                            if (statusYtId != null) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Card(
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
+                                    border = BorderStroke(1.dp, Color(0xFFFCA5A5)),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(width = 80.dp, height = 48.dp)
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(Color.Black),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            androidx.compose.foundation.Image(
+                                                painter = coil.compose.rememberAsyncImagePainter("https://img.youtube.com/vi/$statusYtId/hqdefault.jpg"),
+                                                contentDescription = "Thumbnail YouTube",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.PlayCircle,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Surface(
+                                                color = Color(0xFFDC2626),
+                                                shape = RoundedCornerShape(4.dp)
+                                            ) {
+                                                Text(
+                                                    text = "LINK YOUTUBE TERDETEKSI",
+                                                    color = Color.White,
+                                                    fontSize = 9.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Text(
+                                                text = "Otomatis disematkan sebagai video YouTube yang dapat diputar langsung!",
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF991B1B),
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // Background Gradients Selector
@@ -655,6 +744,192 @@ fun PostComposerDialog(
 
                         PostType.VIDEO -> {
                             // Video Composer
+                            // YouTube Link Box (Copas Link YouTube)
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
+                                border = BorderStroke(1.5.dp, Color(0xFFFCA5A5)),
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Surface(
+                                                color = Color(0xFFDC2626),
+                                                shape = RoundedCornerShape(4.dp)
+                                            ) {
+                                                Text(
+                                                    text = "YT",
+                                                    color = Color.White,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.ExtraBold,
+                                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                            Text(
+                                                text = "Posting dengan Link YouTube",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 13.sp,
+                                                color = Color(0xFF991B1B)
+                                            )
+                                        }
+
+                                        // Quick Paste from Clipboard button
+                                        Button(
+                                            onClick = {
+                                                val clip = clipboardManager.getText()?.text
+                                                if (!clip.isNullOrBlank()) {
+                                                    youtubeUrlInput = clip.trim()
+                                                    val extracted = YouTubeHelper.extractVideoId(clip)
+                                                    if (extracted != null) {
+                                                        Toast.makeText(context, "Link YouTube berhasil ditempel!", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        Toast.makeText(context, "Teks dari clipboard telah ditempel", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                } else {
+                                                    Toast.makeText(context, "Clipboard kosong, salin link dari YouTube terlebih dahulu", Toast.LENGTH_SHORT).show()
+                                                }
+                                            },
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626)),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.ContentPaste,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "Tempel Link",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    OutlinedTextField(
+                                        value = youtubeUrlInput,
+                                        onValueChange = { 
+                                            youtubeUrlInput = it
+                                            if (it.isNotBlank()) {
+                                                selectedVideoPresetKey = ""
+                                                selectedVideoUri = null
+                                            }
+                                        },
+                                        label = { Text("Tautan Video YouTube (Link URL)") },
+                                        placeholder = { Text("Contoh: https://www.youtube.com/watch?v=... atau https://youtu.be/...") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(10.dp),
+                                        singleLine = true,
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.PlayCircle,
+                                                contentDescription = null,
+                                                tint = Color(0xFFDC2626)
+                                            )
+                                        },
+                                        trailingIcon = {
+                                            if (youtubeUrlInput.isNotBlank()) {
+                                                IconButton(onClick = { youtubeUrlInput = "" }) {
+                                                    Icon(Icons.Default.Close, contentDescription = "Hapus URL", modifier = Modifier.size(16.dp))
+                                                }
+                                            }
+                                        },
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedContainerColor = Color.White,
+                                            unfocusedContainerColor = Color.White,
+                                            focusedBorderColor = Color(0xFFDC2626),
+                                            unfocusedBorderColor = Color(0xFFFCA5A5)
+                                        )
+                                    )
+
+                                    val detectedYtId = YouTubeHelper.extractVideoId(youtubeUrlInput)
+                                        ?: YouTubeHelper.extractVideoId(contentText)
+                                        ?: YouTubeHelper.extractVideoId(title)
+
+                                    if (detectedYtId != null) {
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Card(
+                                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                                            shape = RoundedCornerShape(10.dp),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(8.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(width = 96.dp, height = 58.dp)
+                                                        .clip(RoundedCornerShape(6.dp))
+                                                        .background(Color.Black),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    androidx.compose.foundation.Image(
+                                                        painter = coil.compose.rememberAsyncImagePainter("https://img.youtube.com/vi/$detectedYtId/hqdefault.jpg"),
+                                                        contentDescription = "Preview Thumbnail",
+                                                        modifier = Modifier.fillMaxSize(),
+                                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                                    )
+                                                    Icon(
+                                                        imageVector = Icons.Default.PlayCircle,
+                                                        contentDescription = null,
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                }
+
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Surface(
+                                                        color = Color(0xFFDC2626),
+                                                        shape = RoundedCornerShape(4.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = "YOUTUBE TERSEDIA",
+                                                            color = Color.White,
+                                                            fontSize = 9.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.height(2.dp))
+                                                    Text(
+                                                        text = "Video ID: $detectedYtId",
+                                                        color = Color(0xFFE2E8F0),
+                                                        fontSize = 11.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                    Text(
+                                                        text = "Video dapat diputar langsung di aplikasi Android!",
+                                                        color = Color(0xFF94A3B8),
+                                                        fontSize = 10.sp
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
                             OutlinedTextField(
                                 value = title,
                                 onValueChange = { title = it },
@@ -678,6 +953,14 @@ fun PostComposerDialog(
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = "Atau Gunakan Rekaman HP / Animasi Kelas:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
 
                             // Video file picker
                             OutlinedButton(
@@ -944,39 +1227,72 @@ fun PostComposerDialog(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            Row(
+                            LazyRow(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                // Feeling button
-                                FilterChip(
-                                    selected = selectedFeeling.isNotBlank(),
-                                    onClick = { showFeelingSheet = true },
-                                    label = {
-                                        Text(
-                                            text = if (selectedFeeling.isNotBlank()) selectedFeeling else "Perasaan/Aktivitas",
-                                            fontSize = 11.sp
-                                        )
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.SentimentSatisfiedAlt, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    }
-                                )
-
-                                // Tag friends button
-                                FilterChip(
-                                    selected = taggedStudents.isNotEmpty(),
-                                    onClick = { showTagSheet = true },
-                                    label = {
-                                        Text(
-                                            text = if (taggedStudents.isNotEmpty()) "${taggedStudents.size} Ditandai" else "Tandai Teman",
-                                            fontSize = 11.sp
-                                        )
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.PersonAdd, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    }
-                                )
+                                item {
+                                    // YouTube quick action chip
+                                    FilterChip(
+                                        selected = youtubeUrlInput.isNotBlank() || selectedPostType == PostType.VIDEO,
+                                        onClick = {
+                                            selectedPostType = PostType.VIDEO
+                                            val clip = clipboardManager.getText()?.text
+                                            if (youtubeUrlInput.isBlank() && !clip.isNullOrBlank() && YouTubeHelper.isYouTubeUrl(clip)) {
+                                                youtubeUrlInput = clip.trim()
+                                                Toast.makeText(context, "Link YouTube dari clipboard berhasil ditempel!", Toast.LENGTH_SHORT).show()
+                                            }
+                                        },
+                                        label = {
+                                            Text(
+                                                text = if (youtubeUrlInput.isNotBlank()) "YouTube Terpasang" else "Link YouTube",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFFDC2626)
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Default.PlayCircle,
+                                                contentDescription = "YouTube",
+                                                tint = Color(0xFFDC2626),
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    )
+                                }
+                                item {
+                                    // Feeling button
+                                    FilterChip(
+                                        selected = selectedFeeling.isNotBlank(),
+                                        onClick = { showFeelingSheet = true },
+                                        label = {
+                                            Text(
+                                                text = if (selectedFeeling.isNotBlank()) selectedFeeling else "Perasaan/Aktivitas",
+                                                fontSize = 11.sp
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(Icons.Default.SentimentSatisfiedAlt, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        }
+                                    )
+                                }
+                                item {
+                                    // Tag friends button
+                                    FilterChip(
+                                        selected = taggedStudents.isNotEmpty(),
+                                        onClick = { showTagSheet = true },
+                                        label = {
+                                            Text(
+                                                text = if (taggedStudents.isNotEmpty()) "${taggedStudents.size} Ditandai" else "Tandai Teman",
+                                                fontSize = 11.sp
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(Icons.Default.PersonAdd, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

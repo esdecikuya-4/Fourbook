@@ -287,11 +287,11 @@ fun GalleryFeedScreen(
                                 Icon(
                                     Icons.Default.Videocam,
                                     contentDescription = null,
-                                    tint = Color(0xFFEF4444),
+                                    tint = Color(0xFFDC2626),
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Video", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = FbTextPrimary)
+                                Text("Video / YT", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = FbTextPrimary)
                             }
                         }
 

@@ -443,6 +443,12 @@ fun FacebookPostCard(
                             title = photo.title.ifBlank { photo.description },
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
+                    } else if (photo.videoUri.isNotBlank()) {
+                        LocalVideoPlayerCard(
+                            videoUri = photo.videoUri,
+                            title = photo.title.ifBlank { photo.description },
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
                     } else {
                         ClassVideoPlayer(
                             videoPresetKey = if (photo.videoPresetKey.isNotBlank()) photo.videoPresetKey else "video_science",

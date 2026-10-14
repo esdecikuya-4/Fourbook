@@ -236,7 +236,7 @@ fun AppUpdateHost() {
 
         is UpdateState.ReadyToInstall -> {
             Dialog(
-                onDismissRequest = { AppUpdateManager.dismiss() }
+                onDismissRequest = { AppUpdateManager.dismiss(context, s.info.versionCode) }
             ) {
                 Surface(
                     shape = RoundedCornerShape(24.dp),
@@ -295,7 +295,7 @@ fun AppUpdateHost() {
                         Spacer(modifier = Modifier.height(8.dp))
 
                         TextButton(
-                            onClick = { AppUpdateManager.dismiss() },
+                            onClick = { AppUpdateManager.dismiss(context, s.info.versionCode) },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text("Tutup", color = MaterialTheme.colorScheme.onSurfaceVariant)
