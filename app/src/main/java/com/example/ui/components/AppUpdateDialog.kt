@@ -44,7 +44,7 @@ fun AppUpdateHost() {
         is UpdateState.Available -> {
             Dialog(
                 onDismissRequest = {
-                    if (!s.info.forceUpdate) AppUpdateManager.dismiss()
+                    if (!s.info.forceUpdate) AppUpdateManager.dismiss(context, s.info.versionCode)
                 },
                 properties = DialogProperties(
                     dismissOnBackPress = !s.info.forceUpdate,
@@ -156,7 +156,7 @@ fun AppUpdateHost() {
                         if (!s.info.forceUpdate) {
                             Spacer(modifier = Modifier.height(8.dp))
                             TextButton(
-                                onClick = { AppUpdateManager.dismiss() },
+                                onClick = { AppUpdateManager.dismiss(context, s.info.versionCode) },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text("Nanti Saja", color = MaterialTheme.colorScheme.onSurfaceVariant)

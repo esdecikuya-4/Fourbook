@@ -87,8 +87,16 @@ object AppUpdateManager {
                     val remoteInfo = response.body()?.data
                     if (remoteInfo != null) {
                         val currentCode = getCurrentVersionCode(context)
+                        val prefs = context.getSharedPreferences("app_update_prefs", Context.MODE_PRIVATE)
+                        val dismissedVersion = prefs.getInt("dismissed_version_code", -1)
+
                         if (remoteInfo.versionCode > currentCode) {
-                            _updateState.value = UpdateState.Available(remoteInfo, isManual)
+                            if (!isManual && !remoteInfo.forceUpdate && remoteInfo.versionCode <= dismissedVersion) {
+                                // User previously dismissed this version, don't show auto popup
+                                _updateState.value = UpdateState.Idle
+                            } else {
+                                _updateState.value = UpdateState.Available(remoteInfo, isManual)
+                            }
                         } else {
                             if (isManual) {
                                 _updateState.value = UpdateState.UpToDate(getCurrentVersionName(context), isManual)
@@ -164,6 +172,23 @@ object AppUpdateManager {
             }
 
             if (apkFile != null && apkFile.exists() && apkFile.length() > 0) {
+                // Verify the downloaded APK's internal version code
+                val archiveInfo = context.packageManager.getPackageArchiveInfo(apkFile.absolutePath, 0)
+                val downloadedCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    archiveInfo?.longVersionCode?.toInt()
+                } else {
+                    @Suppress("DEPRECATION")
+                    archiveInfo?.versionCode
+                }
+
+                val currentCode = getCurrentVersionCode(context)
+                if (downloadedCode != null && downloadedCode <= currentCode) {
+                    _updateState.value = UpdateState.Error(
+                        "File APK di server cPanel masih versi lama (versionCode $downloadedCode, sedangkan aplikasi sudah versi $currentCode). Silakan upload file fourbook.apk terbaru ke cPanel."
+                    )
+                    return@launch
+                }
+
                 _updateState.value = UpdateState.ReadyToInstall(apkFile, info)
                 installApk(context, apkFile)
             } else {
@@ -202,7 +227,11 @@ object AppUpdateManager {
         }
     }
 
-    fun dismiss() {
+    fun dismiss(context: Context? = null, versionCodeToDismiss: Int? = null) {
+        if (context != null && versionCodeToDismiss != null) {
+            val prefs = context.getSharedPreferences("app_update_prefs", Context.MODE_PRIVATE)
+            prefs.edit().putInt("dismissed_version_code", versionCodeToDismiss).apply()
+        }
         _updateState.value = UpdateState.Idle
     }
 }
