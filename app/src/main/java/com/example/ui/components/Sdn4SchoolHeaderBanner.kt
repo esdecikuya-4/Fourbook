@@ -239,20 +239,38 @@ fun Sdn4SchoolHeaderBanner(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
-                    // Subtitle: SDN 4 PUTRAJAWA ONLINE COMMUNITY
+                    // Subtitle: SDN 4 PUTRAJAWA • SMART COMMUNITY
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.Black.copy(alpha = 0.55f),
-                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFFDE047).copy(alpha = 0.6f))
+                        shape = RoundedCornerShape(14.dp),
+                        color = Color(0xFF0F172A).copy(alpha = 0.75f),
+                        border = androidx.compose.foundation.BorderStroke(0.8.dp, Color(0xFFF59E0B).copy(alpha = 0.7f))
                     ) {
-                        Text(
-                            text = "SDN 4 PUTRAJAWA ONLINE COMMUNITY",
-                            color = Color(0xFFFDE047),
-                            fontSize = 9.5.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.sp,
-                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.5.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = "SDN 4 PUTRAJAWA",
+                                color = Color(0xFFFDE047),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.8.sp
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(3.5.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF38BDF8))
+                            )
+                            Text(
+                                text = "SMART COMMUNITY",
+                                color = Color(0xFF38BDF8),
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.6.sp
+                            )
+                        }
                     }
                 }
             }

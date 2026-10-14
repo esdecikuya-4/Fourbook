@@ -204,7 +204,7 @@ fun ProfileScreen(
                                     color = Color.Black.copy(alpha = 0.35f)
                                 ) {
                                     Text(
-                                        text = "SDN 4 PUTRAJAWA • ONLINE COMMUNITY",
+                                        text = "SDN 4 PUTRAJAWA • SMART COMMUNITY",
                                         color = Color.White,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,

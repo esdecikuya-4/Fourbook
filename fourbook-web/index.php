@@ -12,7 +12,7 @@ session_start();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=20261014a">
+  <link rel="stylesheet" href="css/style.css?v=20261014_smartcomm">
 </head>
 <body>
 
@@ -23,7 +23,7 @@ session_start();
         <div class="auth-header-content">
           <div class="auth-logo-wrapper">
             <div class="auth-logo-badge">
-              <span class="auth-logo-number">4</span>
+              <img src="images/fourbook_emblem_logo.svg?v=20261014" alt="Logo Fourbook SDN 4 Putrajawa" class="auth-emblem-img">
             </div>
             <div class="auth-logo-ring"></div>
           </div>
@@ -141,10 +141,16 @@ session_start();
     <!-- TOP HEADER -->
     <header class="fb-header">
       <div class="fb-brand" onclick="switchTab('beranda')">
-        <div class="fb-logo-circle">4</div>
+        <div class="fb-logo-circle">
+          <img src="images/fourbook_emblem_logo.svg?v=20261014" alt="Logo Fourbook SDN 4 Putrajawa" class="fb-header-emblem-img">
+        </div>
         <div class="fb-brand-title">
           <span class="fb-brand-name">Fourbook</span>
-          <span class="fb-school-tag">SDN 4 PUTRAJAWA ONLINE COMMUNITY</span>
+          <span class="fb-school-tag">
+            <span class="school-name-text">SDN 4 PUTRAJAWA</span>
+            <span class="school-tag-separator">•</span>
+            <span class="smart-comm-badge">SMART COMMUNITY</span>
+          </span>
         </div>
       </div>
 
@@ -201,10 +207,16 @@ session_start();
           <div class="hero-glow-circle"></div>
           <div class="hero-left">
             <div class="hero-branding-wrapper">
-              <div class="hero-logo-box">4</div>
+              <div class="hero-logo-box">
+                <img src="images/fourbook_emblem_logo.svg?v=20261014" alt="Logo Fourbook SDN 4 Putrajawa" class="hero-emblem-img">
+              </div>
               <div>
                 <h2 class="hero-title-main">Fourbook</h2>
-                <div class="hero-school-sub">SDN 4 PUTRAJAWA ONLINE COMMUNITY</div>
+                <div class="hero-school-sub">
+                  <span class="sub-school-text">SDN 4 PUTRAJAWA</span>
+                  <span class="sub-dot-bullet">•</span>
+                  <span class="sub-smart-text">SMART COMMUNITY</span>
+                </div>
               </div>
             </div>
             <p class="hero-description">Wadah kreatifitas, prestasi, galeri karya, dan interaksi akrab seluruh warga sekolah.</p>
