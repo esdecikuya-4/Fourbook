@@ -67,8 +67,8 @@ fun PostComposerDialog(
 
     // Video Post fields
     var selectedVideoUri by remember { mutableStateOf<Uri?>(null) }
-    var selectedVideoPresetKey by remember { mutableStateOf("video_science") }
-    var videoDurationSec by remember { mutableIntStateOf(45) }
+    var selectedVideoPresetKey by remember { mutableStateOf("") }
+    var videoDurationSec by remember { mutableIntStateOf(0) }
     var youtubeUrlInput by remember { mutableStateOf("") }
 
     // Audio / Music Post fields
@@ -962,15 +962,90 @@ fun PostComposerDialog(
                             )
                             Spacer(modifier = Modifier.height(6.dp))
 
-                            // Video file picker
-                            OutlinedButton(
-                                onClick = { videoPickerLauncher.launch("video/*") },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(Icons.Default.VideoFile, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Pilih File Video dari HP / Rekaman")
+                            if (selectedVideoUri != null) {
+                                Card(
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FDF4)),
+                                    border = BorderStroke(1.5.dp, Color(0xFF86EFAC)),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Surface(
+                                                color = Color(0xFF16A34A),
+                                                shape = CircleShape,
+                                                modifier = Modifier.size(40.dp)
+                                            ) {
+                                                Box(contentAlignment = Alignment.Center) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = null,
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(22.dp)
+                                                    )
+                                                }
+                                            }
+                                            Column {
+                                                Surface(
+                                                    color = Color(0xFF15803D),
+                                                    shape = RoundedCornerShape(4.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "VIDEO HP TERPILIH",
+                                                        color = Color.White,
+                                                        fontSize = 9.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(2.dp))
+                                                Text(
+                                                    text = "Video Rekaman HP Siap Diposting",
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFF14532D)
+                                                )
+                                                Text(
+                                                    text = "Suara dan video asli akan berputar penuh di aplikasi",
+                                                    fontSize = 10.sp,
+                                                    color = Color(0xFF166534)
+                                                )
+                                            }
+                                        }
+
+                                        IconButton(
+                                            onClick = { selectedVideoUri = null },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Hapus Video",
+                                                tint = Color(0xFFDC2626)
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Video file picker
+                                OutlinedButton(
+                                    onClick = { videoPickerLauncher.launch("video/*") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(Icons.Default.VideoFile, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Pilih File Video dari HP / Rekaman")
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))

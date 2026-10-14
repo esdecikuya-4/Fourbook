@@ -24,12 +24,16 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.CommentEntity
 import com.example.data.model.PhotoCategory
 import com.example.data.model.PhotoEntity
+import com.example.data.model.PostType
 import com.example.data.model.UserRole
 import com.example.data.repository.GalleryRepository
+import com.example.ui.components.LocalVideoPlayerCard
 import com.example.ui.components.MemberAvatar
 import com.example.ui.components.PhotoDisplay
 import com.example.ui.components.RoleBadge
+import com.example.ui.components.YouTubePlayerCard
 import com.example.ui.viewmodel.GalleryViewModel
+import com.example.util.YouTubeHelper
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -267,20 +271,76 @@ fun PhotoDetailScreen(
                 .padding(innerPadding),
             contentPadding = PaddingValues(bottom = 20.dp)
         ) {
-            // Big Photo Display
+            // Media Display (Video or Photo)
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                        .background(Color.Black)
-                ) {
-                    PhotoDisplay(
-                        imageUri = photo.imageUri,
-                        presetKey = photo.presetKey,
-                        contentDescription = photo.title,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                when (photo.postType) {
+                    PostType.VIDEO.name -> {
+                        val youtubeVideoId = YouTubeHelper.extractVideoId(photo.videoUri)
+                            ?: YouTubeHelper.extractVideoId(photo.description)
+                            ?: YouTubeHelper.extractVideoId(photo.title)
+
+                        val candidateVideoUrl = when {
+                            photo.videoUri.isNotBlank() -> photo.videoUri
+                            photo.description.contains("http://") || photo.description.contains("https://") -> {
+                                photo.description.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: ""
+                            }
+                            photo.title.contains("http://") || photo.title.contains("https://") -> {
+                                photo.title.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: ""
+                            }
+                            else -> ""
+                        }
+
+                        if (youtubeVideoId != null) {
+                            YouTubePlayerCard(
+                                videoId = youtubeVideoId,
+                                title = photo.title.ifBlank { photo.description }
+                            )
+                        } else if (candidateVideoUrl.isNotBlank()) {
+                            LocalVideoPlayerCard(
+                                videoUri = candidateVideoUrl,
+                                title = photo.title.ifBlank { photo.description }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(240.dp)
+                                    .background(Color(0xFF0F172A)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(
+                                        imageVector = Icons.Default.Videocam,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = photo.title.ifBlank { "Video Kegiatan SDN 4 Putrajawa" },
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(280.dp)
+                                .background(Color.Black)
+                        ) {
+                            PhotoDisplay(
+                                imageUri = photo.imageUri,
+                                presetKey = photo.presetKey,
+                                contentDescription = photo.title,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
                 }
             }
 

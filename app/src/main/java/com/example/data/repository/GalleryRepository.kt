@@ -12,6 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -615,38 +619,85 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
 
         // 2. Attempt remote post creation on balallica.my.id
         var remotePostId: Long? = null
+        var remoteMediaUrl: String? = null
         if (isSessionActive) {
             try {
                 val hexColor = "0x" + java.lang.Long.toHexString(uploader.avatarColor).uppercase()
                 val ytEmbed = detectedYouTube ?: if (resolvedVideoUri.contains("youtube") || resolvedVideoUri.contains("youtu.be")) resolvedVideoUri else ""
-                val createRes = FourbookApiClient.service.createPost(
-                    RemoteCreatePostRequest(
-                        title = title.trim(),
-                        description = description.trim(),
-                        category = category.displayName,
-                        postType = resolvedPostType.name,
-                        mediaUri = if (imageUri.startsWith("http")) imageUri else "",
-                        embedUrl = ytEmbed,
-                        uploaderId = uploader.id,
-                        uploaderName = uploader.fullName,
-                        uploaderRole = uploader.role,
-                        uploaderAvatarColor = hexColor,
-                        uploaderAvatarIcon = uploader.avatarIcon
+
+                val localFile = when {
+                    resolvedPostType == PostType.VIDEO && resolvedVideoUri.isNotBlank() && !resolvedVideoUri.startsWith("http") -> File(resolvedVideoUri)
+                    resolvedPostType == PostType.PHOTO && imageUri.isNotBlank() && !imageUri.startsWith("http") -> File(imageUri)
+                    resolvedPostType == PostType.AUDIO && audioUri.isNotBlank() && !audioUri.startsWith("http") -> File(audioUri)
+                    else -> null
+                }
+
+                if (localFile != null && localFile.exists()) {
+                    val mime = when (resolvedPostType) {
+                        PostType.VIDEO -> "video/mp4"
+                        PostType.AUDIO -> "audio/mpeg"
+                        else -> "image/jpeg"
+                    }
+                    val reqFile = localFile.asRequestBody(mime.toMediaTypeOrNull())
+                    val mediaPart = MultipartBody.Part.createFormData("mediaFile", localFile.name, reqFile)
+
+                    val createRes = FourbookApiClient.service.createPostMultipart(
+                        title = title.trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        description = description.trim().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        category = category.displayName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        postType = resolvedPostType.name.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        embedUrl = ytEmbed.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        uploaderId = uploader.id.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        uploaderName = uploader.fullName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        uploaderRole = uploader.role.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        uploaderAvatarColor = hexColor.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        uploaderAvatarIcon = uploader.avatarIcon.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        mediaFile = mediaPart
                     )
-                )
-                if (createRes.isSuccessful && (createRes.body()?.status == true || createRes.body()?.success == true)) {
-                    remotePostId = createRes.body()?.data?.post?.id
+                    if (createRes.isSuccessful && (createRes.body()?.status == true || createRes.body()?.success == true)) {
+                        val rp = createRes.body()?.data?.post
+                        remotePostId = rp?.id
+                        val rawMedia = rp?.mediaUri
+                        if (!rawMedia.isNullOrBlank()) {
+                            remoteMediaUrl = if (rawMedia.startsWith("http")) rawMedia else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rawMedia.trimStart('/')}"
+                        }
+                    }
+                } else {
+                    val createRes = FourbookApiClient.service.createPost(
+                        RemoteCreatePostRequest(
+                            title = title.trim(),
+                            description = description.trim(),
+                            category = category.displayName,
+                            postType = resolvedPostType.name,
+                            mediaUri = if (imageUri.startsWith("http")) imageUri else "",
+                            embedUrl = ytEmbed,
+                            uploaderId = uploader.id,
+                            uploaderName = uploader.fullName,
+                            uploaderRole = uploader.role,
+                            uploaderAvatarColor = hexColor,
+                            uploaderAvatarIcon = uploader.avatarIcon
+                        )
+                    )
+                    if (createRes.isSuccessful && (createRes.body()?.status == true || createRes.body()?.success == true)) {
+                        val rp = createRes.body()?.data?.post
+                        remotePostId = rp?.id
+                        val rawMedia = rp?.mediaUri
+                        if (!rawMedia.isNullOrBlank()) {
+                            remoteMediaUrl = if (rawMedia.startsWith("http")) rawMedia else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rawMedia.trimStart('/')}"
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
 
-        val postToInsert = if (remotePostId != null && remotePostId > 0) {
-            post.copy(id = remotePostId)
-        } else {
-            post
-        }
+        val postToInsert = post.copy(
+            id = if (remotePostId != null && remotePostId > 0) remotePostId else 0L,
+            videoUri = if (resolvedPostType == PostType.VIDEO && !remoteMediaUrl.isNullOrBlank()) remoteMediaUrl else post.videoUri,
+            imageUri = if (resolvedPostType == PostType.PHOTO && !remoteMediaUrl.isNullOrBlank()) remoteMediaUrl else post.imageUri,
+            audioUri = if (resolvedPostType == PostType.AUDIO && !remoteMediaUrl.isNullOrBlank()) remoteMediaUrl else post.audioUri
+        )
         val id = photoDao.insertPhoto(postToInsert)
 
         // Broadcast notification for new post to class members
@@ -1083,7 +1134,17 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                     ?: YouTubeHelper.extractEmbedUrl(rp.mediaUri)
 
                 val resolvedPostType = if (!youtubeUrl.isNullOrBlank()) PostType.VIDEO.name else mappedPostType
-                val resolvedVideoUri = if (!youtubeUrl.isNullOrBlank()) youtubeUrl else if (mappedPostType == PostType.VIDEO.name) mediaUrl else ""
+                val resolvedVideoUri = when {
+                    !youtubeUrl.isNullOrBlank() -> youtubeUrl
+                    mappedPostType == PostType.VIDEO.name && mediaUrl.isNotBlank() -> mediaUrl
+                    existing != null && existing.videoUri.isNotBlank() -> existing.videoUri
+                    else -> ""
+                }
+                val resolvedAudioUri = when {
+                    mappedPostType == PostType.AUDIO.name && mediaUrl.isNotBlank() -> mediaUrl
+                    existing != null && existing.audioUri.isNotBlank() -> existing.audioUri
+                    else -> ""
+                }
 
                 val postEntity = PhotoEntity(
                     id = rp.id,
@@ -1091,9 +1152,9 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                     description = rp.description ?: "",
                     category = mappedCategory,
                     postType = resolvedPostType,
-                    imageUri = if (resolvedPostType == PostType.PHOTO.name) mediaUrl else "",
+                    imageUri = if (resolvedPostType == PostType.PHOTO.name) (if (mediaUrl.isNotBlank()) mediaUrl else (existing?.imageUri ?: "")) else "",
                     videoUri = resolvedVideoUri,
-                    audioUri = if (resolvedPostType == PostType.AUDIO.name) mediaUrl else "",
+                    audioUri = resolvedAudioUri,
                     audioTitle = if (resolvedPostType == PostType.AUDIO.name) (rp.title ?: "") else "",
                     audioArtist = if (resolvedPostType == PostType.AUDIO.name) rp.uploaderName else "",
                     statusBackgroundKey = existing?.statusBackgroundKey ?: "",

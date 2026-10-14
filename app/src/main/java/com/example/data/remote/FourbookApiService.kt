@@ -5,7 +5,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -209,6 +211,22 @@ interface FourbookApiService {
 
     @POST("api/posts.php?action=create_post")
     suspend fun createPost(@Body request: RemoteCreatePostRequest): Response<RemoteCreatePostResponse>
+
+    @Multipart
+    @POST("api/posts.php?action=create_post")
+    suspend fun createPostMultipart(
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("category") category: RequestBody,
+        @Part("postType") postType: RequestBody,
+        @Part("embedUrl") embedUrl: RequestBody,
+        @Part("uploaderId") uploaderId: RequestBody,
+        @Part("uploaderName") uploaderName: RequestBody,
+        @Part("uploaderRole") uploaderRole: RequestBody,
+        @Part("uploaderAvatarColor") uploaderAvatarColor: RequestBody,
+        @Part("uploaderAvatarIcon") uploaderAvatarIcon: RequestBody,
+        @Part mediaFile: MultipartBody.Part?
+    ): Response<RemoteCreatePostResponse>
 
     @POST("api/posts.php?action=toggle_reaction")
     suspend fun toggleReaction(@Body request: RemoteToggleReactionRequest): Response<RemoteApiResponse>

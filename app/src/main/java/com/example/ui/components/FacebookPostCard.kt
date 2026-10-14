@@ -437,25 +437,74 @@ fun FacebookPostCard(
                         ?: YouTubeHelper.extractVideoId(photo.description)
                         ?: YouTubeHelper.extractVideoId(photo.title)
 
+                    val candidateVideoUrl = when {
+                        photo.videoUri.isNotBlank() -> photo.videoUri
+                        photo.description.contains("http://") || photo.description.contains("https://") -> {
+                            photo.description.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: ""
+                        }
+                        photo.title.contains("http://") || photo.title.contains("https://") -> {
+                            photo.title.split("\\s+".toRegex()).firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: ""
+                        }
+                        else -> ""
+                    }
+
                     if (youtubeVideoId != null) {
                         YouTubePlayerCard(
                             videoId = youtubeVideoId,
                             title = photo.title.ifBlank { photo.description },
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
-                    } else if (photo.videoUri.isNotBlank()) {
+                    } else if (candidateVideoUrl.isNotBlank()) {
                         LocalVideoPlayerCard(
-                            videoUri = photo.videoUri,
+                            videoUri = candidateVideoUrl,
                             title = photo.title.ifBlank { photo.description },
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                     } else {
-                        ClassVideoPlayer(
-                            videoPresetKey = if (photo.videoPresetKey.isNotBlank()) photo.videoPresetKey else "video_science",
-                            videoDurationSec = photo.videoDurationSec,
-                            videoTitle = photo.title,
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        )
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = Color(0xFF1E293B),
+                                    modifier = Modifier.size(54.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Default.Videocam,
+                                            contentDescription = null,
+                                            tint = Color(0xFF94A3B8),
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    text = photo.title.ifBlank { "Video Kegiatan SDN 4 Putrajawa" },
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Berkas video sedang disinkronkan dari server atau tautan video belum terisi.",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 11.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
                     }
                 }
 

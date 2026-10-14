@@ -125,12 +125,6 @@ object AppUpdateManager {
 
     fun startDownloadAndInstall(context: Context, info: RemoteAppVersionInfo) {
         scope.launch {
-            // Mark version as processed so subsequent launches don't re-prompt
-            try {
-                val prefs = context.getSharedPreferences("app_update_prefs", Context.MODE_PRIVATE)
-                prefs.edit().putInt("dismissed_version_code", info.versionCode).apply()
-            } catch (_: Exception) {}
-
             _updateState.value = UpdateState.Downloading(0f, "0 MB", info.apkSizeMb)
 
             val apkFile = withContext(Dispatchers.IO) {
