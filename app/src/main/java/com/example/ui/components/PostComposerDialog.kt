@@ -70,7 +70,7 @@ fun PostComposerDialog(
 
     // Audio / Music Post fields
     var selectedAudioUri by remember { mutableStateOf<Uri?>(null) }
-    var selectedAudioPresetKey by remember { mutableStateOf("audio_mars_sdn4") }
+    var selectedAudioPresetKey by remember { mutableStateOf("") }
     var audioArtistName by remember { mutableStateOf(currentUser?.fullName ?: "SDN 4 Putrajawa") }
     var audioDurationSec by remember { mutableIntStateOf(90) }
     var audioFileName by remember { mutableStateOf("") }

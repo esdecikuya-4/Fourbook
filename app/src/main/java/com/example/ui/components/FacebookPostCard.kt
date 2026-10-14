@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -220,12 +222,32 @@ fun FacebookPostCard(
                         customPhotoUri = photo.uploaderCustomPhotoUri,
                         size = 44.dp,
                         modifier = Modifier
-                            .clickable { onUserClick?.invoke(photo.uploaderId) }
+                            .clickable {
+                                onUserClick?.invoke(photo.uploaderId)
+                                viewModel.showMemberProfileById(
+                                    userId = photo.uploaderId,
+                                    fallbackName = photo.uploaderName,
+                                    fallbackRole = photo.uploaderRole,
+                                    fallbackColor = photo.uploaderAvatarColor,
+                                    fallbackIcon = photo.uploaderAvatarIcon,
+                                    fallbackPhotoUri = photo.uploaderCustomPhotoUri
+                                )
+                            }
                             .testTag("post_author_avatar_${photo.id}")
                     )
 
                     Column(
-                        modifier = Modifier.clickable { onUserClick?.invoke(photo.uploaderId) }
+                        modifier = Modifier.clickable {
+                            onUserClick?.invoke(photo.uploaderId)
+                            viewModel.showMemberProfileById(
+                                userId = photo.uploaderId,
+                                fallbackName = photo.uploaderName,
+                                fallbackRole = photo.uploaderRole,
+                                fallbackColor = photo.uploaderAvatarColor,
+                                fallbackIcon = photo.uploaderAvatarIcon,
+                                fallbackPhotoUri = photo.uploaderCustomPhotoUri
+                            )
+                        }
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -414,7 +436,10 @@ fun FacebookPostCard(
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                     AudioTrackPostPlayer(
-                        audioKey = photo.audioPresetKey.ifEmpty { "audio_mars_sdn4" },
+                        audioUri = photo.audioUri,
+                        audioTitle = photo.audioTitle.ifEmpty { photo.title },
+                        audioArtist = photo.audioArtist.ifEmpty { photo.uploaderName },
+                        audioKey = photo.audioPresetKey,
                         isPlaying = isAudioPlaying,
                         onTogglePlay = { isAudioPlaying = !isAudioPlaying },
                         modifier = Modifier.padding(horizontal = 12.dp)
@@ -857,7 +882,18 @@ fun FacebookPostCard(
                                     currentUserRole = currentUser?.role ?: "",
                                     onDelete = { viewModel.deleteComment(comment) },
                                     onEdit = { newText -> viewModel.updateComment(comment, newText) },
-                                    onUserClick = onUserClick
+                                    onUserClick = onUserClick,
+                                    onAuthorClick = {
+                                        onUserClick?.invoke(comment.userId)
+                                        viewModel.showMemberProfileById(
+                                            userId = comment.userId,
+                                            fallbackName = comment.userName,
+                                            fallbackRole = comment.userRole,
+                                            fallbackColor = comment.userAvatarColor,
+                                            fallbackIcon = if (comment.userRole == UserRole.WALI_KELAS.name) "teacher" else "student",
+                                            fallbackPhotoUri = comment.userCustomPhotoUri
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -956,7 +992,8 @@ fun PostCommentBubble(
     currentUserRole: String,
     onDelete: () -> Unit,
     onEdit: (String) -> Unit,
-    onUserClick: ((Long) -> Unit)? = null
+    onUserClick: ((Long) -> Unit)? = null,
+    onAuthorClick: (() -> Unit)? = null
 ) {
     val isTeacherComment = comment.userRole == UserRole.WALI_KELAS.name
     val canModify = currentUserId == comment.userId || currentUserRole == UserRole.WALI_KELAS.name
@@ -1055,7 +1092,7 @@ fun PostCommentBubble(
             customPhotoUri = comment.userCustomPhotoUri,
             size = 34.dp,
             modifier = Modifier
-                .clickable { onUserClick?.invoke(comment.userId) }
+                .clickable { onAuthorClick?.invoke() ?: onUserClick?.invoke(comment.userId) }
                 .testTag("comment_author_avatar_${comment.id}")
         )
 
@@ -1072,7 +1109,7 @@ fun PostCommentBubble(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.clickable { onUserClick?.invoke(comment.userId) }
+                        modifier = Modifier.clickable { onAuthorClick?.invoke() ?: onUserClick?.invoke(comment.userId) }
                     ) {
                         Text(
                             text = comment.userName,
@@ -1148,19 +1185,80 @@ fun PostCommentBubble(
 
 @Composable
 fun AudioTrackPostPlayer(
-    audioKey: String,
+    audioUri: String = "",
+    audioTitle: String = "",
+    audioArtist: String = "",
+    audioKey: String = "",
     isPlaying: Boolean,
     onTogglePlay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val trackInfo = remember(audioKey) {
-        PresetAudioTracks.getByKey(audioKey) ?: PresetAudioTracks.tracks.first()
+    val context = LocalContext.current
+    val preset = if (audioKey.isNotBlank()) PresetAudioTracks.getByKey(audioKey) else null
+
+    val displayTitle = when {
+        audioTitle.isNotBlank() -> audioTitle
+        preset != null -> preset.title
+        else -> "Audio / Musik SDN 4"
+    }
+
+    val displayArtist = when {
+        audioArtist.isNotBlank() -> audioArtist
+        preset != null -> preset.artist
+        else -> "Warga SDN 4 Putrajawa"
+    }
+
+    val themeColor = preset?.primaryColor ?: Color(0xFF8B5CF6)
+
+    // Real audio playback when audioUri is provided
+    DisposableEffect(audioUri, isPlaying) {
+        var mediaPlayer: MediaPlayer? = null
+        if (isPlaying && audioUri.isNotBlank()) {
+            try {
+                mediaPlayer = MediaPlayer().apply {
+                    val cleanUri = audioUri.trim()
+                    if (cleanUri.startsWith("content://") || cleanUri.startsWith("file://")) {
+                        setDataSource(context, Uri.parse(cleanUri))
+                    } else if (cleanUri.startsWith("http://") || cleanUri.startsWith("https://")) {
+                        setDataSource(cleanUri)
+                    } else {
+                        val file = File(cleanUri)
+                        if (file.exists()) {
+                            setDataSource(file.absolutePath)
+                        } else {
+                            val remoteFullUrl = if (cleanUri.startsWith("uploads/")) {
+                                "${com.example.data.remote.FourbookApiClient.BASE_URL.trimEnd('/')}/$cleanUri"
+                            } else cleanUri
+                            setDataSource(remoteFullUrl)
+                        }
+                    }
+                    setOnCompletionListener {
+                        onTogglePlay()
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        onTogglePlay()
+                        true
+                    }
+                    prepare()
+                    start()
+                }
+            } catch (_: Exception) {
+                // Graceful fallback to UI animation if audio source is inaccessible
+            }
+        }
+
+        onDispose {
+            try {
+                mediaPlayer?.stop()
+                mediaPlayer?.release()
+            } catch (_: Exception) {}
+        }
     }
 
     Surface(
         shape = RoundedCornerShape(14.dp),
-        color = trackInfo.primaryColor.copy(alpha = 0.1f),
-        border = BorderStroke(1.dp, trackInfo.primaryColor.copy(alpha = 0.3f)),
+        color = themeColor.copy(alpha = 0.1f),
+        border = BorderStroke(1.dp, themeColor.copy(alpha = 0.3f)),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -1172,7 +1270,7 @@ fun AudioTrackPostPlayer(
                 onClick = onTogglePlay,
                 modifier = Modifier
                     .size(46.dp)
-                    .background(trackInfo.primaryColor, CircleShape)
+                    .background(themeColor, CircleShape)
             ) {
                 Icon(
                     imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -1184,7 +1282,7 @@ fun AudioTrackPostPlayer(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = trackInfo.title,
+                    text = displayTitle,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -1192,7 +1290,7 @@ fun AudioTrackPostPlayer(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${trackInfo.artist} • ${PresetAudioTracks.formatDuration(trackInfo.durationSec)}",
+                    text = "$displayArtist • MP3 Audio",
                     fontSize = 11.sp,
                     color = FbTextSec,
                     maxLines = 1
@@ -1205,7 +1303,9 @@ fun AudioTrackPostPlayer(
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.height(14.dp)
                 ) {
-                    trackInfo.waveHeights.take(10).forEachIndexed { idx, heightFrac ->
+                    val defaultWaves = listOf(0.4f, 0.7f, 1.0f, 0.6f, 0.8f, 0.5f, 0.9f, 0.7f, 0.4f, 0.6f)
+                    val waveHeights = preset?.waveHeights ?: defaultWaves
+                    waveHeights.take(10).forEachIndexed { idx, heightFrac ->
                         val infiniteTransition = rememberInfiniteTransition(label = "audio_wave")
                         val animHeight by infiniteTransition.animateFloat(
                             initialValue = heightFrac * 0.4f,
@@ -1222,7 +1322,7 @@ fun AudioTrackPostPlayer(
                             modifier = Modifier
                                 .width(3.dp)
                                 .fillMaxHeight(currentHeight.coerceIn(0.15f, 1f))
-                                .background(trackInfo.primaryColor, RoundedCornerShape(2.dp))
+                                .background(themeColor, RoundedCornerShape(2.dp))
                         )
                     }
                 }

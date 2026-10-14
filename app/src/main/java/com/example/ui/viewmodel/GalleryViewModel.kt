@@ -490,14 +490,40 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         _selectedMemberProfile.value = user
     }
 
-    fun showMemberProfileById(userId: Long) {
+    fun showMemberProfileById(
+        userId: Long,
+        fallbackName: String = "",
+        fallbackRole: String = "MURID",
+        fallbackColor: Long = 0xFF1877F2,
+        fallbackIcon: String = "student",
+        fallbackPhotoUri: String = ""
+    ) {
         val found = allUsers.value.find { it.id == userId }
+            ?: (if (fallbackName.isNotBlank()) allUsers.value.find { it.fullName.equals(fallbackName, ignoreCase = true) } else null)
+
         if (found != null) {
             _selectedMemberProfile.value = found
-        } else {
-            viewModelScope.launch {
-                val user = repository.getUserById(userId)
+            return
+        }
+
+        viewModelScope.launch {
+            val user = repository.getUserById(userId)
+            if (user != null) {
                 _selectedMemberProfile.value = user
+            } else if (fallbackName.isNotBlank()) {
+                val tempUser = UserEntity(
+                    id = if (userId > 0) userId else (System.currentTimeMillis() % 100000),
+                    username = fallbackName.lowercase().replace(" ", "."),
+                    password = "123",
+                    fullName = fallbackName,
+                    role = fallbackRole,
+                    studentNumber = "SDN 4 Putrajawa",
+                    avatarColor = fallbackColor,
+                    avatarIcon = fallbackIcon,
+                    customPhotoUri = fallbackPhotoUri,
+                    bio = "Warga SDN 4 Putrajawa • Smart Community"
+                )
+                _selectedMemberProfile.value = tempUser
             }
         }
     }

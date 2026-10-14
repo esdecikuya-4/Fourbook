@@ -1597,7 +1597,15 @@ function escapeHtml(str) {
 
 function openModal(id) {
   const m = document.getElementById(id);
-  if (m) m.classList.add('active');
+  if (m) {
+    m.classList.add('active');
+    if (id === 'createPostModal') {
+      const uName = document.getElementById('composer-user-name');
+      if (uName && state.currentUser) {
+        uName.innerText = state.currentUser.fullName || 'Warga SDN 4 Putrajawa';
+      }
+    }
+  }
 }
 
 function closeModal(id) {

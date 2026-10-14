@@ -342,24 +342,26 @@ session_start();
       </div>
       <form id="create-post-form" onsubmit="createNewPost(event)">
         <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">Judul Postingan (Opsional)</label>
-            <input type="text" name="title" id="create-post-title" class="form-input" placeholder="Contoh: Lagu Mars SDN 4 / Praktikum IPA">
+          <!-- Hidden default fields -->
+          <input type="hidden" name="title" id="create-post-title" value="">
+          <input type="hidden" name="category" id="create-post-category" value="Umum">
+
+          <!-- User Identity Bar in Composer -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div class="avatar-circle my-avatar" style="width: 44px; height: 44px; font-size: 16px;">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <div id="composer-user-name" style="font-weight: 700; font-size: 14px; color: #050505;">Warga SDN 4 Putrajawa</div>
+              <div style="display: inline-flex; align-items: center; gap: 4px; background: #F0F2F5; border-radius: 12px; padding: 2px 8px; font-size: 11px; color: #65676B; font-weight: 600;">
+                <i class="fa-solid fa-earth-americas" style="font-size: 10px;"></i> Publik • SDN 4 Putrajawa
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Kategori</label>
-            <select name="category" class="form-select">
-              <option value="Umum">Umum</option>
-              <option value="Akademik">Akademik</option>
-              <option value="Kesenian">Kesenian</option>
-              <option value="Pengumuman">Pengumuman</option>
-              <option value="Olahraga">Olahraga</option>
-              <option value="Pramuka">Pramuka</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Isi Postingan</label>
-            <textarea name="description" id="create-post-desc" class="form-textarea" rows="3" placeholder="Apa yang ingin Anda bagikan? (Tempel tautan YouTube di sini untuk otomatis ter-embed)" oninput="handlePostDescInput(this.value)" required></textarea>
+
+          <!-- Single clean thoughts textarea (No mandatory fields) -->
+          <div class="form-group" style="margin-bottom: 10px;">
+            <textarea name="description" id="create-post-desc" class="form-textarea" rows="4" placeholder="Apa yang Anda pikirkan? Tulis status, ceritakan kegiatan, atau bagikan karya audio/foto..." oninput="handlePostDescInput(this.value)" style="border: none; background: #F8FAFC; border-radius: 12px; font-size: 15px; resize: none; padding: 12px;"></textarea>
           </div>
 
           <!-- YouTube Embed Detected Live Box -->
