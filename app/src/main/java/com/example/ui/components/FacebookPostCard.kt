@@ -510,7 +510,7 @@ fun FacebookPostCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                    .padding(horizontal = 14.dp, vertical = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -519,8 +519,9 @@ fun FacebookPostCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
+                        .weight(1f, fill = false)
                         .clip(RoundedCornerShape(12.dp))
-                        .clickable { showReactionsDialog = true }
+                        .clickable { if (photo.likeCount > 0) showReactionsDialog = true }
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                         .testTag("reaction_summary_${photo.id}")
                 ) {
@@ -547,20 +548,27 @@ fun FacebookPostCard(
                             text = "${photo.likeCount}",
                             fontSize = 12.sp,
                             color = FbTextSec,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     } else {
                         Text(
                             text = "Jadilah yang pertama menyukai 👍",
                             fontSize = 11.sp,
-                            color = FbTextSec.copy(alpha = 0.8f)
+                            color = FbTextSec.copy(alpha = 0.8f),
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
-                // Right: Comments & Share counts
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Right: Comments & Share counts (neat horizontal layout, no vertical wrapping)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -568,23 +576,30 @@ fun FacebookPostCard(
                         fontSize = 12.sp,
                         color = FbTextSec,
                         fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        softWrap = false,
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .clickable { showCommentSection = !showCommentSection }
                             .padding(horizontal = 4.dp, vertical = 2.dp)
                             .testTag("comment_count_btn_${photo.id}")
                     )
-                    Text(
-                        text = "•",
-                        fontSize = 12.sp,
-                        color = FbTextSec
-                    )
-                    Text(
-                        text = "${photo.shareCount} Bagikan",
-                        fontSize = 12.sp,
-                        color = FbTextSec,
-                        fontWeight = FontWeight.Medium
-                    )
+                    // Only show share count if it has been shared at least once
+                    if (photo.shareCount > 0) {
+                        Text(
+                            text = "•",
+                            fontSize = 12.sp,
+                            color = FbTextSec
+                        )
+                        Text(
+                            text = "${photo.shareCount} Bagikan",
+                            fontSize = 12.sp,
+                            color = FbTextSec,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
             }
 
