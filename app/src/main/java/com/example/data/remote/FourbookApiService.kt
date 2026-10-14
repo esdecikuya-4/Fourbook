@@ -165,11 +165,31 @@ data class RemoteApiResponse(
     val message: String? = null
 )
 
+data class RemoteAppVersionInfo(
+    val versionCode: Int = 1,
+    val versionName: String = "1.0",
+    val apkUrl: String = "https://balallica.my.id/fourbook.apk",
+    val apkSizeMb: String = "24 MB",
+    val releaseNotes: String = "",
+    val releaseDate: String = "",
+    val forceUpdate: Boolean = false
+)
+
+data class RemoteAppVersionResponse(
+    val status: Boolean = false,
+    val success: Boolean = false,
+    val message: String? = null,
+    val data: RemoteAppVersionInfo? = null
+)
+
 // ----------------------------------------------------
 // Retrofit Service Interface
 // ----------------------------------------------------
 
 interface FourbookApiService {
+    @GET("api/version.php")
+    suspend fun checkAppVersion(): Response<RemoteAppVersionResponse>
+
     @POST("api/auth.php?action=login")
     suspend fun login(@Body request: RemoteAuthRequest): Response<RemoteAuthResponse>
 

@@ -45,6 +45,7 @@ import com.example.data.model.UserRole
 import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.GalleryViewModel
+import com.example.util.AppUpdateManager
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +54,7 @@ fun ProfileScreen(
     viewModel: GalleryViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val currentUser by viewModel.currentUser.collectAsState()
     val allPhotos by viewModel.allPhotos.collectAsState()
 
@@ -343,6 +345,45 @@ fun ProfileScreen(
                                     Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text("Buat Postingan", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Auto-Update check bar
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFF8FAFC),
+                                border = BorderStroke(0.8.dp, Color(0xFFCBD5E1)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        AppUpdateManager.checkForUpdate(context, isManual = true)
+                                    }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.SystemUpdate,
+                                        contentDescription = null,
+                                        tint = FbBluePrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Versi Aplikasi: v${AppUpdateManager.getCurrentVersionName(context)}",
+                                        fontSize = 12.sp,
+                                        color = FbTextSecondary,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Text(
+                                        text = "Periksa Update",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = FbBluePrimary
+                                    )
                                 }
                             }
                         }

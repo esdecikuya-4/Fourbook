@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.example.ui.components.MemberAvatar
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.GalleryViewModel
 import com.example.ui.viewmodel.MainTab
+import com.example.util.AppUpdateManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +35,7 @@ fun AdminMenuSheet(
     val currentUser by viewModel.currentUser.collectAsState()
     val allUsers by viewModel.allUsers.collectAsState()
     val attendanceSummary by viewModel.attendanceSummary.collectAsState()
+    val context = LocalContext.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -234,6 +237,64 @@ fun AdminMenuSheet(
                         tint = Color(0xFF16A34A),
                         modifier = Modifier.size(20.dp)
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // App Auto-Update Card
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color(0xFFEFF6FF),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        AppUpdateManager.checkForUpdate(context, isManual = true)
+                    }
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF1877F2))
+                    ) {
+                        Icon(
+                            Icons.Default.SystemUpdate,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Pembaruan Aplikasi (Auto-Update)",
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1E40AF)
+                        )
+                        Text(
+                            text = "Versi: v${AppUpdateManager.getCurrentVersionName(context)} • Ketuk cek update",
+                            fontSize = 11.sp,
+                            color = Color(0xFF3B82F6)
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            AppUpdateManager.checkForUpdate(context, isManual = true)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1877F2)),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text("Cek Update", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

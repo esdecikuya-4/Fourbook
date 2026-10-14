@@ -17,11 +17,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.ui.components.AppUpdateHost
 import com.example.ui.screens.*
 import com.example.ui.theme.FbBg
 import com.example.ui.theme.FbBluePrimary
@@ -31,6 +33,7 @@ import com.example.ui.theme.FbTextSecondary
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.GalleryViewModel
 import com.example.ui.viewmodel.MainTab
+import com.example.util.AppUpdateManager
 
 class MainActivity : ComponentActivity() {
     private val viewModel: GalleryViewModel by viewModels()
@@ -57,6 +60,11 @@ fun GalleryApp(
     viewModel: GalleryViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        AppUpdateManager.checkForUpdate(context, isManual = false)
+    }
+
     val currentUser by viewModel.currentUser.collectAsState()
     val activeTab by viewModel.activeTab.collectAsState()
     val selectedPhoto by viewModel.selectedPhoto.collectAsState()
@@ -459,5 +467,8 @@ fun GalleryApp(
                 }
             )
         }
+
+        // In-App Auto Update Modal & Progress Host
+        AppUpdateHost()
     }
 }
