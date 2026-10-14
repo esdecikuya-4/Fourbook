@@ -38,6 +38,7 @@ import com.example.data.model.CommentEntity
 import com.example.data.model.PhotoEntity
 import com.example.data.model.PostType
 import com.example.data.model.ReactionType
+import com.example.util.YouTubeHelper
 import com.example.data.model.UserEntity
 import com.example.data.model.UserRole
 import com.example.data.repository.GalleryRepository
@@ -358,7 +359,11 @@ fun FacebookPostCard(
             // 2. Post Content (Text Status, Video, Audio MP3, or Photo)
             when (photo.postType) {
                 PostType.TEXT_STATUS.name -> {
-                    if (photo.statusBackgroundKey.isNotBlank() && photo.statusBackgroundKey != "none") {
+                    val youtubeVideoId = YouTubeHelper.extractVideoId(photo.videoUri)
+                        ?: YouTubeHelper.extractVideoId(photo.description)
+                        ?: YouTubeHelper.extractVideoId(photo.title)
+
+                    if (photo.statusBackgroundKey.isNotBlank() && photo.statusBackgroundKey != "none" && youtubeVideoId == null) {
                         val brush = getGradientForKey(photo.statusBackgroundKey)
                         Box(
                             modifier = Modifier
@@ -378,13 +383,32 @@ fun FacebookPostCard(
                             )
                         }
                     } else {
-                        Text(
-                            text = photo.description,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                            lineHeight = 21.sp
-                        )
+                        if (photo.title.isNotBlank()) {
+                            Text(
+                                text = photo.title,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                            )
+                        }
+                        if (photo.description.isNotBlank()) {
+                            Text(
+                                text = photo.description,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                lineHeight = 21.sp
+                            )
+                        }
+                        if (youtubeVideoId != null) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            YouTubePlayerCard(
+                                videoId = youtubeVideoId,
+                                title = photo.title.ifBlank { "Video YouTube" },
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
                     }
                 }
 
@@ -401,18 +425,32 @@ fun FacebookPostCard(
                     if (photo.description.isNotBlank()) {
                         Text(
                             text = photo.description,
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 2.dp)
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp),
+                            lineHeight = 20.sp
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
-                    ClassVideoPlayer(
-                        videoPresetKey = if (photo.videoPresetKey.isNotBlank()) photo.videoPresetKey else "video_science",
-                        videoDurationSec = photo.videoDurationSec,
-                        videoTitle = photo.title,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+
+                    val youtubeVideoId = YouTubeHelper.extractVideoId(photo.videoUri)
+                        ?: YouTubeHelper.extractVideoId(photo.description)
+                        ?: YouTubeHelper.extractVideoId(photo.title)
+
+                    if (youtubeVideoId != null) {
+                        YouTubePlayerCard(
+                            videoId = youtubeVideoId,
+                            title = photo.title.ifBlank { photo.description },
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    } else {
+                        ClassVideoPlayer(
+                            videoPresetKey = if (photo.videoPresetKey.isNotBlank()) photo.videoPresetKey else "video_science",
+                            videoDurationSec = photo.videoDurationSec,
+                            videoTitle = photo.title,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
                 }
 
                 PostType.AUDIO.name -> {
@@ -466,18 +504,30 @@ fun FacebookPostCard(
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(230.dp)
-                            .clickable { onPhotoClick(photo) }
-                    ) {
-                        PhotoDisplay(
-                            imageUri = photo.imageUri,
-                            presetKey = photo.presetKey.ifEmpty { "preset_event" },
-                            contentDescription = photo.title,
-                            modifier = Modifier.fillMaxSize()
+                    val youtubeVideoId = YouTubeHelper.extractVideoId(photo.videoUri)
+                        ?: YouTubeHelper.extractVideoId(photo.description)
+                        ?: YouTubeHelper.extractVideoId(photo.title)
+
+                    if (youtubeVideoId != null) {
+                        YouTubePlayerCard(
+                            videoId = youtubeVideoId,
+                            title = photo.title.ifBlank { photo.description },
+                            modifier = Modifier.padding(horizontal = 8.dp)
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(230.dp)
+                                .clickable { onPhotoClick(photo) }
+                        ) {
+                            PhotoDisplay(
+                                imageUri = photo.imageUri,
+                                presetKey = photo.presetKey.ifEmpty { "preset_event" },
+                                contentDescription = photo.title,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }

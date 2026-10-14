@@ -14,11 +14,11 @@ $dataFile = __DIR__ . '/../data/app_version.json';
 // Return current version metadata
 if (!file_exists($dataFile)) {
     $defaultData = [
-        'versionCode' => 2,
-        'versionName' => '1.0.2',
+        'versionCode' => 3,
+        'versionName' => '1.0.3',
         'apkUrl' => 'https://balallica.my.id/fourbook.apk',
         'apkSizeMb' => '24 MB',
-        'releaseNotes' => 'Pembaruan SDN 4 Putrajawa: Tampilan baru dan auto-update aplikasi.',
+        'releaseNotes' => 'Pembaruan SDN 4 Putrajawa: Pemutar video YouTube langsung aktif dengan suara dan durasi penuh.',
         'releaseDate' => '2026-10-14',
         'forceUpdate' => false
     ];
@@ -30,8 +30,8 @@ $versionData = json_decode($content, true);
 
 if (!$versionData) {
     $versionData = [
-        'versionCode' => 2,
-        'versionName' => '1.0.2',
+        'versionCode' => 3,
+        'versionName' => '1.0.3',
         'apkUrl' => 'https://balallica.my.id/fourbook.apk',
         'apkSizeMb' => '24 MB',
         'releaseNotes' => 'Pembaruan SDN 4 Putrajawa',

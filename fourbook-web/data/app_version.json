@@ -1,9 +1,9 @@
 {
-  "versionCode": 2,
-  "versionName": "1.0.2",
+  "versionCode": 3,
+  "versionName": "1.0.3",
   "apkUrl": "https://balallica.my.id/fourbook.apk",
   "apkSizeMb": "24 MB",
-  "releaseNotes": "1. Tampilan header dan deskripsi lebih rapi sejajar.\n2. Perbaikan baris interaksi postingan.\n3. Fitur pembaruan otomatis langsung di aplikasi.",
+  "releaseNotes": "1. Pemutaran video link YouTube playable sempurna (ada suara, video HD, durasi penuh sesuai YouTube).\n2. Tombol praktis 'Buka YouTube' untuk menonton langsung di aplikasi YouTube.\n3. Perbaikan sinkronisasi postingan video dari web.",
   "releaseDate": "2026-10-14",
   "forceUpdate": false
 }

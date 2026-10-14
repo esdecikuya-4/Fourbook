@@ -101,6 +101,7 @@ data class RemotePost(
     val postType: String? = null,
     val mediaUri: String? = null,
     val mediaType: String? = null,
+    val embedUrl: String? = null,
     val likeCount: Int = 0,
     val timestamp: Long = 0L,
     val comments: List<RemoteComment>? = null

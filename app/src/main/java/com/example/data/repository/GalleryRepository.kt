@@ -7,6 +7,7 @@ import android.net.Uri
 import com.example.data.local.AppDatabase
 import com.example.data.model.*
 import com.example.data.remote.*
+import com.example.util.YouTubeHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -557,16 +558,23 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         uploader: UserEntity,
         taggedStudentNames: String = ""
     ): Result<Long> = withContext(Dispatchers.IO) {
-        if (postType == PostType.TEXT_STATUS && description.trim().isEmpty() && title.trim().isEmpty()) {
+        val detectedYouTube = YouTubeHelper.extractEmbedUrl(videoUri)
+            ?: YouTubeHelper.extractEmbedUrl(description)
+            ?: YouTubeHelper.extractEmbedUrl(title)
+
+        val resolvedPostType = if (detectedYouTube != null && postType == PostType.TEXT_STATUS) PostType.VIDEO else postType
+        val resolvedVideoUri = detectedYouTube ?: videoUri
+
+        if (resolvedPostType == PostType.TEXT_STATUS && description.trim().isEmpty() && title.trim().isEmpty()) {
             return@withContext Result.failure(Exception("Status teks tidak boleh kosong"))
         }
-        if (postType == PostType.PHOTO && imageUri.isBlank() && presetKey.isBlank()) {
+        if (resolvedPostType == PostType.PHOTO && imageUri.isBlank() && presetKey.isBlank()) {
             return@withContext Result.failure(Exception("Pilih foto atau gambar terlebih dahulu"))
         }
-        if (postType == PostType.VIDEO && videoUri.isBlank() && videoPresetKey.isBlank()) {
-            return@withContext Result.failure(Exception("Pilih video atau klip video terlebih dahulu"))
+        if (resolvedPostType == PostType.VIDEO && resolvedVideoUri.isBlank() && videoPresetKey.isBlank()) {
+            return@withContext Result.failure(Exception("Pilih video, tautan YouTube, atau klip video terlebih dahulu"))
         }
-        if (postType == PostType.AUDIO && audioUri.isBlank() && audioPresetKey.isBlank()) {
+        if (resolvedPostType == PostType.AUDIO && audioUri.isBlank() && audioPresetKey.isBlank()) {
             return@withContext Result.failure(Exception("Pilih file musik MP3 atau lagu sekolah terlebih dahulu"))
         }
 
@@ -574,10 +582,10 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
             title = title.trim(),
             description = description.trim(),
             category = category.name,
-            postType = postType.name,
+            postType = resolvedPostType.name,
             imageUri = imageUri,
             presetKey = presetKey,
-            videoUri = videoUri,
+            videoUri = resolvedVideoUri,
             videoPresetKey = videoPresetKey,
             videoDurationSec = videoDurationSec,
             audioUri = audioUri,
@@ -1067,17 +1075,25 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                 val avatarUrl = if (rp.uploaderPhotoUri.isNullOrBlank()) "" else if (rp.uploaderPhotoUri.startsWith("http")) rp.uploaderPhotoUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.uploaderPhotoUri.trimStart('/')}"
                 val parsedColor = parseAvatarColor(rp.uploaderAvatarColor)
 
+                val youtubeUrl = rp.embedUrl?.takeIf { it.isNotBlank() }
+                    ?: YouTubeHelper.extractEmbedUrl(rp.description)
+                    ?: YouTubeHelper.extractEmbedUrl(rp.title)
+                    ?: YouTubeHelper.extractEmbedUrl(rp.mediaUri)
+
+                val resolvedPostType = if (!youtubeUrl.isNullOrBlank()) PostType.VIDEO.name else mappedPostType
+                val resolvedVideoUri = if (!youtubeUrl.isNullOrBlank()) youtubeUrl else if (mappedPostType == PostType.VIDEO.name) mediaUrl else ""
+
                 val postEntity = PhotoEntity(
                     id = rp.id,
                     title = rp.title ?: "",
                     description = rp.description ?: "",
                     category = mappedCategory,
-                    postType = mappedPostType,
-                    imageUri = if (mappedPostType == PostType.PHOTO.name) mediaUrl else "",
-                    videoUri = if (mappedPostType == PostType.VIDEO.name) mediaUrl else "",
-                    audioUri = if (mappedPostType == PostType.AUDIO.name) mediaUrl else "",
-                    audioTitle = if (mappedPostType == PostType.AUDIO.name) (rp.title ?: "") else "",
-                    audioArtist = if (mappedPostType == PostType.AUDIO.name) rp.uploaderName else "",
+                    postType = resolvedPostType,
+                    imageUri = if (resolvedPostType == PostType.PHOTO.name) mediaUrl else "",
+                    videoUri = resolvedVideoUri,
+                    audioUri = if (resolvedPostType == PostType.AUDIO.name) mediaUrl else "",
+                    audioTitle = if (resolvedPostType == PostType.AUDIO.name) (rp.title ?: "") else "",
+                    audioArtist = if (resolvedPostType == PostType.AUDIO.name) rp.uploaderName else "",
                     statusBackgroundKey = existing?.statusBackgroundKey ?: "",
                     feelingOrActivity = rp.feeling ?: (existing?.feelingOrActivity ?: ""),
                     uploaderId = rp.uploaderId,
