@@ -536,6 +536,10 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
     suspend fun updateUserProfile(user: UserEntity): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             userDao.updateUser(user)
+            if (user.customPhotoUri.isNotBlank()) {
+                photoDao.updateUploaderPhotoForUser(user.id, user.customPhotoUri)
+                commentDao.updateUserPhotoForComments(user.id, user.customPhotoUri)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -1124,9 +1128,18 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
                 val existing = photoDao.getPhotoById(rp.id)
                 val mappedCategory = mapRemoteCategory(rp.category)
                 val mappedPostType = mapRemotePostType(rp.postType)
+                val localUser = userDao.getUserById(rp.uploaderId)
                 val mediaUrl = if (rp.mediaUri.isNullOrBlank()) "" else if (rp.mediaUri.startsWith("http")) rp.mediaUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.mediaUri.trimStart('/')}"
-                val avatarUrl = if (rp.uploaderPhotoUri.isNullOrBlank()) "" else if (rp.uploaderPhotoUri.startsWith("http")) rp.uploaderPhotoUri else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.uploaderPhotoUri.trimStart('/')}"
-                val parsedColor = parseAvatarColor(rp.uploaderAvatarColor)
+                val avatarUrl = when {
+                    !rp.uploaderPhotoUri.isNullOrBlank() -> {
+                        if (rp.uploaderPhotoUri.startsWith("http")) rp.uploaderPhotoUri
+                        else "${FourbookApiClient.BASE_URL.trimEnd('/')}/${rp.uploaderPhotoUri.trimStart('/')}"
+                    }
+                    localUser != null && localUser.customPhotoUri.isNotBlank() -> localUser.customPhotoUri
+                    existing != null && existing.uploaderCustomPhotoUri.isNotBlank() -> existing.uploaderCustomPhotoUri
+                    else -> ""
+                }
+                val parsedColor = localUser?.avatarColor ?: parseAvatarColor(rp.uploaderAvatarColor)
 
                 val youtubeUrl = rp.embedUrl?.takeIf { it.isNotBlank() }
                     ?: YouTubeHelper.extractEmbedUrl(rp.description)

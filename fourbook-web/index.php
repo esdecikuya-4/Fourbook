@@ -16,8 +16,11 @@ session_start();
 </head>
 <body>
 
+<?php
+$isLoggedIn = !empty($_SESSION['user']) && is_array($_SESSION['user']);
+?>
   <!-- ================= AUTH SCREEN (LOGIN & REGISTER) ================= -->
-  <div id="auth-view-screen" class="fb-auth-overlay" style="display: none;">
+  <div id="auth-view-screen" class="fb-auth-overlay" style="<?= $isLoggedIn ? 'display: none;' : 'display: flex;' ?>">
     <div class="fb-auth-card">
       <div class="auth-header">
         <div class="auth-header-content">
@@ -137,7 +140,7 @@ session_start();
   </div>
 
   <!-- ================= MAIN APPLICATION SCREEN ================= -->
-  <div id="app-main-screen" style="display: none;">
+  <div id="app-main-screen" style="<?= $isLoggedIn ? 'display: block;' : 'display: none;' ?>">
     <!-- TOP HEADER -->
     <header class="fb-header">
       <div class="fb-brand" onclick="switchTab('beranda')">
@@ -610,7 +613,7 @@ session_start();
     </div>
   </div>
 
-  <script src="js/app.js?v=20260910d"></script>
+  <script src="js/app.js?v=20261021_auth_secure"></script>
   <script>
     function setPostCategoryFilter(el, cat) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));

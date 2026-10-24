@@ -25,6 +25,7 @@ import com.example.data.model.CommentEntity
 import com.example.data.model.PhotoCategory
 import com.example.data.model.PhotoEntity
 import com.example.data.model.PostType
+import com.example.data.model.UserEntity
 import com.example.data.model.UserRole
 import com.example.data.repository.GalleryRepository
 import com.example.ui.components.LocalVideoPlayerCard
@@ -46,6 +47,7 @@ fun PhotoDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val currentUser by viewModel.currentUser.collectAsState()
+    val allUsers by viewModel.allUsers.collectAsState()
     val comments by viewModel.photoComments.collectAsState()
     var commentText by remember { mutableStateOf("") }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -458,16 +460,29 @@ fun PhotoDetailScreen(
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(14.dp))
 
+                    val uploaderUser = remember(allUsers, photo.uploaderId, currentUser) {
+                        if (currentUser?.id == photo.uploaderId) currentUser
+                        else allUsers.find { it.id == photo.uploaderId }
+                    }
+                    val effectiveUploaderPhoto = uploaderUser?.customPhotoUri?.takeIf { it.isNotBlank() }
+                        ?: photo.uploaderCustomPhotoUri
+                    val effectiveUploaderName = uploaderUser?.fullName?.takeIf { it.isNotBlank() }
+                        ?: photo.uploaderName
+                    val effectiveUploaderRole = uploaderUser?.role?.takeIf { it.isNotBlank() }
+                        ?: photo.uploaderRole
+                    val effectiveUploaderColor = uploaderUser?.avatarColor ?: photo.uploaderAvatarColor
+                    val effectiveUploaderIcon = uploaderUser?.avatarIcon ?: photo.uploaderAvatarIcon
+
                     // Uploader info
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         MemberAvatar(
-                            fullName = photo.uploaderName,
-                            avatarColor = photo.uploaderAvatarColor,
-                            avatarIcon = photo.uploaderAvatarIcon,
-                            customPhotoUri = photo.uploaderCustomPhotoUri,
+                            fullName = effectiveUploaderName,
+                            avatarColor = effectiveUploaderColor,
+                            avatarIcon = effectiveUploaderIcon,
+                            customPhotoUri = effectiveUploaderPhoto,
                             size = 44.dp,
                             modifier = Modifier
                                 .clickable { viewModel.showMemberProfileById(photo.uploaderId) }
@@ -479,7 +494,7 @@ fun PhotoDetailScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = photo.uploaderName,
+                                    text = effectiveUploaderName,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.testTag("detail_uploader_name")
@@ -578,6 +593,7 @@ fun PhotoDetailScreen(
                     CommentItem(
                         comment = comment,
                         currentUserId = currentUser?.id ?: 0L,
+                        allUsers = allUsers,
                         canModify = currentUser != null && (currentUser!!.id == comment.userId || currentUser!!.role == UserRole.WALI_KELAS.name),
                         onDelete = { viewModel.deleteComment(comment) },
                         onEdit = { newText -> viewModel.updateComment(comment, newText) },
@@ -593,6 +609,7 @@ fun PhotoDetailScreen(
 fun CommentItem(
     comment: CommentEntity,
     currentUserId: Long,
+    allUsers: List<UserEntity> = emptyList(),
     canModify: Boolean,
     onDelete: () -> Unit,
     onEdit: (String) -> Unit,
@@ -605,6 +622,16 @@ fun CommentItem(
     val isTeacherComment = comment.userRole == UserRole.WALI_KELAS.name
     var showEditDialog by remember { mutableStateOf(false) }
     var editedText by remember(comment.text) { mutableStateOf(comment.text) }
+
+    val commentUser = remember(allUsers, comment.userId) {
+        allUsers.find { it.id == comment.userId }
+    }
+    val effectiveCommentPhoto = commentUser?.customPhotoUri?.takeIf { it.isNotBlank() }
+        ?: comment.userCustomPhotoUri
+    val effectiveCommentName = commentUser?.fullName?.takeIf { it.isNotBlank() }
+        ?: comment.userName
+    val effectiveCommentColor = commentUser?.avatarColor ?: comment.userAvatarColor
+    val effectiveCommentIcon = commentUser?.avatarIcon ?: (if (isTeacherComment) "teacher" else "star")
 
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     val bubbleBg = if (isTeacherComment) {
@@ -644,7 +671,7 @@ fun CommentItem(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Komentar oleh ${comment.userName}:",
+                        text = "Komentar oleh ${effectiveCommentName}:",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -687,10 +714,10 @@ fun CommentItem(
         verticalAlignment = Alignment.Top
     ) {
         MemberAvatar(
-            fullName = comment.userName,
-            avatarColor = comment.userAvatarColor,
-            avatarIcon = if (isTeacherComment) "teacher" else "star",
-            customPhotoUri = comment.userCustomPhotoUri,
+            fullName = effectiveCommentName,
+            avatarColor = effectiveCommentColor,
+            avatarIcon = effectiveCommentIcon,
+            customPhotoUri = effectiveCommentPhoto,
             size = 32.dp,
             modifier = Modifier
                 .clickable { onUserClick(comment.userId) }

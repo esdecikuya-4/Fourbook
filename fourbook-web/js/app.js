@@ -456,10 +456,15 @@ function renderPosts() {
         }
       }
 
+      const cUser = state.allUsers.find(u => u.id === c.userId) || (state.currentUser?.id === c.userId ? state.currentUser : null);
+      const cPhoto = (cUser && cUser.customPhotoUri && cUser.customPhotoUri.trim() !== '') ? cUser.customPhotoUri : c.userPhotoUri;
+      const cColor = cUser?.avatarColor || c.userAvatarColor;
+      const cIcon = cUser?.avatarIcon || c.userAvatarIcon;
+
       return `
         <div class="comment-item">
           <div onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
-            ${renderAvatarHtml(c.userPhotoUri, c.userAvatarColor, c.userAvatarIcon, 32, 13)}
+            ${renderAvatarHtml(cPhoto, cColor, cIcon, 32, 13)}
           </div>
           <div class="comment-bubble">
             <div class="comment-author" onclick="showUserProfileModal(${c.userId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
@@ -513,11 +518,16 @@ function renderPosts() {
       `;
     }
 
+    const uploaderObj = state.allUsers.find(u => u.id === p.uploaderId) || (state.currentUser?.id === p.uploaderId ? state.currentUser : null);
+    const uploaderPhoto = (uploaderObj && uploaderObj.customPhotoUri && uploaderObj.customPhotoUri.trim() !== '') ? uploaderObj.customPhotoUri : p.uploaderPhotoUri;
+    const uploaderColor = uploaderObj?.avatarColor || p.uploaderAvatarColor;
+    const uploaderIcon = uploaderObj?.avatarIcon || p.uploaderAvatarIcon;
+
     return `
       <div class="fb-post-card" id="post-card-${p.id}">
         <div class="post-header">
           <div class="post-user-info" onclick="showUserProfileModal(${p.uploaderId})" style="cursor: pointer;" title="Lihat profil / tambah teman">
-            ${renderAvatarHtml(p.uploaderPhotoUri, p.uploaderAvatarColor, p.uploaderAvatarIcon, 40, 16)}
+            ${renderAvatarHtml(uploaderPhoto, uploaderColor, uploaderIcon, 40, 16)}
             <div>
               <div class="post-author-name">
                 ${escapeHtml(p.uploaderName)}
@@ -705,6 +715,7 @@ function sharePost(postId) {
 // FRIENDS & COMMUNITY
 // ----------------------------------------------------
 async function fetchFriendships() {
+  if (!state.currentUser) return;
   const res = await apiRequest('friends.php?action=get_friendships');
   if (res.status) {
     state.friendships = res.data.friendships;
@@ -1147,6 +1158,7 @@ function copyUserProfileDetails(userId) {
 // NOTIFICATIONS
 // ----------------------------------------------------
 async function fetchNotifications(silent = false) {
+  if (!state.currentUser) return;
   const res = await apiRequest('notifications.php?action=get_notifications');
   if (res.status) {
     state.notifications = res.data.notifications;

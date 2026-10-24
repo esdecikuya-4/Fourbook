@@ -60,6 +60,9 @@ interface PhotoDao {
     @Query("DELETE FROM photos WHERE id = :photoId")
     suspend fun deletePhotoById(photoId: Long)
 
+    @Query("UPDATE photos SET uploaderCustomPhotoUri = :photoUri WHERE uploaderId = :userId")
+    suspend fun updateUploaderPhotoForUser(userId: Long, photoUri: String)
+
     @Query("SELECT COUNT(*) FROM photos")
     suspend fun getPhotoCount(): Int
 }
@@ -83,6 +86,9 @@ interface CommentDao {
 
     @Query("DELETE FROM comments WHERE photoId = :photoId")
     suspend fun deleteCommentsForPhoto(photoId: Long)
+
+    @Query("UPDATE comments SET userCustomPhotoUri = :photoUri WHERE userId = :userId")
+    suspend fun updateUserPhotoForComments(userId: Long, photoUri: String)
 }
 
 @Dao

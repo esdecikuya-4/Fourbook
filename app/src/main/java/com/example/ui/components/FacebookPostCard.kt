@@ -211,27 +211,40 @@ fun FacebookPostCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                val uploaderUser = remember(allUsers, photo.uploaderId, currentUser) {
+                    if (currentUser?.id == photo.uploaderId) currentUser
+                    else allUsers.find { it.id == photo.uploaderId }
+                }
+                val effectiveUploaderPhoto = uploaderUser?.customPhotoUri?.takeIf { it.isNotBlank() }
+                    ?: photo.uploaderCustomPhotoUri
+                val effectiveUploaderName = uploaderUser?.fullName?.takeIf { it.isNotBlank() }
+                    ?: photo.uploaderName
+                val effectiveUploaderRole = uploaderUser?.role?.takeIf { it.isNotBlank() }
+                    ?: photo.uploaderRole
+                val effectiveUploaderColor = uploaderUser?.avatarColor ?: photo.uploaderAvatarColor
+                val effectiveUploaderIcon = uploaderUser?.avatarIcon ?: photo.uploaderAvatarIcon
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     MemberAvatar(
-                        fullName = photo.uploaderName,
-                        avatarColor = photo.uploaderAvatarColor,
-                        avatarIcon = photo.uploaderAvatarIcon,
-                        customPhotoUri = photo.uploaderCustomPhotoUri,
+                        fullName = effectiveUploaderName,
+                        avatarColor = effectiveUploaderColor,
+                        avatarIcon = effectiveUploaderIcon,
+                        customPhotoUri = effectiveUploaderPhoto,
                         size = 44.dp,
                         modifier = Modifier
                             .clickable {
                                 onUserClick?.invoke(photo.uploaderId)
                                 viewModel.showMemberProfileById(
                                     userId = photo.uploaderId,
-                                    fallbackName = photo.uploaderName,
-                                    fallbackRole = photo.uploaderRole,
-                                    fallbackColor = photo.uploaderAvatarColor,
-                                    fallbackIcon = photo.uploaderAvatarIcon,
-                                    fallbackPhotoUri = photo.uploaderCustomPhotoUri
+                                    fallbackName = effectiveUploaderName,
+                                    fallbackRole = effectiveUploaderRole,
+                                    fallbackColor = effectiveUploaderColor,
+                                    fallbackIcon = effectiveUploaderIcon,
+                                    fallbackPhotoUri = effectiveUploaderPhoto
                                 )
                             }
                             .testTag("post_author_avatar_${photo.id}")
@@ -242,11 +255,11 @@ fun FacebookPostCard(
                             onUserClick?.invoke(photo.uploaderId)
                             viewModel.showMemberProfileById(
                                 userId = photo.uploaderId,
-                                fallbackName = photo.uploaderName,
-                                fallbackRole = photo.uploaderRole,
-                                fallbackColor = photo.uploaderAvatarColor,
-                                fallbackIcon = photo.uploaderAvatarIcon,
-                                fallbackPhotoUri = photo.uploaderCustomPhotoUri
+                                fallbackName = effectiveUploaderName,
+                                fallbackRole = effectiveUploaderRole,
+                                fallbackColor = effectiveUploaderColor,
+                                fallbackIcon = effectiveUploaderIcon,
+                                fallbackPhotoUri = effectiveUploaderPhoto
                             )
                         }
                     ) {
@@ -255,7 +268,7 @@ fun FacebookPostCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
-                                text = photo.uploaderName,
+                                text = effectiveUploaderName,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
@@ -1000,6 +1013,7 @@ fun FacebookPostCard(
                                     comment = comment,
                                     currentUserId = currentUser?.id ?: 0L,
                                     currentUserRole = currentUser?.role ?: "",
+                                    allUsers = allUsers,
                                     onDelete = { viewModel.deleteComment(comment) },
                                     onEdit = { newText -> viewModel.updateComment(comment, newText) },
                                     onUserClick = onUserClick,
@@ -1110,6 +1124,7 @@ fun PostCommentBubble(
     comment: CommentEntity,
     currentUserId: Long,
     currentUserRole: String,
+    allUsers: List<UserEntity> = emptyList(),
     onDelete: () -> Unit,
     onEdit: (String) -> Unit,
     onUserClick: ((Long) -> Unit)? = null,
@@ -1120,6 +1135,16 @@ fun PostCommentBubble(
     var isLiked by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var editedText by remember(comment.text) { mutableStateOf(comment.text) }
+
+    val commentUser = remember(allUsers, comment.userId) {
+        allUsers.find { it.id == comment.userId }
+    }
+    val effectiveCommentPhoto = commentUser?.customPhotoUri?.takeIf { it.isNotBlank() }
+        ?: comment.userCustomPhotoUri
+    val effectiveCommentName = commentUser?.fullName?.takeIf { it.isNotBlank() }
+        ?: comment.userName
+    val effectiveCommentColor = commentUser?.avatarColor ?: comment.userAvatarColor
+    val effectiveCommentIcon = commentUser?.avatarIcon ?: (if (isTeacherComment) "teacher" else "star")
 
     val isDark = isSystemInDarkTheme()
 
@@ -1164,7 +1189,7 @@ fun PostCommentBubble(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Komentar oleh ${comment.userName}:",
+                        text = "Komentar oleh ${effectiveCommentName}:",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1206,10 +1231,10 @@ fun PostCommentBubble(
         verticalAlignment = Alignment.Top
     ) {
         MemberAvatar(
-            fullName = comment.userName,
-            avatarColor = comment.userAvatarColor,
-            avatarIcon = if (isTeacherComment) "teacher" else "star",
-            customPhotoUri = comment.userCustomPhotoUri,
+            fullName = effectiveCommentName,
+            avatarColor = effectiveCommentColor,
+            avatarIcon = effectiveCommentIcon,
+            customPhotoUri = effectiveCommentPhoto,
             size = 34.dp,
             modifier = Modifier
                 .clickable { onAuthorClick?.invoke() ?: onUserClick?.invoke(comment.userId) }

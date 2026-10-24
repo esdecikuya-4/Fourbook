@@ -1,9 +1,9 @@
 {
-  "versionCode": 5,
-  "versionName": "1.0.5",
+  "versionCode": 6,
+  "versionName": "1.0.6",
   "apkUrl": "https://balallica.my.id/fourbook.apk",
-  "apkSizeMb": "24 MB",
-  "releaseNotes": "1. Pemutaran video asli: Video rekaman/lokal HP dan link YouTube berputar dengan gambar asli & suara jernih penuh tanpa animasi 45 detik.\n2. Posting video lokal HP tersimpan dan tersinkronisasi otomatis ke server.\n3. Tombol 'Tempel Link' YouTube di Android berfungsi instan dengan live preview thumbnail.\n4. Pembaruan otomatis versi aplikasi Fourbook Android v1.0.5.",
-  "releaseDate": "2026-10-14",
+  "apkSizeMb": "25 MB",
+  "releaseNotes": "1. Keamanan Website: Pengunjung web balallica.my.id wajib login/daftar terlebih dahulu sebelum masuk (tidak lagi otomatis masuk sebagai admin).\n2. Foto Profil Langsung Muncul: Foto asli pengguna langsung terlihat di postingan feed dan komentar tanpa harus diklik.\n3. Avatar kartun hanya digunakan untuk akun yang belum mengunggah foto profil asli.\n4. Sinkronisasi foto profil real-time di semua postingan.",
+  "releaseDate": "2026-10-21",
   "forceUpdate": true
 }

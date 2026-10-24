@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.data.model.UserRole
+import com.example.data.remote.FourbookApiClient
 import java.io.File
 
 fun getAvatarIconVector(iconKey: String): ImageVector {
@@ -86,9 +87,25 @@ fun MemberAvatar(
     val bg = Color(avatarColor)
     val context = LocalContext.current
 
-    val hasCustomPhoto = customPhotoUri.isNotBlank() && run {
-        val f = File(customPhotoUri)
-        f.exists() || customPhotoUri.startsWith("content://") || customPhotoUri.startsWith("http")
+    val trimmedUri = customPhotoUri.trim()
+    val resolvedPhotoUri = when {
+        trimmedUri.isBlank() -> ""
+        trimmedUri.startsWith("http://") || trimmedUri.startsWith("https://") -> trimmedUri
+        trimmedUri.startsWith("content://") || trimmedUri.startsWith("file://") -> trimmedUri
+        File(trimmedUri).exists() -> trimmedUri
+        trimmedUri.startsWith("uploads/") || trimmedUri.startsWith("/uploads/") ||
+        trimmedUri.endsWith(".jpg") || trimmedUri.endsWith(".png") || trimmedUri.endsWith(".jpeg") || trimmedUri.endsWith(".webp") -> {
+            "${FourbookApiClient.BASE_URL.trimEnd('/')}/${trimmedUri.trimStart('/')}"
+        }
+        else -> trimmedUri
+    }
+
+    val hasCustomPhoto = resolvedPhotoUri.isNotBlank() && run {
+        resolvedPhotoUri.startsWith("http://") ||
+        resolvedPhotoUri.startsWith("https://") ||
+        resolvedPhotoUri.startsWith("content://") ||
+        resolvedPhotoUri.startsWith("file://") ||
+        File(resolvedPhotoUri).exists()
     }
 
     Box(
@@ -96,10 +113,10 @@ fun MemberAvatar(
         contentAlignment = Alignment.Center
     ) {
         if (hasCustomPhoto) {
-            val imageModel = if (File(customPhotoUri).exists()) {
-                File(customPhotoUri)
-            } else {
-                customPhotoUri
+            val imageModel: Any = when {
+                resolvedPhotoUri.startsWith("file://") -> File(resolvedPhotoUri.removePrefix("file://"))
+                File(resolvedPhotoUri).exists() -> File(resolvedPhotoUri)
+                else -> resolvedPhotoUri
             }
 
             AsyncImage(

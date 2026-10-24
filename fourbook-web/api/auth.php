@@ -14,23 +14,11 @@ if ($action === 'get_current') {
                 break;
             }
         }
-    } else if (!empty($users)) {
-        // Auto default to primary user (Teten Kurniawan / Wali Kelas)
-        $user = $users[0];
-        $_SESSION['user'] = $user;
+        json_response(true, ['user' => $user, 'all_users' => $users]);
+    } else {
+        // Pengunjung belum login - WAJIB tampilkan form login / register!
+        json_response(true, ['user' => null, 'all_users' => $users], 'Belum masuk');
     }
-    json_response(true, ['user' => $user, 'all_users' => $users]);
-}
-
-if ($action === 'switch_user') {
-    $userId = (int)($_POST['userId'] ?? 0);
-    foreach ($users as $u) {
-        if ($u['id'] === $userId) {
-            $_SESSION['user'] = $u;
-            json_response(true, ['user' => $u], 'Berhasil beralih akun ke ' . $u['fullName']);
-        }
-    }
-    json_response(false, [], 'User tidak ditemukan');
 }
 
 if ($action === 'login') {
