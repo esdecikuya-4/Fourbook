@@ -18,3 +18,5 @@ local.properties
 debug.keystore
 *.zip
 *.apk
+fourbook-web/*.apk
+fourbook-balallica/*.apk
