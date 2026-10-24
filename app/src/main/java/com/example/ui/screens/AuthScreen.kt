@@ -193,12 +193,14 @@ fun AuthScreen(
             }
 
             Text(
-                text = "Kec. Selaawi, Kab. Garut • Media Edukasi Digital",
-                color = Color(0xFFCBD5E1).copy(alpha = 0.85f),
+                text = "Kec. Selaawi, Kab. Garut",
+                color = Color(0xFFCBD5E1).copy(alpha = 0.9f),
                 fontSize = 11.5.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
             )
 
             // Auth Card Container
@@ -367,7 +369,7 @@ fun AuthScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> balallica.my.id)
+                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> sdn4putrajawa.my.id)
                         Surface(
                             shape = RoundedCornerShape(12.dp),
                             color = Color(0xFF1E3A8A).copy(alpha = 0.85f),
@@ -375,7 +377,7 @@ fun AuthScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    uriHandler.openUri("https://balallica.my.id")
+                                    uriHandler.openUri("https://sdn4putrajawa.my.id")
                                 }
                                 .testTag("btn_access_web_version")
                         ) {
@@ -420,7 +422,7 @@ fun AuthScreen(
                                             color = Color.White
                                         )
                                         Text(
-                                            text = "balallica.my.id",
+                                            text = "sdn4putrajawa.my.id",
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF93C5FD)
@@ -781,7 +783,7 @@ fun AuthScreen(
 
                         Spacer(modifier = Modifier.height(18.dp))
 
-                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> balallica.my.id)
+                        // Web Version Access Banner ("Klik Buat Akses Versi Web" -> sdn4putrajawa.my.id)
                         Surface(
                             shape = RoundedCornerShape(16.dp),
                             color = Color(0xFF1E3A8A).copy(alpha = 0.85f),
@@ -789,7 +791,7 @@ fun AuthScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    uriHandler.openUri("https://balallica.my.id")
+                                    uriHandler.openUri("https://sdn4putrajawa.my.id")
                                 }
                                 .testTag("btn_access_web_version_register")
                         ) {
@@ -833,7 +835,7 @@ fun AuthScreen(
                                             color = Color.White
                                         )
                                         Text(
-                                            text = "balallica.my.id",
+                                            text = "sdn4putrajawa.my.id",
                                             fontSize = 11.5.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF93C5FD)

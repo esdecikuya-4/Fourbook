@@ -1,0 +1,359 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Sky & Atmosphere Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E6FD9"/>
+      <stop offset="30%" stop-color="#38BDF8"/>
+      <stop offset="65%" stop-color="#7DD3FC"/>
+      <stop offset="100%" stop-color="#BAE6FD"/>
+    </linearGradient>
+
+    <!-- Mountain Gradient in distance (Garut mountains/Gunung Cikuray/Guntur) -->
+    <linearGradient id="mountainGradFar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#60A5FA" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="mountainGradMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1D4ED8" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.4"/>
+    </linearGradient>
+
+    <!-- Classroom Terracotta Clay Roof Gradient -->
+    <linearGradient id="roofTerracotta" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="50%" stop-color="#C2410C"/>
+      <stop offset="100%" stop-color="#7C2D12"/>
+    </linearGradient>
+
+    <!-- Side Wing Roof Gradient -->
+    <linearGradient id="roofWing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#78350F"/>
+    </linearGradient>
+
+    <!-- Sundanese Traditional Thatched Bamboo Gate Roof (Ijuk / Rumbia) -->
+    <linearGradient id="ijukRoof" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#291403"/>
+      <stop offset="40%" stop-color="#451A03"/>
+      <stop offset="70%" stop-color="#78350F"/>
+      <stop offset="100%" stop-color="#291403"/>
+    </linearGradient>
+
+    <!-- Polished Golden Bamboo Gradient -->
+    <linearGradient id="bambooGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#78350F"/>
+      <stop offset="25%" stop-color="#D97706"/>
+      <stop offset="50%" stop-color="#FDE047"/>
+      <stop offset="75%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#451A03"/>
+    </linearGradient>
+
+    <!-- Teak Wood Signboard Gradient -->
+    <linearGradient id="teakWood" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#451A03"/>
+      <stop offset="50%" stop-color="#5B2105"/>
+      <stop offset="100%" stop-color="#361302"/>
+    </linearGradient>
+
+    <!-- School Wall Light Lime Green (SDN 4 Putrajawa Brand Colors) -->
+    <linearGradient id="wallGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A3E635"/>
+      <stop offset="70%" stop-color="#65A30D"/>
+      <stop offset="100%" stop-color="#4D7C0F"/>
+    </linearGradient>
+
+    <!-- Paving Courtyard Floor Gradient -->
+    <linearGradient id="pavingGround" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="30%" stop-color="#CBD5E1"/>
+      <stop offset="70%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#F1F5F9"/>
+    </linearGradient>
+
+    <!-- Vignette / Atmosphere Filter -->
+    <radialGradient id="sunGlow" cx="15%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#FEF08A" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#BAE6FD" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#1E3A8A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 1. SKY & SUNLIGHT -->
+  <rect x="0" y="0" width="1920" height="700" fill="url(#skyGrad)"/>
+  <rect x="0" y="0" width="1920" height="700" fill="url(#sunGlow)"/>
+
+  <!-- Clouds -->
+  <g fill="#FFFFFF" opacity="0.65">
+    <ellipse cx="320" cy="140" rx="140" ry="45"/>
+    <ellipse cx="420" cy="120" rx="110" ry="55"/>
+    <ellipse cx="230" cy="150" rx="90" ry="40"/>
+    
+    <ellipse cx="1450" cy="180" rx="160" ry="50"/>
+    <ellipse cx="1580" cy="155" rx="130" ry="60"/>
+    <ellipse cx="1340" cy="190" rx="100" ry="45"/>
+
+    <ellipse cx="880" cy="90" rx="130" ry="40"/>
+    <ellipse cx="980" cy="80" rx="100" ry="45"/>
+  </g>
+
+  <!-- 2. SCENIC MOUNTAINS IN GARUT BACKGROUND (Gunung Jawa Barat) -->
+  <path d="M-100,520 Q350,260 720,480 T1500,420 Q1750,300 2050,530 L2050,680 L-100,680 Z" fill="url(#mountainGradFar)"/>
+  <path d="M-50,560 Q480,340 920,530 T1800,490 Q1920,440 2050,570 L2050,680 L-50,680 Z" fill="url(#mountainGradMid)"/>
+
+  <!-- 3. LUSH TROPICAL TREE CANOPY BEHIND SCHOOL -->
+  <g>
+    <!-- Left Trees -->
+    <circle cx="120" cy="490" r="140" fill="#14532D"/>
+    <circle cx="260" cy="470" r="155" fill="#15803D"/>
+    <circle cx="390" cy="485" r="130" fill="#166534"/>
+    <circle cx="210" cy="440" r="110" fill="#22C55E" opacity="0.85"/>
+
+    <!-- Right Trees -->
+    <circle cx="1530" cy="485" r="145" fill="#14532D"/>
+    <circle cx="1680" cy="460" r="160" fill="#15803D"/>
+    <circle cx="1820" cy="480" r="150" fill="#166534"/>
+    <circle cx="1620" cy="430" r="115" fill="#22C55E" opacity="0.85"/>
+
+    <!-- Center Horizon Trees -->
+    <circle cx="620" cy="520" r="95" fill="#166534"/>
+    <circle cx="780" cy="510" r="110" fill="#15803D"/>
+    <circle cx="960" cy="515" r="100" fill="#14532D"/>
+    <circle cx="1140" cy="510" r="105" fill="#15803D"/>
+    <circle cx="1300" cy="520" r="90" fill="#166534"/>
+  </g>
+
+  <!-- 4. COURTYARD GROUND / PAVING (Lapangan Sekolah SDN 4 Putrajawa) -->
+  <path d="M0,580 L1920,580 L1920,1080 L0,1080 Z" fill="url(#pavingGround)"/>
+  
+  <!-- Perspective Paving Lines -->
+  <g stroke="#64748B" stroke-width="1.5" opacity="0.35">
+    <line x1="0" y1="620" x2="1920" y2="620"/>
+    <line x1="0" y1="670" x2="1920" y2="670"/>
+    <line x1="0" y1="735" x2="1920" y2="735"/>
+    <line x1="0" y1="820" x2="1920" y2="820"/>
+    <line x1="0" y1="930" x2="1920" y2="930"/>
+    
+    <!-- Diagonal perspective ground lines radiating from courtyard center -->
+    <line x1="960" y1="580" x2="0" y2="950"/>
+    <line x1="960" y1="580" x2="350" y2="1080"/>
+    <line x1="960" y1="580" x2="700" y2="1080"/>
+    <line x1="960" y1="580" x2="960" y2="1080"/>
+    <line x1="960" y1="580" x2="1220" y2="1080"/>
+    <line x1="960" y1="580" x2="1570" y2="1080"/>
+    <line x1="960" y1="580" x2="1920" y2="950"/>
+  </g>
+
+  <!-- 5. MAIN SCHOOL BUILDING (Gedung Kelas SDN 4 Putrajawa) -->
+  <g id="schoolBuilding">
+    <!-- Left Wing Classroom (Side perspective) -->
+    <polygon points="180,480 620,495 620,640 180,680" fill="#4D7C0F"/>
+    <polygon points="180,420 620,440 620,495 180,480" fill="url(#roofWing)"/>
+    <!-- Left wing windows -->
+    <rect x="250" y="520" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+    <rect x="350" y="525" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+    <rect x="450" y="530" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+
+    <!-- Right Wing Classroom (Side perspective) -->
+    <polygon points="1740,480 1300,495 1300,640 1740,680" fill="#4D7C0F"/>
+    <polygon points="1740,420 1300,440 1300,495 1740,480" fill="url(#roofWing)"/>
+    <!-- Right wing windows -->
+    <rect x="1610" y="520" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+    <rect x="1510" y="525" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+    <rect x="1410" y="530" width="60" height="70" fill="#38BDF8" stroke="#0F172A" stroke-width="3"/>
+
+    <!-- Center Main Classroom Building -->
+    <!-- Lower Dado Base Wall -->
+    <rect x="580" y="500" width="760" height="150" fill="url(#wallGreen)"/>
+    <rect x="580" y="605" width="760" height="45" fill="#365314"/>
+
+    <!-- Main Terracotta Roof (Prisma Limasan SD) -->
+    <polygon points="540,500 960,330 1380,500" fill="url(#roofTerracotta)"/>
+    <!-- Roof Ridge and eave lines -->
+    <polygon points="940,325 980,325 960,330" fill="#7C2D12"/>
+    <line x1="535" y1="503" x2="1385" y2="503" stroke="#431407" stroke-width="6"/>
+
+    <!-- Classroom Doors & Windows Center -->
+    <rect x="910" y="540" width="100" height="110" fill="#1E293B" rx="4"/>
+    <rect x="920" y="550" width="35" height="90" fill="#334155"/>
+    <rect x="965" y="550" width="35" height="90" fill="#334155"/>
+
+    <!-- Left Windows -->
+    <rect x="620" y="535" width="90" height="65" fill="#E0F2FE" stroke="#0F172A" stroke-width="3" rx="2"/>
+    <line x1="665" y1="535" x2="665" y2="600" stroke="#0F172A" stroke-width="3"/>
+    <line x1="620" y1="565" x2="710" y2="565" stroke="#0F172A" stroke-width="2"/>
+
+    <rect x="750" y="535" width="90" height="65" fill="#E0F2FE" stroke="#0F172A" stroke-width="3" rx="2"/>
+    <line x1="795" y1="535" x2="795" y2="600" stroke="#0F172A" stroke-width="3"/>
+    <line x1="750" y1="565" x2="840" y2="565" stroke="#0F172A" stroke-width="2"/>
+
+    <!-- Right Windows -->
+    <rect x="1080" y="535" width="90" height="65" fill="#E0F2FE" stroke="#0F172A" stroke-width="3" rx="2"/>
+    <line x1="1125" y1="535" x2="1125" y2="600" stroke="#0F172A" stroke-width="3"/>
+    <line x1="1080" y1="565" x2="1170" y2="565" stroke="#0F172A" stroke-width="2"/>
+
+    <rect x="1210" y="535" width="90" height="65" fill="#E0F2FE" stroke="#0F172A" stroke-width="3" rx="2"/>
+    <line x1="1255" y1="535" x2="1255" y2="600" stroke="#0F172A" stroke-width="3"/>
+    <line x1="1210" y1="565" x2="1300" y2="565" stroke="#0F172A" stroke-width="2"/>
+
+    <!-- Front Porch Pillars (Tiang Selasar Hijau Putih) -->
+    <g fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5">
+      <rect x="600" y="495" width="18" height="155"/>
+      <rect x="730" y="495" width="18" height="155"/>
+      <rect x="880" y="495" width="18" height="155"/>
+      <rect x="1025" y="495" width="18" height="155"/>
+      <rect x="1180" y="495" width="18" height="155"/>
+      <rect x="1310" y="495" width="18" height="155"/>
+    </g>
+
+    <!-- School Signboard in front of center building -->
+    <rect x="820" y="490" width="280" height="38" fill="#FFFFFF" stroke="#047857" stroke-width="3" rx="4"/>
+    <text x="960" y="515" font-family="'Inter', sans-serif" font-weight="900" font-size="17" fill="#065F46" text-anchor="middle" letter-spacing="1">
+      SDN 4 PUTRAJAWA
+    </text>
+  </g>
+
+  <!-- 6. INDONESIAN NATIONAL FLAG (Tiang Bendera Merah Putih) -->
+  <g id="flagpole">
+    <!-- Base -->
+    <ellipse cx="960" cy="650" rx="30" ry="10" fill="#64748B"/>
+    <rect x="945" y="635" width="30" height="12" fill="#E2E8F0" stroke="#94A3B8"/>
+    <!-- Pole -->
+    <line x1="960" y1="635" x2="960" y2="350" stroke="#F1F5F9" stroke-width="5"/>
+    <line x1="961" y1="635" x2="961" y2="350" stroke="#94A3B8" stroke-width="1.5"/>
+    <circle cx="960" cy="347" r="6" fill="#FBBF24"/>
+
+    <!-- Fluttering Red & White Flag -->
+    <!-- Red stripe -->
+    <path d="M962,352 Q1005,342 1045,355 T1120,350 L1120,385 Q1080,390 1045,375 T962,385 Z" fill="#DC2626"/>
+    <!-- White stripe -->
+    <path d="M962,385 Q1005,375 1045,390 T1120,385 L1120,420 Q1080,425 1045,410 T962,420 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="0.5"/>
+  </g>
+
+  <!-- Potted Plants & Shrubs in front of classroom porch -->
+  <g>
+    <circle cx="670" cy="655" r="18" fill="#15803D"/>
+    <circle cx="800" cy="655" r="18" fill="#16A34A"/>
+    <circle cx="1120" cy="655" r="18" fill="#16A34A"/>
+    <circle cx="1250" cy="655" r="18" fill="#15803D"/>
+    <!-- Flower accents -->
+    <circle cx="670" cy="645" r="5" fill="#F43F5E"/>
+    <circle cx="800" cy="645" r="5" fill="#F59E0B"/>
+    <circle cx="1120" cy="645" r="5" fill="#F43F5E"/>
+    <circle cx="1250" cy="645" r="5" fill="#F59E0B"/>
+  </g>
+
+  <!-- 7. ICONIC TRADITIONAL BAMBOO GATE (Gerbang Bambu Khas SDN 4 Putrajawa) -->
+  <g id="bambooGate">
+    <!-- Left Bamboo Fence (Pagar Bambu Kiri) -->
+    <g id="leftFence">
+      <path d="M0,740 L460,700 L460,860 L0,920 Z" fill="#78350F" opacity="0.3"/>
+      <!-- Fence Slats -->
+      <line x1="0" y1="760" x2="460" y2="720" stroke="url(#bambooGold)" stroke-width="12"/>
+      <line x1="0" y1="840" x2="460" y2="800" stroke="url(#bambooGold)" stroke-width="12"/>
+      <!-- Vertical Bamboo Stakes -->
+      <line x1="50" y1="710" x2="50" y2="890" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="110" y1="705" x2="110" y2="880" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="170" y1="700" x2="170" y2="870" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="230" y1="695" x2="230" y2="860" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="290" y1="690" x2="290" y2="850" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="350" y1="685" x2="350" y2="840" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="410" y1="680" x2="410" y2="830" stroke="url(#bambooGold)" stroke-width="8"/>
+    </g>
+
+    <!-- Right Bamboo Fence (Pagar Bambu Kanan) -->
+    <g id="rightFence">
+      <path d="M1920,740 L1460,700 L1460,860 L1920,920 Z" fill="#78350F" opacity="0.3"/>
+      <line x1="1920" y1="760" x2="1460" y2="720" stroke="url(#bambooGold)" stroke-width="12"/>
+      <line x1="1920" y1="840" x2="1460" y2="800" stroke="url(#bambooGold)" stroke-width="12"/>
+      <!-- Vertical Bamboo Stakes -->
+      <line x1="1870" y1="710" x2="1870" y2="890" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1810" y1="705" x2="1810" y2="880" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1750" y1="700" x2="1750" y2="870" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1690" y1="695" x2="1690" y2="860" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1630" y1="690" x2="1630" y2="850" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1570" y1="685" x2="1570" y2="840" stroke="url(#bambooGold)" stroke-width="8"/>
+      <line x1="1510" y1="680" x2="1510" y2="830" stroke="url(#bambooGold)" stroke-width="8"/>
+    </g>
+
+    <!-- Left Gate Pillars (Cluster of 4 Bamboo Trunks) -->
+    <g id="leftPillar">
+      <rect x="460" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="485" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="510" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="535" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      
+      <!-- Diagonal Lattice Reinforcement (Anyaman Bambu) -->
+      <line x1="460" y1="280" x2="560" y2="380" stroke="#78350F" stroke-width="4"/>
+      <line x1="560" y1="280" x2="460" y2="380" stroke="#78350F" stroke-width="4"/>
+      <line x1="460" y1="460" x2="560" y2="560" stroke="#78350F" stroke-width="4"/>
+      <line x1="560" y1="460" x2="460" y2="560" stroke="#78350F" stroke-width="4"/>
+      
+      <!-- Black Rattan Ties (Tali Ijuk Pengikat) -->
+      <rect x="456" y="320" width="105" height="12" fill="#1E1B18" rx="2"/>
+      <rect x="456" y="520" width="105" height="12" fill="#1E1B18" rx="2"/>
+      <rect x="456" y="720" width="105" height="12" fill="#1E1B18" rx="2"/>
+    </g>
+
+    <!-- Right Gate Pillars (Cluster of 4 Bamboo Trunks) -->
+    <g id="rightPillar">
+      <rect x="1360" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="1385" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="1410" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      <rect x="1435" y="240" width="22" height="660" fill="url(#bambooGold)"/>
+      
+      <!-- Diagonal Lattice Reinforcement -->
+      <line x1="1360" y1="280" x2="1460" y2="380" stroke="#78350F" stroke-width="4"/>
+      <line x1="1460" y1="280" x2="1360" y2="380" stroke="#78350F" stroke-width="4"/>
+      <line x1="1360" y1="460" x2="1460" y2="560" stroke="#78350F" stroke-width="4"/>
+      <line x1="1460" y1="460" x2="1360" y2="560" stroke="#78350F" stroke-width="4"/>
+      
+      <!-- Black Rattan Ties -->
+      <rect x="1356" y="320" width="105" height="12" fill="#1E1B18" rx="2"/>
+      <rect x="1356" y="520" width="105" height="12" fill="#1E1B18" rx="2"/>
+      <rect x="1356" y="720" width="105" height="12" fill="#1E1B18" rx="2"/>
+    </g>
+
+    <!-- Main Horizontal Bamboo Beams Supporting Roof -->
+    <rect x="400" y="220" width="1120" height="24" fill="url(#bambooGold)" rx="8"/>
+    <rect x="420" y="250" width="1080" height="18" fill="url(#bambooGold)" rx="6"/>
+
+    <!-- Bamboo Arch Roof / Thatched Straw & Palm Roof (Atap Ijuk Alang-Alang Sunda) -->
+    <polygon points="340,230 960,60 1580,230" fill="url(#ijukRoof)"/>
+    <!-- Thatched Eaves Texture Overhang -->
+    <path d="M320,235 Q960,210 1600,235 L1580,255 Q960,225 340,255 Z" fill="#291403"/>
+    
+    <!-- Top Bamboo Ridge Beam (Wuwungan Bambu Puncak) -->
+    <rect x="680" y="52" width="560" height="20" fill="url(#bambooGold)" rx="8"/>
+    <circle cx="680" cy="62" r="10" fill="#78350F"/>
+    <circle cx="1240" cy="62" r="10" fill="#78350F"/>
+
+    <!-- Bamboo diagonal struts under roof -->
+    <line x1="560" y1="220" x2="800" y2="130" stroke="url(#bambooGold)" stroke-width="14"/>
+    <line x1="1360" y1="220" x2="1120" y2="130" stroke="url(#bambooGold)" stroke-width="14"/>
+
+    <!-- 8. AUTHENTIC WOODEN SIGNBOARDS ON THE BAMBOO GATE -->
+    <!-- Top Small Plaque: "Selamat Datang" -->
+    <g id="plaqueWelcome">
+      <rect x="800" y="160" width="320" height="42" fill="url(#teakWood)" stroke="#F59E0B" stroke-width="3" rx="8"/>
+      <text x="960" y="188" font-family="'Inter', sans-serif" font-weight="700" font-size="18" fill="#FEF08A" text-anchor="middle" letter-spacing="3">
+        SELAMAT DATANG DI
+      </text>
+    </g>
+
+    <!-- Main Large Plaque: "SDN 4 PUTRAJAWA" -->
+    <g id="plaqueMain">
+      <rect x="640" y="270" width="640" height="74" fill="url(#teakWood)" stroke="#FBBF24" stroke-width="4" rx="12"/>
+      <rect x="648" y="278" width="624" height="58" fill="none" stroke="#D97706" stroke-width="1.5" rx="8"/>
+      <text x="960" y="320" font-family="'Inter', sans-serif" font-weight="900" font-size="34" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">
+        SDN 4 PUTRAJAWA
+      </text>
+    </g>
+
+    <!-- Hanging Chains for Plaque -->
+    <line x1="720" y1="250" x2="720" y2="270" stroke="#0F172A" stroke-width="4"/>
+    <line x1="1200" y1="250" x2="1200" y2="270" stroke="#0F172A" stroke-width="4"/>
+  </g>
+
+  <!-- Gentle Ambient Vignette Overlay for Depth & Drama -->
+  <rect x="0" y="0" width="1920" height="1080" fill="#000000" opacity="0.18"/>
+</svg>

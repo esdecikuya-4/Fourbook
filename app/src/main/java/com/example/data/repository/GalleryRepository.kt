@@ -359,7 +359,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         val id = userDao.insertUser(newUser)
         val savedUser = newUser.copy(id = id)
 
-        // Sync registration with Live Web Server Fourbook balallica.my.id
+        // Sync registration with Live Web Server Fourbook sdn4putrajawa.my.id
         try {
             val hexColor = "0x" + java.lang.Long.toHexString(avatarColor).uppercase()
             FourbookApiClient.service.register(
@@ -419,7 +419,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
             }
         }
 
-        // 1. Try Live Server Login first if online (balallica.my.id)
+        // 1. Try Live Server Login first if online (sdn4putrajawa.my.id)
         try {
             val response = FourbookApiClient.service.login(RemoteAuthRequest(cleanUsername, cleanPassword))
             if (response.isSuccessful && (response.body()?.success == true || response.body()?.status == true)) {
@@ -621,7 +621,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
         // 1. Ensure remote session with current uploader
         val isSessionActive = ensureRemoteSession(uploader)
 
-        // 2. Attempt remote post creation on balallica.my.id
+        // 2. Attempt remote post creation on sdn4putrajawa.my.id
         var remotePostId: Long? = null
         var remoteMediaUrl: String? = null
         if (isSessionActive) {
@@ -1019,7 +1019,7 @@ class GalleryRepository(private val database: AppDatabase, private val context: 
     }
 
     // ----------------------------------------------------
-    // Live Server Realtime Sync Engine (balallica.my.id)
+    // Live Server Realtime Sync Engine (sdn4putrajawa.my.id)
     // ----------------------------------------------------
 
     suspend fun ensureRemoteSession(user: UserEntity): Boolean = withContext(Dispatchers.IO) {

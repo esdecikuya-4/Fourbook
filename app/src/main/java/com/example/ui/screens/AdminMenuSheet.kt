@@ -226,7 +226,7 @@ fun AdminMenuSheet(
                             color = Color(0xFF166534)
                         )
                         Text(
-                            text = "https://balallica.my.id (API Sinkronisasi Aktif)",
+                            text = "https://sdn4putrajawa.my.id (API Sinkronisasi Aktif)",
                             fontSize = 11.sp,
                             color = Color(0xFF15803D)
                         )

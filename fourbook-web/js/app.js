@@ -165,7 +165,9 @@ async function handleLogout() {
   if (confirm('Apakah Anda yakin ingin keluar dari akun Fourbook?')) {
     await apiRequest('auth.php?action=logout');
     state.currentUser = null;
+    sessionStorage.clear();
     showAuthScreen();
+    window.location.reload();
   }
 }
 

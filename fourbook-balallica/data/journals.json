@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "teacherId": 1,
+    "teacherName": "Teten Kurniawan, S.Pd.",
+    "dateString": "2026-09-01",
+    "subject": "IPAS & Praktikum",
+    "topic": "Struktur Daun dan Proses Fotosintesis Tumbuhan",
+    "activity": "Pengamatan langsung daun menggunakan lup kaca pembesar dan diskusi kelompok interaktif.",
+    "attendanceSummary": "Hadir: 5, Sakit: 0, Izin: 0, Alpa: 0",
+    "notes": "Seluruh murid aktif bertanya dan mengerjakan lembar kerja praktikum dengan tertib.",
+    "createdAt": 1756715000000
+  }
+]

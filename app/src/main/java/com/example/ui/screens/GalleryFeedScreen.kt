@@ -357,7 +357,7 @@ fun GalleryFeedScreen(
                 }
             }
 
-            // 2b. Live Realtime Sync Status Bar with balallica.my.id
+            // 2b. Live Realtime Sync Status Bar with sdn4putrajawa.my.id
             item {
                 val isSyncing by viewModel.isSyncing.collectAsState()
 
@@ -392,7 +392,7 @@ fun GalleryFeedScreen(
                             )
                             Column {
                                 Text(
-                                    text = if (isSyncing) "Menyinkronkan dengan web balallica.my.id..." else "Online Realtime • balallica.my.id",
+                                    text = if (isSyncing) "Menyinkronkan dengan web sdn4putrajawa.my.id..." else "Online Realtime • sdn4putrajawa.my.id",
                                     fontSize = 11.5.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = if (isSyncing) Color(0xFF1D4ED8) else Color(0xFF15803D)

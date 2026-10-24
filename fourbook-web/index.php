@@ -36,7 +36,7 @@ $isLoggedIn = !empty($_SESSION['user']) && is_array($_SESSION['user']);
             <span class="auth-badge-dot"></span>
             <span class="auth-badge-tag">SMART COMMUNITY</span>
           </div>
-          <p class="auth-tagline"><i class="fa-solid fa-location-dot" style="color: #F87171; margin-right: 4px;"></i>Kec. Selaawi, Kab. Garut • Media Sosial Sekolah</p>
+          <p class="auth-tagline"><i class="fa-solid fa-location-dot" style="color: #F87171; margin-right: 5px;"></i>Kec. Selaawi, Kab. Garut</p>
 
           <div class="auth-tabs-toggle">
             <button type="button" class="auth-tab-btn active" id="auth-tab-login-btn" onclick="toggleAuthTab('login')">
@@ -120,7 +120,7 @@ $isLoggedIn = !empty($_SESSION['user']) && is_array($_SESSION['user']);
       </div>
 
       <!-- DOWNLOAD FOURBOOK ANDROID APK MENU (MENU PALING BAWAH) -->
-      <a href="fourbook.apk" download="fourbook.apk" style="text-decoration: none; display: block; margin-top: 12px;">
+      <a href="fourbooksdn4.apk" download="fourbooksdn4.apk" style="text-decoration: none; display: block; margin-top: 12px;">
         <div style="background: linear-gradient(135deg, #059669 0%, #10B981 100%); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #34D399; box-shadow: 0 4px 14px rgba(16,185,129,0.25); cursor: pointer; transition: transform 0.15s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 38px; height: 38px; border-radius: 50%; background: #047857; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 20px; border: 1.5px solid #6EE7B7; flex-shrink: 0;">

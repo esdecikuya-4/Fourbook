@@ -16,9 +16,9 @@ if (!file_exists($dataFile)) {
     $defaultData = [
         'versionCode' => 6,
         'versionName' => '1.0.6',
-        'apkUrl' => 'https://balallica.my.id/fourbook.apk',
+        'apkUrl' => 'https://sdn4putrajawa.my.id/fourbooksdn4.apk',
         'apkSizeMb' => '25 MB',
-        'releaseNotes' => "1. Keamanan Website: Pengunjung web balallica.my.id wajib login/daftar terlebih dahulu sebelum masuk (tidak lagi otomatis masuk sebagai admin).\n2. Foto Profil Langsung Muncul: Foto asli pengguna langsung terlihat di postingan feed dan komentar tanpa harus diklik.\n3. Avatar kartun hanya digunakan untuk akun yang belum mengunggah foto profil asli.\n4. Sinkronisasi foto profil real-time di semua postingan.",
+        'releaseNotes' => "1. Domain Baru: Sinkronisasi dan portal resmi beralih ke https://sdn4putrajawa.my.id.\n2. Keamanan Website: Pengunjung web sdn4putrajawa.my.id wajib login/daftar terlebih dahulu sebelum masuk (tidak lagi otomatis masuk sebagai admin).\n3. Foto Profil Langsung Muncul: Foto asli pengguna langsung terlihat di postingan feed dan komentar tanpa harus diklik.\n4. Avatar kartun hanya digunakan untuk akun yang belum mengunggah foto profil asli.\n5. Sinkronisasi foto profil real-time di semua postingan.",
         'releaseDate' => '2026-10-21',
         'forceUpdate' => true
     ];
@@ -32,7 +32,7 @@ if (!$versionData) {
     $versionData = [
         'versionCode' => 6,
         'versionName' => '1.0.6',
-        'apkUrl' => 'https://balallica.my.id/fourbook.apk',
+        'apkUrl' => 'https://sdn4putrajawa.my.id/fourbooksdn4.apk',
         'apkSizeMb' => '24 MB',
         'releaseNotes' => 'Pembaruan SDN 4 Putrajawa v1.0.5',
         'releaseDate' => '2026-10-14',

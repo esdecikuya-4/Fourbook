@@ -16,7 +16,7 @@ import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
 // ----------------------------------------------------
-// Models for Fourbook Server API (https://balallica.my.id)
+// Models for Fourbook Server API (https://sdn4putrajawa.my.id)
 // ----------------------------------------------------
 
 data class RemoteAuthRequest(
@@ -172,7 +172,7 @@ data class RemoteApiResponse(
 data class RemoteAppVersionInfo(
     val versionCode: Int = 1,
     val versionName: String = "1.0",
-    val apkUrl: String = "https://balallica.my.id/fourbook.apk",
+    val apkUrl: String = "https://sdn4putrajawa.my.id/fourbooksdn4.apk",
     val apkSizeMb: String = "24 MB",
     val releaseNotes: String = "",
     val releaseDate: String = "",
@@ -279,7 +279,7 @@ class FourbookCookieJar : CookieJar {
 
 object FourbookApiClient {
     // Live Server Hosting SDN 4 Putrajawa
-    var BASE_URL: String = "https://balallica.my.id/"
+    var BASE_URL: String = "https://sdn4putrajawa.my.id/"
         private set
 
     val cookieJar = FourbookCookieJar()
